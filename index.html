@@ -79,7 +79,8 @@
   .morph{ display:block; filter:url(#threshold) blur(0.4px); line-height:1.12; }
   .morph .slot{ display:inline-block; position:relative; height:1.12em; vertical-align:top; transition:width .45s cubic-bezier(.2,.8,.2,1); }
   .morph .slot + .slot{ margin-left:.24em; }
-  .morph .l{ position:absolute; left:0; top:0; white-space:nowrap; will-change:filter,opacity; }
+  /* Avoid will-change here: WebKit skips the parent SVG threshold (webkit.org/b/219729). */
+  .morph .l{ position:absolute; left:0; top:0; white-space:nowrap; }
   .morph .slot{ white-space:nowrap; }
   .morph .l2{ opacity:0; }
   .morph.static{ filter:none; }

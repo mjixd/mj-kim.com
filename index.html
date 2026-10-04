@@ -475,12 +475,10 @@ function renderAbout(){
       <p>I\u2019ve done that at Samsung, a 0\u21921 fintech startup, and Meta HQ, across Seoul and Silicon Valley.</p>
     </section>
     <section class="wrap manifesto-block">
-      <h2>The role doesn\u2019t have a name yet</h2>
-      <p>The role on the homepage keeps changing because the role itself is still being defined.</p>
-      <p>As AI blurs the boundaries between design, engineering, product, and strategy, new titles are emerging: design engineer, builder, AI imagineer, and others that don\u2019t exist yet.</p>
-      <p>My work already moves across those boundaries: designing products, shaping strategy, and building systems that let people and AI work together.</p>
-      <p>I\u2019m interested in what happens when that kind of work is given a bigger mandate.</p>
-      <p>I\u2019d rather help define the role than wait for the industry to name it.</p>
+      <h2>The role doesn’t have a name yet</h2>
+      <p>My work moves across design, product, strategy, and technology: designing products, shaping strategy, and building systems that let people and AI work together.</p>
+      <p>I’m interested in what happens when that kind of work is given a bigger mandate.</p>
+      <p>I’d rather help define the role than wait for the industry to name it.</p>
     </section>
     <section class="wrap">
       <div class="rows" aria-label="Selected impact">
@@ -631,19 +629,22 @@ function startMorph(){
     fit(); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true); morphState = { timer: setTimeout(tick, COOLDOWN + MORPH), raf: 0 }; return;
   }
 
+  // blur scales with the hero font size: ~8px at 56px, ~4px at 30px (mobile)
+  const blurK = () => { const h = document.querySelector('.hero h1'); const fs = h ? parseFloat(getComputedStyle(h).fontSize) : 56; return Math.max(3, fs * 0.145); };
   let active = 0; const isAnimating = () => active > 0; const pending = { pre:null, role:null };
   function morph(key, nextWord){
     pending[key] = nextWord;
     const el = slots[key], l1 = el.querySelector('.l1'), l2 = el.querySelector('.l2');
-    l2.textContent = nextWord; l2.style.opacity = 0; l2.style.filter = 'blur(20px)';
+    const K = blurK(), CAP = K * 10;
+    l2.textContent = nextWord; l2.style.opacity = 0; l2.style.filter = `blur(${K * 2.5}px)`;
     sizeSlot(key, nextWord, false);           // the slot (and the word after it) slides while the text melts
     const t0 = performance.now(); active++;
     const frame = now => {
       const f = Math.min(1, (now - t0) / MORPH);
       // Valgo-style: outgoing blur grows, incoming blur shrinks; the threshold filter does the gooey join.
       const inF = Math.max(0.001, f), outF = Math.max(0.001, 1 - f);
-      l2.style.filter = `blur(${Math.min(8 / inF - 8, 100)}px)`;  l2.style.opacity = Math.pow(inF, 0.4);
-      l1.style.filter = `blur(${Math.min(8 / outF - 8, 100)}px)`; l1.style.opacity = Math.pow(outF, 0.4);
+      l2.style.filter = `blur(${Math.min(K / inF - K, CAP)}px)`;  l2.style.opacity = Math.pow(inF, 0.4);
+      l1.style.filter = `blur(${Math.min(K / outF - K, CAP)}px)`; l1.style.opacity = Math.pow(outF, 0.4);
       if (f < 1) morphState.raf = requestAnimationFrame(frame);
       else { l1.textContent = nextWord; l1.style.filter = ''; l1.style.opacity = 1; l2.textContent = ''; l2.style.filter = ''; l2.style.opacity = 0; active--; pending[key] = null; sizeSlot(key, nextWord, true); }
     };
@@ -665,9 +666,10 @@ function startMorph(){
   window.__morphRedraw = () => {};
   fit(); setLayers('pre', PREFIXES[0], ''); setLayers('role', ROLES[0], ''); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true);
   // entrance: melt in once
-  for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = 'blur(20px)'; l1.style.opacity = 0; }
+  const K0 = blurK(), CAP0 = K0 * 10;
+  for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${K0 * 2.5}px)`; l1.style.opacity = 0; }
   const t0 = performance.now();
-  const enter = now => { const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(8 / ff - 8, 100)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } };
+  const enter = now => { const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(K0 / ff - K0, CAP0)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } };
   morphState.raf = requestAnimationFrame(enter);
   schedule();
 

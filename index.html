@@ -178,6 +178,7 @@
   .rows + .rows{ margin-top:-8px; }
   .row{ display:grid; grid-template-columns:260px 1fr; gap:48px; padding:24px 0; border-bottom:1px solid var(--line); }
   .row b{ font-weight:600; font-size:15px; } .row p{ margin:0; color:var(--muted); font-size:16px; max-width:70ch; }
+  .company-location{ display:block; margin-top:4px; font-size:13px; font-weight:400; color:var(--muted); }
   @media (max-width:640px){ .row{ grid-template-columns:1fr; gap:8px; } }
   .note{ background:var(--surface); border-radius:var(--radius); padding:clamp(24px,4vw,40px); margin-bottom:clamp(56px,8vw,96px); }
   .note p{ margin:16px 0; max-width:70ch; font-size:clamp(16px,1.6vw,18px); }
@@ -483,11 +484,11 @@ function renderAbout(){
     </section>
     <section class="wrap">
       <div class="rows" aria-label="Selected impact">
-        <div class="row"><b>Samsung Electronics Co., Ltd.</b><p>AI validation operating model recognized by center leadership for broader reuse. Deterministic checks automated; ambiguous decisions routed to people.</p></div>
-        <div class="row"><b>FastForward, Inc. (Domino)</b><p>D7 retention +153.84% (8.47% \u2192 21.5%) and DAU 3\u00d7 after an account-centric product decision. \u20a910B (about $7M) raised with design cited by the lead investor.</p></div>
-        <div class="row"><b>Meta Platforms, Inc.</b><p>Manager WAP +195.65% (2.3% \u2192 6.8%) and D7 retention +33.94% (49.8% \u2192 66.7%) for the 1:1 tool inside Enterprise Engineering.</p></div>
-        <div class="row"><b>LINE Plus Corp.</b><p>Selected designer at Apple WWDC 2016, integrating pre-release SiriKit into LINE in a private Apple lab. Supported the CLOVA voice assistant app and led LINE UX Task Force usability studies in Tokyo and Taipei.</p></div>
-        <div class="row"><b>NAVER Corp.</b><p>New concept interfaces and interaction design, one presented at IDG\u2019s UX World as a future NAVER product. Shopping and commerce web design, and the mobile conversion of a cloud service.</p></div>
+        <div class="row"><b>Samsung Electronics Co., Ltd.<span class="company-location">South Korea</span></b><p>AI validation operating model recognized by center leadership for broader reuse. Deterministic checks automated; ambiguous decisions routed to people.</p></div>
+        <div class="row"><b>FastForward, Inc. (Domino)<span class="company-location">South Korea</span></b><p>D7 retention +153.84% (8.47% \u2192 21.5%) and DAU 3\u00d7 after an account-centric product decision. \u20a910B (about $7M) raised with design cited by the lead investor.</p></div>
+        <div class="row"><b>Meta Platforms, Inc.<span class="company-location">United States</span></b><p>Manager WAP +195.65% (2.3% \u2192 6.8%) and D7 retention +33.94% (49.8% \u2192 66.7%) for the 1:1 tool inside Enterprise Engineering.</p></div>
+        <div class="row"><b>LINE Plus Corp.<span class="company-location">South Korea</span></b><p>Selected designer at Apple WWDC 2016, integrating pre-release SiriKit into LINE in a private Apple lab. Supported the CLOVA voice assistant app and led LINE UX Task Force usability studies in Tokyo and Taipei.</p></div>
+        <div class="row"><b>NAVER Corp.<span class="company-location">South Korea</span></b><p>New concept interfaces and interaction design, one presented at IDG\u2019s UX World as a future NAVER product. Shopping and commerce web design, and the mobile conversion of a cloud service.</p></div>
       </div>
       <div class="rows" aria-label="How I work">
         <div class="row"><b>Strategy &amp; operations</b><p>Operating strategy, KPI and reporting frameworks, prioritization, decision systems, continuous improvement. Ambiguity into structure.</p></div>

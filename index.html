@@ -58,7 +58,7 @@
   .nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
   .brand{ font-weight:600; font-size:15px; letter-spacing:-.01em; }
   .links{ display:flex; align-items:center; gap:28px; font-size:15px; }
-  .links a{ color:var(--muted); cursor:pointer; } .links a.active, .links a:hover{ color:var(--text); }
+  .links a{ font-weight:500; color:var(--muted); opacity:.5; cursor:pointer; transition:opacity .15s; } .links a.active, .links a:hover{ color:var(--text); opacity:1; }
   .links .theme{ background:transparent; border:0; width:40px; height:40px; border-radius:999px; cursor:pointer; display:grid; place-items:center; padding:0; overflow:hidden; transition:border-color .2s, background .2s; }
   .links .theme:active .eclipse{ transform:scale(.9); }
   .eclipse{ position:relative; width:28px; height:28px; transition:transform .25s; }
@@ -89,7 +89,7 @@
   .hero .meta{ margin-top:36px; display:flex; flex-wrap:wrap; gap:10px 28px; font-size:14px; color:var(--muted); }
 
   /* ---------- home: full-bleed strips ---------- */
-  .strips{ display:flex; flex-direction:column; gap:clamp(48px,7vw,88px); padding-bottom:clamp(56px,8vw,96px); }
+  .strips{ display:flex; flex-direction:column; gap:0; padding-bottom:clamp(56px,8vw,96px); }
   .strip{ display:block; color:inherit; }
   .strip:focus-visible{ outline:2px solid var(--sky); outline-offset:4px; }
   .kv{ position:relative; width:100%; aspect-ratio:16/10; border-radius:var(--radius); background:var(--surface); overflow:hidden; box-shadow:inset 0 0 0 1px var(--line); }
@@ -97,22 +97,24 @@
   @media (max-width:820px){ .kv.wide{ aspect-ratio:16/9; } }
   .kv img{ width:100%; height:100%; object-fit:cover; }
   .kv .label{ position:absolute; left:16px; top:14px; font-size:12px; color:var(--muted); }
+  .kv .dims{ position:absolute; left:16px; top:32px; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .kv.wide .dims{ left:var(--gutter); }
   .kv.wide .label{ left:var(--gutter); }
   .kv .art{ display:none; }
   /* strip bottom: edge-to-edge rules + full-height divider */
   .ed{ border-top:1px solid var(--text); border-bottom:1px solid var(--text); }
   .ed-grid{ display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr); }
-  .ed-left{ padding:clamp(22px,2.6vw,36px) clamp(20px,3vw,48px) clamp(22px,2.6vw,36px) 0; border-right:1px solid var(--text); }
+  .ed-left{ padding:clamp(22px,2.6vw,36px) clamp(20px,3vw,48px) calc(clamp(22px,2.6vw,36px) + clamp(48px,7vw,88px)) 0; border-right:1px solid var(--text); }
   .ed-left h3{ margin:0; font-size:clamp(14px,1.15vw,16px); font-weight:600; line-height:1.5; letter-spacing:0; text-wrap:pretty; }
   .ed-left .ed-sub{ margin:10px 0 0; font-size:clamp(14px,1.15vw,16px); line-height:1.5; color:var(--muted); }
-  .ed-right{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(20px,3vw,48px); padding:clamp(22px,2.6vw,36px) 0 clamp(22px,2.6vw,36px) clamp(20px,3vw,48px); align-items:start; }
+  .ed-right{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(20px,3vw,48px); padding:clamp(22px,2.6vw,36px) 0 calc(clamp(22px,2.6vw,36px) + clamp(48px,7vw,88px)) clamp(20px,3vw,48px); align-items:start; }
   .ed-body{ margin:0; font-size:clamp(14px,1.15vw,16px); line-height:1.5; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
   .ed-key b{ display:block; font-size:clamp(14px,1.15vw,16px); font-weight:600; line-height:1.5; }
   .ed-key span{ display:block; margin-top:2px; font-size:clamp(14px,1.15vw,16px); line-height:1.5; color:var(--muted); }
   @media (max-width:820px){
     .ed-grid{ grid-template-columns:1fr; }
     .ed-left{ padding:20px 0 0; border-right:0; border-bottom:0; }
-    .ed-right{ grid-template-columns:1fr; gap:14px; padding:16px 0 20px; }
+    .ed-right{ grid-template-columns:1fr; gap:14px; padding:16px 0 calc(20px + clamp(48px,7vw,88px)); }
   }
   .stat{ display:flex; align-items:baseline; gap:10px; }
 
@@ -167,7 +169,7 @@
   /* ---------- about ---------- */
   .about-intro{ padding-top:clamp(48px,8vw,96px); padding-bottom:clamp(32px,5vw,64px); }
   .about-intro h1{ margin:0 0 20px; font-size:clamp(34px,5.4vw,64px); font-weight:600; letter-spacing:-.03em; }
-  .about-intro p{ margin:0; max-width:64ch; font-size:clamp(16px,1.8vw,20px); color:var(--muted); }
+  .about-intro p{ margin:0 0 14px; max-width:64ch; font-size:clamp(16px,1.8vw,20px); line-height:1.5; color:var(--muted); }
   .manifesto-block{ padding-bottom:clamp(32px,5vw,64px); }
   .manifesto-block h2{ margin:0 0 14px; font-size:clamp(22px,2.6vw,32px); font-weight:600; letter-spacing:-.02em; }
   .manifesto-block p{ margin:0 0 14px; max-width:68ch; font-size:clamp(16px,1.6vw,19px); line-height:1.55; color:var(--muted); }
@@ -356,7 +358,7 @@ const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kvHTML = (kv, cls='') => kv.src
   ? `<div class="kv ${cls}"><img src="${esc(kv.src)}" alt="${esc(kv.alt||'')}" loading="lazy"></div>`
-  : `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span></div>`;
+  : `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
 
 function renderHome(){
   document.title = 'Minjung Kim — Product Designer';
@@ -389,8 +391,20 @@ function renderHome(){
         </a>`).join('')}
     </section>`;
   startMorph();
+  observeKV();
 }
 
+let kvRO = null;
+function observeKV(){
+  if (kvRO) kvRO.disconnect();
+  if (!window.ResizeObserver) return;
+  kvRO = new ResizeObserver(entries => entries.forEach(e => {
+    const el = e.target, out = el.querySelector('.dims'); if (!out) return;
+    const w = Math.round(el.clientWidth), h = Math.round(el.clientHeight), dpr = Math.min(window.devicePixelRatio || 1, 3);
+    out.textContent = `${w} \u00d7 ${h} px \u00b7 export ${Math.round(w*dpr)} \u00d7 ${Math.round(h*dpr)} @${dpr}x`;
+  }));
+  document.querySelectorAll('.kv').forEach(el => kvRO.observe(el));
+}
 function bindDeckButtons(){
   document.querySelectorAll('[data-deck]').forEach(el => el.addEventListener('click', () => {
     location.hash = `#/work/${el.dataset.deck}/deck/${(parseInt(el.dataset.at,10)||0)+1}`;
@@ -448,6 +462,7 @@ function renderCase(slug){
     </nav>`;
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   bindDeckButtons();
+  observeKV();
 }
 
 function renderAbout(){
@@ -455,12 +470,17 @@ function renderAbout(){
   app.innerHTML = `
     <section class="about-intro wrap">
       <h1>About</h1>
-      <p>I\u2019m a strategy and product leader with 15 years across product, technology, and organizational transformation, grounded in an MFA in Human-Computer Interaction. My titles have mostly said design. The work I keep gravitating toward is finding a structural problem, building a system that makes it tractable, aligning senior cross-functional stakeholders around it, and staying until it shows measurable results. Samsung, a 0\u21921 fintech startup, and Meta HQ, across Seoul and Silicon Valley.</p>
+      <p>I\u2019m a strategy and product leader with 15 years across product, technology, and organizational transformation, grounded in an MFA in Human-Computer Interaction.</p>
+      <p>My titles have mostly said design. My work has rarely stayed inside it. I find structural problems, turn them into systems, align cross-functional leaders around them, and stay through measurable outcomes.</p>
+      <p>I\u2019ve done that at Samsung, a 0\u21921 fintech startup, and Meta HQ, across Seoul and Silicon Valley.</p>
     </section>
     <section class="wrap manifesto-block">
-      <h2>Why the title keeps changing</h2>
-      <p>On the home page, the words in front of and after \u201cDesigner\u201d never settle. That\u2019s deliberate. In 2026 the lines between designer, engineer, and product manager are blurring fast: UX and UI titles are fading in favor of broader ones, and new names like design engineer, builder, and AI imagineer are showing up in Silicon Valley job posts. Some of the combinations above are real titles. Some don\u2019t exist yet.</p>
-      <p>The work I do sits across all of them. I design products, I write the strategy behind them, and I build the machine-readable systems that let AI and people share the work. No single title describes that today. I believe the industry will name it soon, and I\u2019d rather be fluent in the work before the name arrives than wait for a job description to tell me what I am.</p>
+      <h2>The role doesn\u2019t have a name yet</h2>
+      <p>The role on the homepage keeps changing because the role itself is still being defined.</p>
+      <p>As AI blurs the boundaries between design, engineering, product, and strategy, new titles are emerging: design engineer, builder, AI imagineer, and others that don\u2019t exist yet.</p>
+      <p>My work already moves across those boundaries: designing products, shaping strategy, and building systems that let people and AI work together.</p>
+      <p>I\u2019m interested in what happens when that kind of work is given a bigger mandate.</p>
+      <p>I\u2019d rather help define the role than wait for the industry to name it.</p>
     </section>
     <section class="wrap">
       <div class="rows" aria-label="Selected impact">

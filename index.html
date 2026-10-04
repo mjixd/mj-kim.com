@@ -139,8 +139,8 @@
   .band.dark .slide h2{ color:var(--text-inverse); } .band.dark .slide p{ color:rgba(245,245,247,.7); }
   .impact{ text-align:center; }
   .impact .eyebrow{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:500; color:rgba(245,245,247,.6); margin-bottom:28px; }
-  .impact .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px 32px; padding:0; max-width:1100px; margin:0 auto; }
-  .impact b{ display:block; font-size:clamp(44px,6vw,80px); font-weight:600; letter-spacing:-.04em; line-height:1; }
+  .impact .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:40px 48px; padding:0; max-width:1100px; margin:0 auto; align-items:start; }
+  .impact b{ display:block; font-size:clamp(30px,3.1vw,44px); font-weight:600; letter-spacing:-.03em; line-height:1.05; }
   .impact span{ display:block; margin-top:12px; font-size:15px; color:rgba(245,245,247,.65); max-width:28ch; margin-left:auto; margin-right:auto; }
   .deck-band{ text-align:center; }
   .deck-band h2{ margin:14px auto 0; font-size:clamp(28px,4vw,48px); font-weight:600; letter-spacing:-.03em; max-width:18ch; }
@@ -264,7 +264,7 @@ const CASES = [
     accent:'#06bfff', stat:{n:'Org-wide', l:'reuse recognized at center leadership review'},
     lead:'Samsung\u2019s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, and conceived a governance system that turns design tokens and implementation rules into machine-readable checks against live code.',
     role:'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 \u2013 present',
-    stats:[['PASS / REVIEW / FAIL','deterministic checks automated; ambiguous accessibility decisions routed to people'],['1 command','updates tokens org-wide; color, radius, spacing, type propagate to every linked screen'],['Storybook','connected on the internal secure network, in use by engineering'],['CES 2025','AI Office mobile prototype, from brief to exhibit in 3 months']],
+    stats:[['3 states','PASS / REVIEW / FAIL: deterministic checks automated; ambiguous accessibility decisions routed to people'],['1 command','updates tokens org-wide; color, radius, spacing, type propagate to every linked screen'],['CES 2025','AI Office mobile prototype, from brief to exhibit in 3 months']],
     blocks:[
       {tag:'1 Context', h:'Business and product challenge', p:'Design assets and production code were maintained on separate paths, so every color, radius, margin, and type change meant individual edits and repeated QA. Enterprise sites also needed a B2B product model that consumer-first SmartThings could not support.', from:'E05'},
       {tag:'2 Operating model', h:'Define the automation boundary', p:'Deterministic token and spacing checks are automated and scored. Ambiguous accessibility decisions route to human review, with re-validation against alternate token standards. The point is not more automation; it is deciding what the system should not do alone.', from:'E09'},
@@ -275,7 +275,7 @@ const CASES = [
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
-    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6'],['CN \u00b7 BO \u00b7 C \u00b7 E','prioritization framework: customer need, business opportunity, confidence, effort'],['4','designers hired, mentored, and run on a critique cadence']],
+    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6']],
     blocks:[
       {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', from:'WEB 25'},
       {tag:'2 Strategy', h:'Priorities and problem framing', p:'Five product value propositions and a scoring model (customer need, business opportunity, confidence, effort) turned a flood of ideas into a sequenced roadmap. Information architecture everyone could navigate, down to the business team and new hires.', from:'WEB 31'},
@@ -287,7 +287,7 @@ const CASES = [
     accent:'#81ff46', stat:{n:'+153.84%', l:'D7 retention, 8.47% \u2192 21.5%'},
     lead:'Ahead of MyData integration, Domino had to choose: keep the type-centric home and add linked accounts, or rebuild the home around real brokerage accounts and lay the foundation for multi-brokerage trading. I made the case, aligned the CEO, PM, and CTO, defined the metrics before launch, and the team shipped it.',
     role:'Role · Product strategy, product decision, design brief with the CEO and PM, metrics design',
-    stats:[['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained'],['29.3%','entry to account Analysis, up, not down']],
+    stats:[['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
     blocks:[
       {tag:'1 Discover', h:'Users were already building accounts by hand', p:'33% of holding memos were brokerage names. Watch groups like \u201cwife\u2019s account\u201d showed what heavy users wanted: account separation and per-account management.', from:'WEB 50'},
       {tag:'2 Trade-off', h:'Keep the structure, or change it', p:'Five Whys with leadership. Keeping the home meant low migration cost and weak account value. Shifting to accounts meant accepting change for manual users to unlock multi-brokerage viewing and future trading. We chose the second, and sequenced it as stage 2 of a three-stage roadmap.', from:'WEB 52'},
@@ -298,7 +298,7 @@ const CASES = [
     accent:'#277af6', stat:{n:'+195.65%', l:'Manager WAP, 2.3% \u2192 6.8%'},
     lead:'When Meta went remote, 52% of managers worried about team cohesion. In the People Products team of Enterprise Engineering, I led product strategy and execution for manager and 1:1 workflows, translating hybrid-work needs into measurable hypotheses and experiments.',
     role:'Role · Product strategy, research, experimentation, cross-functional leadership · 2020 \u2013 2022',
-    stats:[['+195.65%','Manager WAP, 2.3% \u2192 6.8%'],['+33.94%','D7 retention, 49.8% \u2192 66.7%'],['810k','shared 1:1 notes; 9.37 notes per manager'],['4','strategic concepts developed and presented in an XFN sprint']],
+    stats:[['+195.65%','Manager WAP, 2.3% \u2192 6.8%'],['+33.94%','D7 retention, 49.8% \u2192 66.7%'],['810k','shared 1:1 notes; 9.37 notes per manager']],
     blocks:[
       {tag:'1 Understanding', h:'Remote-work adoption challenge', p:'52% of managers worried about cohesion; 56% expected engagement to be harder. The scope connected structured 1:1 conversations with Manager Landing so planning, notes, and follow-up lived in one workflow.', from:'WEB 67'},
       {tag:'2 Research', h:'Design sprint with XFN partners', p:'A new information architecture for the 1:1 tool, developed through a cross-functional sprint. Four strategic concepts, one selected and iterated for testing.', from:'WEB 69'},
@@ -309,7 +309,7 @@ const CASES = [
     accent:'#19e300', stat:{n:'5 months', l:'concept to commercialization cycle'},
     lead:'The initial CLOVA project. Exploratory UX for the Friends smart speaker, from music and search to kids\u2019 content and smart-home pairing, and a first-time experience that teaches the AI your name.',
     role:'Role · Human-AI interaction, conversational AI strategy, HCI · 2017 Q3 · 5 months',
-    stats:[['5 months','from concept through the commercialization cycle'],['Voice + hand','two modes of use merged into one screen structure'],['+130%','LINE Group Call usage growth, shipped in the same era'],['WWDC 2016','selected to represent the company at Apple']],
+    stats:[['5 months','from concept through the commercialization cycle'],['WWDC 2016','selected to represent the company at Apple']],
     blocks:[
       {tag:'1 Understanding', h:'Background', p:'Music recommendations, NAVER search, kids\u2019 content, and smart-home Bluetooth pairing, inside one app for a smart speaker.', from:'WEB 77'},
       {tag:'2 Concept', h:'Scenarios first', p:'Question-and-answer scenarios for messenger, maps, clock, and video, iterated with leadership to set direction before screens.', from:'WEB 80'},
@@ -320,7 +320,7 @@ const CASES = [
     accent:'#ffd84d', stat:{n:'System-oriented', l:'principles, process, scenarios, information architecture, and documentation the team ran on'},
     lead:'As a founding team member and design lead, I connected user and business goals to execution priorities, made roles and deliverables explicit across teams, and coordinated scope, timing, and dependencies with PM and engineering so the way the team worked led to product delivery.',
     role:'Role · Strategic decision making, operating model, organizational leadership',
-    stats:[['System-oriented','principles, process, scenarios, IA, and documentation'],['3 scenarios','new feature, improvement, pre-PRD exploration, each with its own path'],['2\u00d7/week','design critique; 1 weekly announcement; monthly 1:1s'],['4','designers hired, mentored, and run on that cadence']],
+    stats:[['System-oriented','principles, process, scenarios, IA, and documentation'],['3 scenarios','new feature, improvement, pre-PRD exploration, each with its own path'],['4','designers hired, mentored, and run on that cadence']],
     blocks:[
       {tag:'Alignment', h:'Scenario-based alignment', p:'One goal, different paths. New features, improvements, and pre-PRD exploration follow distinct routes, shared from kickoff so everyone knows the goal and the collaboration path.', from:'WEB 89'},
       {tag:'Delivery', h:'Cross-functional delivery', p:'Kickoff, design with PM and server, client engineering and QA, release. A flow that runs from scope to store submission and hotfix response.', from:'WEB 90'},

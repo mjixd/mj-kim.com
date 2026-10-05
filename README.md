@@ -8,3 +8,8 @@ Portfolio site for Minjung Kim. Single-file static site (index.html) hosted on G
 - `assets/decks/` — full case-study slide images (export from Figma, filenames = frame names)
 - `CNAME` — custom domain for GitHub Pages
 - `og.png`, `favicon*.png`, `apple-touch-icon.png` — share card and icons
+
+Detail visuals and decks use 2× PNG exports (3840×2160), displayed at 16:9.
+`EN · NN` images come from [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2192-715).
+`WEB 42–44` (Domino mentorship) and `WEB 77–84` (LINE) supplement that selection from the English frames in [Interview Deck 25.12.15](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=1660-4743).
+Keep the exported Figma frame names as filenames; `CASES` and `DECKS` in `index.html` own their placement and order.

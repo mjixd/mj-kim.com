@@ -146,6 +146,7 @@
   .impact{ text-align:center; }
   .impact .eyebrow{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:500; color:rgba(245,245,247,.6); margin-bottom:28px; }
   .impact .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:40px 48px; padding:0; max-width:1100px; margin:0 auto; align-items:start; }
+  @media (min-width:821px){ .impact .stats-four{ grid-template-columns:repeat(4,minmax(0,1fr)); column-gap:clamp(16px,3vw,48px); } }
   .impact b{ display:block; font-size:clamp(30px,3.1vw,44px); font-weight:600; letter-spacing:-.03em; line-height:1.05; }
   .impact span{ display:block; margin-top:12px; font-size:15px; color:rgba(245,245,247,.65); max-width:28ch; margin-left:auto; margin-right:auto; }
   .deck-band{ text-align:center; }
@@ -290,7 +291,7 @@ const CASES = [
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
-    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6'],['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
+    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
     blocks:[
       {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', slides:['EN · 22','EN · 23','EN · 24','EN · 25']},
       {tag:'2 Strategy', h:'Priorities and problem framing', p:'Five product value propositions and a scoring model (customer need, business opportunity, confidence, effort) turned a flood of ideas into a sequenced roadmap. Information architecture everyone could navigate, down to the business team and new hires.', from:'EN · 26', src:'assets/decks/EN · 26.png'},
@@ -357,7 +358,7 @@ const DECKS = {
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261005-3';
+const DECK_REVISION = '20261005-4';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
@@ -380,8 +381,8 @@ const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').repla
 function slideContents(src, alt='', animate=true){
   const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.split('?')[0].slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
   const imageSrc = name ? slideSrc(name) : src;
-  // EN 37 is a full-bleed visual without a page number in its latest Figma revision.
-  const mask = name.startsWith('EN · ') && name !== 'EN · 37' ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
+  // These updated Figma visuals no longer contain page numbers.
+  const mask = name.startsWith('EN · ') && !['EN · 28', 'EN · 37'].includes(name) ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
   return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
@@ -551,7 +552,7 @@ function renderCase(slug){
     <section class="band dark">
       <div class="impact wrap">
         <div class="eyebrow">Impact</div>
-        <div class="stats">${c.stats.map(([n,l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+        <div class="stats${c.stats.length === 4 ? ' stats-four' : ''}">${c.stats.map(([n,l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
       </div>
     </section>
     ${d ? `

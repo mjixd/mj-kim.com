@@ -305,6 +305,7 @@ const CASES = [
       {tag:'5 Delivery', h:'Open the app, see live assets, switch accounts', p:'For the first time in Korea, swipe between brokerage accounts without opening each app. One gesture to switch, one home for everything.', from:'EN · 33', src:'assets/decks/EN · 33.png'}
     ]},
   { slug:'meta', meta:'Meta · 2020', title:'Remote-work adoption, Manager\u00a01:1\u00a0tool', line:'Cross-functional product strategy inside Enterprise Engineering: hypotheses, an XFN sprint, and measured launch.',
+    kvHomeFrom:'EN · 44',
     kvHero:'assets/decks/EN · 44.png',
     accent:'#277af6', stat:{n:'+195.65%', l:'Manager WAP, 2.3% \u2192 6.8%'},
     lead:'When Meta went remote, 52% of managers worried about team cohesion. In the People Products team of Enterprise Engineering, I led product strategy and execution for manager and 1:1 workflows, translating hybrid-work needs into measurable hypotheses and experiments.',
@@ -312,9 +313,10 @@ const CASES = [
     stats:[['+195.65%','Manager WAP, 2.3% \u2192 6.8%'],['+33.94%','D7 retention, 49.8% \u2192 66.7%'],['810k','shared 1:1 notes; 9.37 notes per manager']],
     blocks:[
       {tag:'1 Understanding', h:'Remote-work adoption challenge', p:'52% of managers worried about cohesion; 56% expected engagement to be harder. The scope connected structured 1:1 conversations with Manager Landing so planning, notes, and follow-up lived in one workflow.', from:'EN · 40', src:'assets/decks/EN · 40.png'},
-      {tag:'2 Research', h:'Design sprint with XFN partners', p:'A new information architecture for the 1:1 tool, developed through a cross-functional sprint. Four strategic concepts, one selected and iterated for testing.', from:'EN · 41', src:'assets/decks/EN · 41.png'},
-      {tag:'3 Solution', h:'Workflow integration', p:'Recurring check-ins, mid-cycle, performance, and career conversations in a familiar flow. Meetings as the entry point, so preparation and follow-up became part of everyday work.', from:'EN · 44', src:'assets/decks/EN · 44.png'},
-      {tag:'3 Extension', h:'Rooms integration', p:'A shared 1:1 note that starts automatically when a 1:1 is detected in a Room and continues across desktop and mobile. The workflow extended beyond its original team.', from:'EN · 47', src:'assets/decks/EN · 47.png'}
+      {tag:'2 Planning', h:'Planning', p:'The roadmap connected H2 2020 priorities—Team Signal and structured 1:1 conversations—to a new Manager Landing information architecture for H1 2021.', slides:['ML3','ML6']},
+      {tag:'3 Research', h:'Design sprint with XFN partners', p:'A new information architecture for the 1:1 tool, developed through a cross-functional sprint. Four strategic concepts, one selected and iterated for testing.', from:'EN · 41', src:'assets/decks/EN · 41.png'},
+      {tag:'4 Solution', h:'Workflow integration', p:'Recurring check-ins, mid-cycle, performance, and career conversations in a familiar flow. Meetings as the entry point, so preparation and follow-up became part of everyday work.', from:'EN · 44', src:'assets/decks/EN · 44.png'},
+      {tag:'4 Extension', h:'Rooms integration', p:'A shared 1:1 note that starts automatically when a 1:1 is detected in a Room and continues across desktop and mobile. The workflow extended beyond its original team.', from:'EN · 47', src:'assets/decks/EN · 47.png'}
     ]},
   { slug:'line', meta:'LINE · 2017', title:'LINE AI Speaker', line:'Initial CLOVA project. Voice-first interaction, first-time setup, and the structure that merged voice and hand.',
     kvHero:'assets/decks/WEB 78.png',
@@ -344,14 +346,15 @@ const CASES = [
 
 
 /* Figma English frames exported at 2× (3840×2160). Frame names are the asset filenames.
-   Main source: Interview Deck · AI Strategy. WEB frames supplement LINE and Domino mentorship. */
+   Main source: Interview Deck · AI Strategy. WEB frames supplement LINE and Domino mentorship.
+   ML3 and ML6 are supplied Meta planning images, retained at their original resolution. */
 const DECKS = {
   'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
     chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
   'domino-mvp': { slides:["EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
     chapters:[["1 Discover",0],["2 Product strategy",5],["3 Delivery & impact",7],["4 Account strategy",11],["5 Delivery & metrics",17]] },
-  'meta': { slides:["EN · 39","EN · 40","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
-    chapters:[["1 Understanding",0],["2 Research",2],["3 Design solution",5]] },
+  'meta': { slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
+    chapters:[["1 Understanding",0],["2 Planning",2],["3 Research",4],["4 Design solution",7]] },
   'line': { slides:["WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
     chapters:[["1 Understanding",0],["2 Design solution",2],["3 Design output",4]] },
   'leadership': { slides:["EN · 48","EN · 49","EN · 50","EN · 51","EN · 52","EN · 53","EN · 54"],
@@ -490,7 +493,7 @@ function renderHome(){
     <section class="strips" id="work" aria-label="Selected work">
       ${CASES.map((c,i) => `
         <a class="strip" href="#/work/${c.slug}">
-          ${kvHTML({from:c.blocks[2].from, src:c.kvHome||'', alt:c.kvHomeAlt||''}, 'wide')}
+          ${kvHTML({from:c.kvHomeFrom||c.blocks[2].from, src:c.kvHome||'', alt:c.kvHomeAlt||''}, 'wide')}
           <div class="ed">
             <div class="ed-grid wrap">
               <div class="ed-left">

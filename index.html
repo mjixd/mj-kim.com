@@ -287,18 +287,18 @@ const CASES = [
   { slug:'domino-mvp', meta:'Domino · 2022–2024', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
     kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
     kvHero:'assets/decks/EN · 19.png',
-    heroSlides:['EN · 22','EN · 23','EN · 24','EN · 25','EN · 28'],
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
     stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6'],['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
     blocks:[
-      {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', from:'EN · 24', src:'assets/decks/EN · 24.png'},
+      {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', slides:['EN · 22','EN · 23','EN · 24','EN · 25']},
       {tag:'2 Strategy', h:'Priorities and problem framing', p:'Five product value propositions and a scoring model (customer need, business opportunity, confidence, effort) turned a flood of ideas into a sequenced roadmap. Information architecture everyone could navigate, down to the business team and new hires.', from:'EN · 26', src:'assets/decks/EN · 26.png'},
       {tag:'3 Delivery', h:'Quality at scale', p:'A design system with semantic naming and scalable tokens, a twice-weekly critique, and a handoff process. One mentoring case turned a filter 35% of users failed to recognize into an intuitive, asset-type-aware system.', from:'WEB 43', src:'assets/decks/WEB 43.png'},
       {tag:'3 Outcome', h:'Market validation and talent inflow', p:'Featured by Apple, Google Play Top 10, rising organic traffic and lower CAC. Highly engaged investors joined the team, and candidates applied because of the design.', from:'EN · 37', src:'assets/decks/EN · 37.png'},
       {tag:'4 Account strategy', h:'Account-centric product model', p:'Ahead of MyData integration, Domino had to choose: keep the type-centric home and add linked accounts, or rebuild the home around real brokerage accounts and lay the foundation for multi-brokerage trading. I made the case, aligned the CEO, PM, and CTO, defined the metrics before launch, and the team shipped it.', from:'EN · 27', src:'assets/decks/EN · 27.png'},
       {tag:'4 Discover', h:'Users were already building accounts by hand', p:'33% of holding memos were brokerage names. Watch groups like \u201cwife\u2019s account\u201d showed what heavy users wanted: account separation and per-account management.', from:'EN · 29', src:'assets/decks/EN · 29.png'},
+      {tag:'4 Research', h:'Build alignment through research', p:'Competitor research showed how account switching could differentiate Domino and lay the groundwork for trading. I used it to align the team on the mission, agree on the initial structure, and identify refinements.', from:'EN · 28', src:'assets/decks/EN · 28.png'},
       {tag:'4 Trade-off', h:'Keep the structure, or change it', p:'Five Whys with leadership. Keeping the home meant low migration cost and weak account value. Shifting to accounts meant accepting change for manual users to unlock multi-brokerage viewing and future trading. We chose the second, and sequenced it as stage 2 of a three-stage roadmap.', from:'EN · 30', src:'assets/decks/EN · 30.png'},
       {tag:'4 Hypothesis', h:'Metrics before launch', p:'Primary: new-user D7 retention and MyData active DAU. Secondary: account-switching retention. Guardrail: entry to account Analysis. Defined so the team would know what success looked like before shipping.', from:'EN · 31', src:'assets/decks/EN · 31.png'},
       {tag:'5 Delivery', h:'Open the app, see live assets, switch accounts', p:'For the first time in Korea, swipe between brokerage accounts without opening each app. One gesture to switch, one home for everything.', from:'EN · 33', src:'assets/decks/EN · 33.png'}
@@ -357,7 +357,7 @@ const DECKS = {
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261005-2';
+const DECK_REVISION = '20261005-3';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
@@ -380,7 +380,8 @@ const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').repla
 function slideContents(src, alt='', animate=true){
   const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.split('?')[0].slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
   const imageSrc = name ? slideSrc(name) : src;
-  const mask = name.startsWith('EN · ') ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
+  // EN 37 is a full-bleed visual without a page number in its latest Figma revision.
+  const mask = name.startsWith('EN · ') && name !== 'EN · 37' ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
   return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
@@ -419,12 +420,13 @@ function bindSlideVideos(){
 }
 document.addEventListener('visibilitychange', bindSlideVideos);
 
-function carouselHTML(c){
-  return `<div class="case-carousel" role="region" aria-roledescription="carousel" aria-label="Product strategy highlights" data-carousel="${c.slug}">
-    ${kvHTML({src:slideSrc(c.heroSlides[0]), alt:c.title})}
+function carouselHTML(c, blockIndex){
+  const block = c.blocks[blockIndex];
+  return `<div class="case-carousel" role="region" aria-roledescription="carousel" aria-label="${esc(block.h)}" data-carousel="${c.slug}" data-block-index="${blockIndex}">
+    ${kvHTML({src:slideSrc(block.slides[0]), alt:block.h})}
     <div class="carousel-controls">
       <button type="button" data-carousel-prev aria-label="Previous slide">←</button>
-      <span class="carousel-count" aria-live="off">1 / ${c.heroSlides.length}</span>
+      <span class="carousel-count" aria-live="off">1 / ${block.slides.length}</span>
       <button type="button" data-carousel-next aria-label="Next slide">→</button>
       <button type="button" data-carousel-pause aria-label="Pause slideshow">Pause</button>
     </div>
@@ -455,8 +457,9 @@ function bindCarousel(){
   stopCarousel();
   const root = document.querySelector('[data-carousel]'); if (!root) return;
   const c = CASES.find(c => c.slug === root.dataset.carousel);
+  const block = c.blocks[Number(root.dataset.blockIndex)];
   const frame = root.querySelector('.kv'), pause = root.querySelector('[data-carousel-pause]');
-  carouselState = {root, frame, title:c.title, slides:c.heroSlides, index:0, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
+  carouselState = {root, frame, title:block.h, slides:block.slides, index:0, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
   const updatePause = () => {
     pause.textContent = carouselState.paused ? 'Play' : 'Pause';
     pause.setAttribute('aria-label', carouselState.paused ? 'Play slideshow' : 'Pause slideshow');
@@ -466,7 +469,7 @@ function bindCarousel(){
   pause.onclick = () => { carouselState.paused = !carouselState.paused; updatePause(); syncCarousel(); };
   updatePause();
   carouselState.observer.observe(frame);
-  c.heroSlides.slice(1).forEach(name => { const img = new Image(); img.src = slideSrc(name); });
+  block.slides.slice(1).forEach(name => { const img = new Image(); img.src = slideSrc(name); });
   syncCarousel();
 }
 document.addEventListener('visibilitychange', syncCarousel);
@@ -534,7 +537,7 @@ function renderCase(slug){
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${c.heroSlides ? carouselHTML(c) : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title})}
+      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title})}
     </section>
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
@@ -542,7 +545,7 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           <p>${esc(b.p)}</p>
-          ${kvHTML({from:b.from, src:b.src||'', alt:b.h})}
+          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h})}
         </div>
       </section>`).join('')}
     <section class="band dark">

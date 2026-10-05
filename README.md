@@ -24,4 +24,4 @@ The light theme uses `--surface-light` as its default background, one step light
 
 `SLIDE_VIDEOS` keeps their placement aligned to the 1920×1080 Figma frames. Videos loop while visible in a detail page or deck viewer; the original slide stays underneath as a fallback.
 
-Domino's founding strategy and account-centric work share the `domino-mvp` case, using the original account cover. Its hero cycles through EN 22–25 and EN 28 every five seconds while visible, with previous/next and pause controls. Reduced-motion visitors can start the slideshow manually. Old `domino-mydata` links redirect to the merged case and preserve their original deck slide.
+Domino's founding strategy and account-centric work share the `domino-mvp` case, using the original account cover. The image below “Problem areas to solve” cycles through EN 22–25 every five seconds while visible, with previous/next and pause controls. The hero stays on EN 19, and EN 28 appears separately in “Build alignment through research.” Reduced-motion visitors can start the slideshow manually. Old `domino-mydata` links redirect to the merged case and preserve their original deck slide.

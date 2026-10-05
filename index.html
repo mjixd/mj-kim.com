@@ -120,6 +120,8 @@
   .stat{ display:flex; align-items:baseline; gap:10px; }
 
   /* ---------- case page (Apple slide style) ---------- */
+  .c-hero h1, .slide h2, .deck-band h2{ text-wrap:balance; }
+  .c-hero .lead, .c-hero .role, .slide p, .impact span, .deck-band p, .pager strong{ text-wrap:pretty; }
   .c-hero{ text-align:center; padding:clamp(64px,9vw,120px) 0 clamp(40px,6vw,72px); }
   .c-hero .meta{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:500; }
   .c-hero h1{ margin:18px auto 0; font-size:clamp(40px,6.4vw,80px); font-weight:600; letter-spacing:-.03em; line-height:1.05; max-width:14ch; }
@@ -360,6 +362,8 @@ const ROLES = ['Product Designer', 'Design Strategist', 'Design Engineer', 'Prod
    ============================================================ */
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Keep short connecting words with the phrase they introduce in case headings.
+const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').replace(/live assets/g, 'live&nbsp;assets');
 const kvHTML = (kv, cls='') => kv.src
   ? `<div class="kv ${cls}"><img src="${esc(kv.src)}" alt="${esc(kv.alt||'')}" loading="lazy"></div>`
   : `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
@@ -424,7 +428,7 @@ function renderCase(slug){
   app.innerHTML = `
     <section class="c-hero wrap">
       <div class="meta">${esc(c.meta)} · Case ${i+1} of ${CASES.length}</div>
-      <h1>${esc(c.title)}</h1>
+      <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
       ${kvHTML({from:hero.from, src:c.kvHero||''})}
@@ -433,7 +437,7 @@ function renderCase(slug){
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           <span class="tag">${esc(b.tag)}</span>
-          <h2>${esc(b.h)}</h2>
+          <h2>${caseHeading(b.h)}</h2>
           <p>${esc(b.p)}</p>
           ${kvHTML({from:b.from, src:b.src||''})}
         </div>

@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://mj-kim.com/">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#fafafb">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Minjung Kim">
 <meta property="og:title" content="Minjung Kim — AI-native Product Designer">
@@ -27,7 +27,7 @@
 <style>
   /* ---------- tokens (mirrors the Figma 'Site' collection) ---------- */
   :root{
-    --bg:#ffffff; --bg-dark:#1f1f1f; --surface:#f5f5f7; --surface-2:#e8e8ed;
+    --surface-light:#fafafb; --bg:var(--surface-light); --bg-dark:#1f1f1f; --surface:#f5f5f7; --surface-2:#e8e8ed;
     --text:#1d1d1f; --text-inverse:#f5f5f7; --muted:#6e6e73; --line:#e5e5e7;
     --lime:#c3f56a; --lime-soft:#eefbc6; --sky:#06bfff;
     --space-xs:8px; --space-s:16px; --space-m:24px; --space-l:40px; --space-xl:80px;
@@ -198,8 +198,13 @@
   .viewer-bar .title{ font-weight:600; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .viewer-bar .counter{ opacity:.75; white-space:nowrap; }
   .viewer-bar button{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:999px; min-height:36px; padding:0 14px; cursor:pointer; font-size:13px; }
-  .viewer-stage{ flex:1; display:grid; place-items:center; padding:0 clamp(8px,2vw,24px); min-height:0; touch-action:pan-y pinch-zoom; }
-  .viewer-stage img{ max-width:100%; max-height:100%; width:auto; height:auto; aspect-ratio:16/9; object-fit:contain; background:#111; border-radius:6px; }
+  .viewer-stage{ flex:1; display:grid; place-items:center; padding:0 clamp(8px,2vw,24px); min-height:0; touch-action:pan-y pinch-zoom; container-type:size; }
+  .viewer-stage .slide-frame{ position:relative; width:min(100cqw, calc(100cqh * 16 / 9)); aspect-ratio:16/9; overflow:hidden; border-radius:6px; }
+  .viewer-stage img{ display:block; width:100%; height:100%; object-fit:contain; background:#111; }
+  /* Cover the Figma page number with the blank footer immediately below it.
+     The source PNG stays intact, including its original background colors. */
+  .slide-number-mask{ position:absolute; left:90.520833%; top:96.481481%; width:5.729167%; height:2.592593%; background-size:1745.454545% 13500%; background-position:96.022099% 99.813433%; background-repeat:no-repeat; pointer-events:none; }
+  .slide-video{ position:absolute; object-fit:cover; }
   .viewer-stage .ph{ width:min(100%, calc((100vh - 160px) * 16 / 9)); aspect-ratio:16/9; display:grid; place-items:center; border:1px dashed rgba(255,255,255,.25); border-radius:6px; color:rgba(255,255,255,.6); font-size:14px; text-align:center; padding:16px; }
   .viewer-nav{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 16px 14px; }
   .viewer-nav .chips{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
@@ -357,6 +362,11 @@ const DECKS = {
 };
 const DECK_BASE = 'assets/decks/';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png';
+// Video bounds in the original 1920×1080 Figma frames.
+const SLIDE_VIDEOS = {
+  'EN · 33': {src:'assets/videos/domino-account.mp4', x:144, y:98.65, w:432, h:892.216, alt:'Switching between investment accounts'},
+  'WEB 44': {src:'assets/videos/domino-filter.mp4', x:175, y:99, w:432, h:896.5946, alt:'Filtering assets by category'}
+};
 
 /* Two independent slots. New titles keep appearing as AI reshapes design, strategy, and leadership roles;
    the front noun and the position name alternate so the combinations keep changing. */
@@ -370,9 +380,46 @@ const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Keep short connecting words with the phrase they introduce in case headings.
 const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').replace(/live assets/g, 'live&nbsp;assets');
+function slideContents(src, alt='', animate=true){
+  const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
+  const mask = name.startsWith('EN · ') ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(src)}')"></i>` : '';
+  const v = animate && SLIDE_VIDEOS[name];
+  const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
+  return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
+}
 const kvHTML = (kv, cls='') => kv.src
-  ? `<div class="kv ${cls}"><img src="${esc(kv.src)}" alt="${esc(kv.alt||'')}" loading="lazy"></div>`
+  ? `<div class="kv ${cls}">${slideContents(kv.src, kv.alt||'')}</div>`
   : `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
+
+let videoObserver = null, slideVideos = [];
+function videoVisible(video){
+  const r = video.getBoundingClientRect();
+  const viewerOpen = document.body.classList.contains('viewer-open');
+  return video.isConnected && !document.hidden && !video.hidden &&
+    (!viewerOpen || !!video.closest('.viewer')) && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+}
+function stopSlideVideos(){
+  if (videoObserver) videoObserver.disconnect();
+  slideVideos.forEach(video => { video.autoplay = false; video.pause(); });
+  slideVideos = [];
+}
+function bindSlideVideos(){
+  stopSlideVideos();
+  slideVideos = [...document.querySelectorAll('.slide-video')];
+  videoObserver = new IntersectionObserver(entries => entries.forEach(({target:video, isIntersecting}) => {
+    if (!slideVideos.includes(video)) return;
+    if (isIntersecting && videoVisible(video)) {
+      video.play().catch(error => { if (error.name === 'NotAllowedError' && videoVisible(video)) video.controls = true; });
+    } else video.pause();
+  }));
+  slideVideos.forEach(video => {
+    video.muted = true; video.autoplay = true;
+    video.onplay = () => { if (!videoVisible(video)) video.pause(); };
+    video.onerror = () => { video.hidden = true; video.pause(); };
+    videoObserver.observe(video);
+  });
+}
+document.addEventListener('visibilitychange', bindSlideVideos);
 
 function renderHome(){
   document.title = 'Minjung Kim — Product Designer';
@@ -463,7 +510,7 @@ function renderCase(slug){
         <div class="deck-chapters">${d.chapters.map(([n,at]) => `<button class="chip" type="button" data-deck="${c.slug}" data-at="${at}">${esc(n)}</button>`).join('')}</div>
         <button class="btn" type="button" data-deck="${c.slug}" data-at="0">Open full case study →</button>
         <div class="deck-strip">
-          ${d.slides.slice(0,2).map((n,k) => `<div class="thumb" data-deck="${c.slug}" data-at="${k}"><img src="${slideSrc(n)}" alt="" loading="lazy" onerror="this.remove()"><span>${k+1}</span></div>`).join('')}
+          ${d.slides.slice(0,2).map((n,k) => `<div class="thumb" data-deck="${c.slug}" data-at="${k}">${slideContents(slideSrc(n), '', false)}<span>${k+1}</span></div>`).join('')}
           <div class="thumb more" data-deck="${c.slug}" data-at="2">+${d.slides.length - 2}</div>
         </div>
       </div>
@@ -532,6 +579,8 @@ function renderAbout(){
 function route(){
   const h = location.hash.replace(/^#\/?/, '');
   stopMorph();
+  stopSlideVideos();
+  closeViewer(true);
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');
     renderCase(parts[0]);
@@ -539,6 +588,7 @@ function route(){
   }
   else if (h === 'about') renderAbout();
   else renderHome();
+  bindSlideVideos();
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === (h === 'about' ? 'about' : 'home')));
 }
 window.addEventListener('hashchange', route);
@@ -562,8 +612,10 @@ function openViewer(slug, i, silent){
 }
 function closeViewer(silent){
   if (!V.el.classList.contains('open')) return;
+  stopSlideVideos();
   V.el.classList.remove('open'); document.body.classList.remove('viewer-open'); V.stage.innerHTML='';
   if (!silent && V.slug) history.replaceState(null, '', `#/work/${V.slug}`);
+  bindSlideVideos();
 }
 function goSlide(i){
   const d = DECKS[V.slug]; if (!d) return;
@@ -579,10 +631,11 @@ function paint(){
   // active chapter chip
   let active = 0; d.chapters.forEach(([n,at],k) => { if (V.i >= at) active = k; });
   V.chips.querySelectorAll('.chip').forEach((b,k) => b.classList.toggle('active', k === active));
-  V.stage.innerHTML = '';
-  const img = new Image(); img.alt = `${V.title.textContent}, slide ${V.i+1}`; img.src = slideSrc(name);
+  stopSlideVideos();
+  V.stage.innerHTML = `<div class="slide-frame">${slideContents(slideSrc(name), `${V.title.textContent}, slide ${V.i+1}`)}</div>`;
+  const img = V.stage.querySelector('img'); img.loading = 'eager';
   img.onerror = () => { const ph = document.createElement('div'); ph.className = 'ph'; ph.innerHTML = `<div><strong>${esc(name)}</strong><br><span style="opacity:.7">Export this frame from Figma to ${esc(DECK_BASE + name + '.png')}</span></div>`; V.stage.innerHTML=''; V.stage.appendChild(ph); };
-  V.stage.appendChild(img);
+  bindSlideVideos();
   // preload neighbors
   [V.i-1, V.i+1].forEach(k => { if (d.slides[k]) { const p = new Image(); p.src = slideSrc(d.slides[k]); } });
 }

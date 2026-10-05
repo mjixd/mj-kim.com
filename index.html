@@ -131,9 +131,6 @@
   .carousel-controls{ display:flex; justify-content:center; align-items:center; gap:12px; margin-top:14px; color:var(--muted); font-size:12px; }
   .carousel-controls button{ min-width:40px; min-height:40px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--text); cursor:pointer; }
   .carousel-controls button svg{ width:18px; height:18px; display:block; margin:auto; fill:currentColor; }
-  .nda-caption{ position:absolute; left:clamp(20px,4vw,48px); bottom:clamp(14px,3vw,36px); text-align:left; color:#10212c; }
-  .nda-caption small{ display:block; margin-bottom:6px; font-size:clamp(10px,1.1vw,13px); letter-spacing:.1em; text-transform:uppercase; }
-  .nda-caption strong{ display:block; font-size:clamp(16px,2.6vw,32px); line-height:1.15; font-weight:600; }
   .carousel-controls button:hover{ background:var(--surface-2); }
   .carousel-controls .carousel-count{ min-width:38px; font-variant-numeric:tabular-nums; }
   .band{ padding:clamp(56px,8vw,112px) 0; }
@@ -145,6 +142,18 @@
   .slide h2{ margin:0 auto; font-size:clamp(30px,4.6vw,56px); font-weight:600; letter-spacing:-.03em; line-height:1.08; max-width:18ch; }
   .slide p{ margin:18px auto 0; font-size:clamp(17px,1.8vw,21px); line-height:1.45; color:var(--muted); max-width:58ch; }
   .slide .kv{ max-width:1100px; margin:clamp(28px,4.5vw,48px) auto 0; }
+  .context-cards{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; max-width:1100px; margin:clamp(28px,4.5vw,48px) auto 0; text-align:left; }
+  .context-card{ display:grid; grid-template-rows:52% 48%; aspect-ratio:1; min-width:0; overflow:hidden; border-radius:var(--radius); background:linear-gradient(145deg,#e6eeff,#f5f8ff); color:#10212c; }
+  .context-card:focus-visible{ outline:2px solid var(--sky); outline-offset:4px; }
+  .context-card-media{ display:flex; align-items:center; justify-content:center; min-height:0; }
+  .context-screen{ display:block; position:relative; width:84%; aspect-ratio:16/9; overflow:hidden; border-radius:6px; box-shadow:0 8px 24px #5879b51a; }
+  .context-screen img{ display:block; position:absolute; max-width:none; }
+  .context-card-copy{ display:flex; flex-direction:column; min-height:0; padding:clamp(20px,3vw,36px); padding-top:8px; }
+  .context-card h3{ margin:0; font-size:clamp(18px,2.1vw,28px); line-height:1.15; letter-spacing:-.02em; font-weight:600; text-wrap:pretty; }
+  .slide .context-card p{ margin:12px 0; max-width:none; font-size:clamp(14px,1.3vw,16px); line-height:1.45; color:#4f5f72; }
+  .context-card small{ display:block; margin-top:auto; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:#4f5f72; }
+  @media (max-width:900px){ .context-cards{ grid-template-columns:1fr; gap:20px; max-width:550px; } }
+  @media (max-width:360px){ .context-card-copy{ padding:8px 16px 16px; } .slide .context-card p{ font-size:12px; margin:8px 0; } .context-card small{ font-size:9px; } }
   .band.alt .kv{ background:var(--bg); }
   .band.dark .slide h2{ color:var(--text-inverse); } .band.dark .slide p{ color:rgba(245,245,247,.7); }
   .impact{ text-align:center; }
@@ -296,8 +305,7 @@ const CASES = [
     role:'Role · Product strategy, research, experimentation, cross-functional leadership · 2020 \u2013 2022',
     stats:[['+195.65%','Manager WAP, 2.3% \u2192 6.8%'],['+33.94%','D7 retention, 49.8% \u2192 66.7%'],['810k','shared 1:1 notes; 9.37 notes per manager']],
     blocks:[
-      {"tag":"1 Context","h":"A connected workspace for managers","p":"Manager Landing launched in beta in June 2020 to help managers build supportive relationships with their direct reports and teams. It brought team information, meeting preparation, guidance, and everyday actions into one internal workspace.","paragraphs":["The H2 2020 work connected team health, remote-work support, and structured 1:1 conversations. Team Signal helped managers move from identifying a concern to assessing it, finding relevant guidance, taking action, and checking its impact. Research sessions with 30 managers explored whether the signals and recommendations were understandable and useful.","The 1:1 work extended a single input box into a more structured conversation flow, with shared topics, conversation history, follow-ups, and documents. The next Manager Landing phase prioritized a new information architecture, the needs of managers of managers, and a cross-functional design sprint, with the Comet Design System under consideration."],"from":"Manager Landing context","src":"assets/meta/manager-landing-context-nda.png","nda":true},
-      {tag:'1 Understanding', h:'Remote-work adoption challenge', p:'52% of managers worried about cohesion; 56% expected engagement to be harder. The scope connected structured 1:1 conversations with Manager Landing so planning, notes, and follow-up lived in one workflow.', from:'EN · 40', src:'assets/decks/EN · 40.png'},
+      {"tag":"1 Understanding","h":"Remote-work adoption challenge","p":"52% of managers worried about cohesion; 56% expected engagement to be harder. Manager Landing connected team health, structured 1:1 conversations, and everyday guidance in one workspace. The work below shows the product context and planning behind that shift.","cards":[{"title":"A connected workspace","description":"Launched in June 2020, Manager Landing connected team information, meeting preparation, guidance, and everyday actions in one workspace.","src":"assets/meta/context-workspace.png","crop":[155,78,1276,835,1586,992]},{"title":"Team Signal","description":"Team-health signals connected concerns to guidance and action. Research with 30 managers tested whether the recommendations were useful.","src":"assets/meta/context-team-signal.png","crop":[118,71,1352,850,1586,992]},{"title":"Priorities & planning","description":"Weekly planning aligned team care, remote inclusion, structured 1:1s, and information architecture with design capacity and engineering handoffs.","src":"assets/meta/context-schedule.png","crop":[0,0,1672,941,1672,941]},{"title":"The next Manager Landing","description":"A new information architecture, support for managers of managers, and a cross-functional design sprint shaped the next phase, with Comet under consideration.","src":"assets/meta/context-next-phase.png","crop":[233,68,1120,854,1586,992]}]},
       {tag:'2 Planning', h:'Planning', p:'The roadmap connected H2 2020 priorities—Team Signal and structured 1:1 conversations—to a new Manager Landing information architecture for H1 2021.', slides:['ML3','ML6']},
       {tag:'3 Research', h:'Design sprint with XFN partners', p:'A new information architecture for the 1:1 tool, developed through a cross-functional sprint. Four strategic concepts, one selected and iterated for testing.', from:'EN · 41', src:'assets/decks/EN · 41.png'},
       {tag:'4 Solution', h:'Workflow integration', p:'Recurring check-ins, mid-cycle, performance, and career conversations in a familiar flow. Meetings as the entry point, so preparation and follow-up became part of everyday work.', from:'EN · 44', src:'assets/decks/EN · 44.png'},
@@ -379,13 +387,23 @@ function slideContents(src, alt='', animate=true){
   const overlay = o ? `<img class="slide-overlay" src="${o.src}" alt="" aria-hidden="true" style="position:absolute;left:${o.x/1920*100}%;top:${o.y/1080*100}%;width:${o.w/1920*100}%;height:${o.h/1080*100}%;border-radius:${o.radius/o.w*100}%;pointer-events:none">` : '';
   return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}${overlay}`;
 }
+function contextCardsHTML(cards, slug){
+  return `<div class="context-cards">${cards.map(card => {
+    const [x,y,w,h,sourceW,sourceH] = card.crop;
+    return `<a class="context-card" href="${esc(requestHref(slug))}" aria-label="Request the full case study: ${esc(card.title)}">
+      <div class="context-card-media"><span class="context-screen"><img src="${esc(card.src)}" alt="Blurred ${esc(card.title)} preview" loading="lazy" style="left:${-x/w*100}%;top:${-y/h*100}%;width:${sourceW/w*100}%;height:${sourceH/h*100}%"></span></div>
+      <div class="context-card-copy"><h3>${esc(card.title)}</h3><p>${esc(card.description)}</p><small>Under NDA</small></div>
+    </a>`;
+  }).join('')}</div>`;
+}
+
 function requestHref(slug=''){
   const c = CASES.find(c => c.slug === slug), title = c ? c.title : 'Selected projects';
   return 'mailto:mjkiminfo@gmail.com?subject=' + encodeURIComponent('Case study request — ' + title) + '&body=' + encodeURIComponent('Hi Minjung,\n\nI would like to see the full case study for ' + title + '.\n\nName / company:\nContext for my request:\n\nThank you!');
 }
 function kvHTML(kv, cls=''){
   if (!kv.src) return `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
-  const contents = slideContents(kv.src, kv.alt||'') + (kv.nda ? '<span class="nda-caption"><small>Under NDA</small><strong>Manager Landing context</strong></span>' : '');
+  const contents = slideContents(kv.src, kv.alt||'');
   return kv.request
     ? `<a class="kv ${cls}" href="${esc(requestHref(kv.request))}" aria-label="Request the full case study: ${esc(kv.alt||'')}">${contents}</a>`
     : `<div class="kv ${cls}">${contents}</div>`;
@@ -568,9 +586,8 @@ function renderCase(slug){
         <div class="slide wrap">
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
-          <p>${esc(b.p)}</p>
-          ${(b.paragraphs||[]).map(p => `<p>${esc(p)}</p>`).join('')}
-          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug, nda:b.nda})}
+          ${b.p ? `<p>${esc(b.p)}</p>` : ''}
+          ${b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>
       </section>`).join('')}

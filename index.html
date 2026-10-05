@@ -130,6 +130,10 @@
   .c-hero .kv{ max-width:1100px; margin:clamp(32px,5vw,56px) auto 0; }
   .carousel-controls{ display:flex; justify-content:center; align-items:center; gap:12px; margin-top:14px; color:var(--muted); font-size:12px; }
   .carousel-controls button{ min-width:40px; min-height:40px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--text); cursor:pointer; }
+  .carousel-controls button svg{ width:18px; height:18px; display:block; margin:auto; fill:currentColor; }
+  .nda-caption{ position:absolute; left:clamp(20px,4vw,48px); bottom:clamp(14px,3vw,36px); text-align:left; color:#10212c; }
+  .nda-caption small{ display:block; margin-bottom:6px; font-size:clamp(10px,1.1vw,13px); letter-spacing:.1em; text-transform:uppercase; }
+  .nda-caption strong{ display:block; font-size:clamp(16px,2.6vw,32px); line-height:1.15; font-weight:600; }
   .carousel-controls button:hover{ background:var(--surface-2); }
   .carousel-controls .carousel-count{ min-width:38px; font-variant-numeric:tabular-nums; }
   .band{ padding:clamp(56px,8vw,112px) 0; }
@@ -190,6 +194,7 @@
     background:linear-gradient(90deg, #eefbc6 0%, #c3f56a 50%, #eefbc6 100%); }
   /* ---------- about ---------- */
   .about-intro{ padding-top:clamp(48px,8vw,96px); padding-bottom:clamp(32px,5vw,64px); }
+  .about-intro a{ text-decoration:underline; text-underline-offset:3px; }
   .about-intro h1{ margin:0 0 20px; font-size:clamp(34px,5.4vw,64px); font-weight:600; letter-spacing:-.03em; }
   .about-intro p{ margin:0 0 14px; max-width:64ch; font-size:clamp(16px,1.8vw,20px); line-height:1.5; color:var(--muted); }
   .manifesto-block{ padding-bottom:clamp(32px,5vw,64px); }
@@ -274,7 +279,7 @@ const CASES = [
     blocks:[
       {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', slides:['EN · 22','EN · 23','EN · 24','EN · 25']},
       {tag:'2 Strategy', h:'Priorities and problem framing', p:'Five product value propositions and a scoring model (customer need, business opportunity, confidence, effort) turned a flood of ideas into a sequenced roadmap. Information architecture everyone could navigate, down to the business team and new hires.', from:'EN · 26', src:'assets/decks/EN · 26.png'},
-      {tag:'3 Delivery', h:'Quality at scale', p:'A design system with semantic naming and scalable tokens, a twice-weekly critique, and a handoff process. One mentoring case turned a filter 35% of users failed to recognize into an intuitive, asset-type-aware system.', from:'WEB 43', src:'assets/decks/WEB 43.png'},
+      {tag:'3 Delivery', h:'Quality at scale', p:'A design system with semantic naming and scalable tokens, a twice-weekly critique, and a handoff process. One mentoring case turned a filter 35% of users failed to recognize into an intuitive, asset-type-aware system.', from:'2072', src:'assets/decks/2072.png'},
       {tag:'3 Outcome', h:'Market validation and talent inflow', p:'Featured by Apple, Google Play Top 10, rising organic traffic and lower CAC. Highly engaged investors joined the team, and candidates applied because of the design.', from:'EN · 37', src:'assets/decks/EN · 37.png'},
       {tag:'4 Account strategy', h:'Account-centric product model', p:'Ahead of MyData integration, Domino had to choose: keep the type-centric home and add linked accounts, or rebuild the home around real brokerage accounts and lay the foundation for multi-brokerage trading. I made the case, aligned the CEO, PM, and CTO, defined the metrics before launch, and the team shipped it.', from:'EN · 27', src:'assets/decks/EN · 27.png'},
       {tag:'4 Discover', h:'Users were already building accounts by hand', p:'33% of holding memos were brokerage names. Watch groups like \u201cwife\u2019s account\u201d showed what heavy users wanted: account separation and per-account management.', from:'EN · 29', src:'assets/decks/EN · 29.png'},
@@ -291,6 +296,7 @@ const CASES = [
     role:'Role · Product strategy, research, experimentation, cross-functional leadership · 2020 \u2013 2022',
     stats:[['+195.65%','Manager WAP, 2.3% \u2192 6.8%'],['+33.94%','D7 retention, 49.8% \u2192 66.7%'],['810k','shared 1:1 notes; 9.37 notes per manager']],
     blocks:[
+      {"tag":"1 Context","h":"A connected workspace for managers","p":"Manager Landing launched in beta in June 2020 to help managers build supportive relationships with their direct reports and teams. It brought team information, meeting preparation, guidance, and everyday actions into one internal workspace.","paragraphs":["The H2 2020 work connected team health, remote-work support, and structured 1:1 conversations. Team Signal helped managers move from identifying a concern to assessing it, finding relevant guidance, taking action, and checking its impact. Research sessions with 30 managers explored whether the signals and recommendations were understandable and useful.","The 1:1 work extended a single input box into a more structured conversation flow, with shared topics, conversation history, follow-ups, and documents. The next Manager Landing phase prioritized a new information architecture, the needs of managers of managers, and a cross-functional design sprint, with the Comet Design System under consideration."],"from":"Manager Landing context","src":"assets/meta/manager-landing-context-nda.png","nda":true},
       {tag:'1 Understanding', h:'Remote-work adoption challenge', p:'52% of managers worried about cohesion; 56% expected engagement to be harder. The scope connected structured 1:1 conversations with Manager Landing so planning, notes, and follow-up lived in one workflow.', from:'EN · 40', src:'assets/decks/EN · 40.png'},
       {tag:'2 Planning', h:'Planning', p:'The roadmap connected H2 2020 priorities—Team Signal and structured 1:1 conversations—to a new Manager Landing information architecture for H1 2021.', slides:['ML3','ML6']},
       {tag:'3 Research', h:'Design sprint with XFN partners', p:'A new information architecture for the 1:1 tool, developed through a cross-functional sprint. Four strategic concepts, one selected and iterated for testing.', from:'EN · 41', src:'assets/decks/EN · 41.png'},
@@ -330,9 +336,9 @@ const CASES = [
 const DECKS = {
   'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
     chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
-  'domino-mvp': { slides:["EN · 21","EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
+  'domino-mvp': { previews:['EN · 21','EN · 32','EN · 34'], slides:["EN · 21","EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","2072","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
     chapters:[["1 Discover",0],["2 Product strategy",6],["3 Delivery & impact",8],["4 Account strategy",12],["5 Delivery & metrics",18]] },
-  'meta': { slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
+  'meta': { previews:['EN · 42','EN · 43','EN · 46'], slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
     chapters:[["1 Understanding",0],["2 Planning",2],["3 Research",4],["4 Design solution",7]] },
   'line': { slides:["WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
     chapters:[["1 Understanding",0],["2 Design solution",2],["3 Design output",4]] },
@@ -341,10 +347,11 @@ const DECKS = {
 };
 const META_SOLUTIONS = [{"key":"upcoming","title":"CTA for Upcoming 1:1s","description":"Start from an upcoming meeting. Open the shared 1:1 note directly from Home, so preparation begins in the flow of the workday.","src":"assets/meta/solution-upcoming.png"},{"key":"event-notes","title":"Event details with 1:1 notes","description":"Keep the meeting and its shared notes together. Review the agenda from event details before joining the conversation.","src":"assets/meta/solution-event-notes.png"},{"key":"quick-editor","title":"Quick editor","description":"Add or update talking points in place. A focused editor makes it easy to capture context without leaving the meeting flow.","src":"assets/meta/solution-quick-editor.png"},{"key":"discover","title":"Discover & Add your 1:1s","description":"Find existing 1:1s and create a new one from a single list. Recurring conversations stay easy to return to.","src":"assets/meta/solution-discover.png"}];
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261005-6';
+const DECK_REVISION = '20261005-7';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
+  'EN · 19': {src:'assets/videos/domino-chart.mp4', x:341, y:78, w:1239, h:623, alt:'Exploring an interactive investment chart', overlay:{src:'assets/domino-app-icon.png', x:1386, y:491, w:244, h:244, radius:61.86656}},
   'EN · 33': {src:'assets/videos/domino-account.mp4', x:144, y:98.65, w:432, h:892.216, alt:'Switching between investment accounts'},
   'WEB 44': {src:'assets/videos/domino-filter.mp4', x:175, y:99, w:432, h:896.5946, alt:'Filtering assets by category'}
 };
@@ -368,7 +375,9 @@ function slideContents(src, alt='', animate=true){
   const mask = name.startsWith('EN · ') && !['EN · 28', 'EN · 37'].includes(name) ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
-  return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
+  const o = v && v.overlay;
+  const overlay = o ? `<img class="slide-overlay" src="${o.src}" alt="" aria-hidden="true" style="position:absolute;left:${o.x/1920*100}%;top:${o.y/1080*100}%;width:${o.w/1920*100}%;height:${o.h/1080*100}%;border-radius:${o.radius/o.w*100}%;pointer-events:none">` : '';
+  return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}${overlay}`;
 }
 function requestHref(slug=''){
   const c = CASES.find(c => c.slug === slug), title = c ? c.title : 'Selected projects';
@@ -376,7 +385,7 @@ function requestHref(slug=''){
 }
 function kvHTML(kv, cls=''){
   if (!kv.src) return `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
-  const contents = slideContents(kv.src, kv.alt||'');
+  const contents = slideContents(kv.src, kv.alt||'') + (kv.nda ? '<span class="nda-caption"><small>Under NDA</small><strong>Manager Landing context</strong></span>' : '');
   return kv.request
     ? `<a class="kv ${cls}" href="${esc(requestHref(kv.request))}" aria-label="Request the full case study: ${esc(kv.alt||'')}">${contents}</a>`
     : `<div class="kv ${cls}">${contents}</div>`;
@@ -411,6 +420,10 @@ function bindSlideVideos(){
 }
 document.addEventListener('visibilitychange', bindSlideVideos);
 
+function playbackIcon(paused){
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paused ? '<path d="M7 4v16l14-8z"/>' : '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>'}</svg>`;
+}
+const CAROUSEL_INTERVAL = 3000;
 function carouselHTML(c, blockIndex){
   const block = c.blocks[blockIndex];
   return `<div class="case-carousel" role="region" aria-roledescription="carousel" aria-label="${esc(block.h)}" data-carousel="${c.slug}" data-block-index="${blockIndex}">
@@ -419,7 +432,7 @@ function carouselHTML(c, blockIndex){
       <button type="button" data-carousel-prev aria-label="Previous slide">←</button>
       <span class="carousel-count" aria-live="off">1 / ${block.slides.length}</span>
       <button type="button" data-carousel-next aria-label="Next slide">→</button>
-      <button type="button" data-carousel-pause aria-label="Pause slideshow">Pause</button>
+      <button type="button" data-carousel-pause aria-label="Pause slideshow">${playbackIcon(false)}</button>
     </div>
   </div>`;
 }
@@ -435,7 +448,7 @@ function syncCarousel(){
   clearTimeout(s.timer);
   const r = s.frame.getBoundingClientRect();
   if (s.paused || !s.root.isConnected || document.hidden || r.bottom <= 0 || r.top >= innerHeight) return;
-  s.timer = setTimeout(() => advanceCarousel(1), 5000);
+  s.timer = setTimeout(() => advanceCarousel(1), CAROUSEL_INTERVAL);
 }
 function advanceCarousel(delta){
   const s = carouselState; if (!s) return;
@@ -452,7 +465,7 @@ function bindCarousel(){
   const frame = root.querySelector('.kv'), pause = root.querySelector('[data-carousel-pause]');
   carouselState = {root, frame, title:block.h, slides:block.slides, index:0, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
   const updatePause = () => {
-    pause.textContent = carouselState.paused ? 'Play' : 'Pause';
+    pause.innerHTML = playbackIcon(carouselState.paused);
     pause.setAttribute('aria-label', carouselState.paused ? 'Play slideshow' : 'Pause slideshow');
   };
   root.querySelector('[data-carousel-prev]').onclick = () => advanceCarousel(-1);
@@ -556,7 +569,8 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           <p>${esc(b.p)}</p>
-          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug})}
+          ${(b.paragraphs||[]).map(p => `<p>${esc(p)}</p>`).join('')}
+          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug, nda:b.nda})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>
       </section>`).join('')}
@@ -574,7 +588,7 @@ function renderCase(slug){
         <p>Explore a preview below. The full case study—including process, trade-offs, and outcomes—is available on request.</p>
         <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study</a>
         <div class="deck-strip">
-          ${d.slides.slice(0,3).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more slides' : 'preview ' + (k+1)}">${slideContents(slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
+          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more slides' : 'preview ' + (k+1)}">${slideContents(slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
         </div>
       </div>
     </section>` : ''}
@@ -596,7 +610,7 @@ function renderAbout(){
       <h1>About</h1>
       <p>I\u2019m a strategy and product leader with 15 years across product, technology, and organizational transformation, grounded in an MFA in Human-Computer Interaction.</p>
       <p>My titles have mostly said design. My work has rarely stayed inside it. I find structural problems, turn them into systems, align cross-functional leaders around them, and stay through measurable outcomes.</p>
-      <p>I\u2019ve done that at Samsung, a 0\u21921 fintech startup, and Meta HQ, across Seoul and Silicon Valley.</p>
+      <p>I\u2019ve done that at <a href="https://design.samsung.com/global/main/">Samsung</a>, <a href="https://www.meta.com/">Meta HQ</a>, and a 0\u21921 fintech startup, across Seoul and Silicon Valley.</p>
     </section>
     <section class="wrap manifesto-block">
       <h2>The role doesn’t have a name yet</h2>

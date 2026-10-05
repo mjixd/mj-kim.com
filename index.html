@@ -128,6 +128,10 @@
   .c-hero .lead{ margin:22px auto 0; font-size:clamp(17px,2vw,24px); line-height:1.4; color:var(--muted); max-width:52ch; }
   .c-hero .role{ margin:18px auto 0; font-size:14px; color:var(--muted); max-width:60ch; }
   .c-hero .kv{ max-width:1100px; margin:clamp(32px,5vw,56px) auto 0; }
+  .carousel-controls{ display:flex; justify-content:center; align-items:center; gap:12px; margin-top:14px; color:var(--muted); font-size:12px; }
+  .carousel-controls button{ min-width:40px; min-height:40px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--text); cursor:pointer; }
+  .carousel-controls button:hover{ background:var(--surface-2); }
+  .carousel-controls .carousel-count{ min-width:38px; font-variant-numeric:tabular-nums; }
   .band{ padding:clamp(56px,8vw,112px) 0; }
   .band.alt{ background:var(--surface); }
   .band.dark{ background:var(--bg-dark); color:var(--text-inverse); }
@@ -280,30 +284,24 @@ const CASES = [
       {tag:'3 Adoption', h:'From one-off fixes to shared updates', p:'Figma variables became tokens synced to internal GitHub through Tokens Studio. Engineers update tokens with a single command and the change propagates everywhere. Driven directly with development teams, shifting QA from manual interpretation to a repeatable, measurable system.', from:'EN · 12', src:'assets/decks/EN · 12.png'},
       {tag:'3 Delivery', h:'Complex data, clear decisions, on site', p:'Dense energy and space data compressed into a mobile decision surface. Partner, engineering, and business requirements converged through weekly CTO\u00b7VP reviews and shipped as the AI Office prototype at CES 2025.', from:'EN · 13', src:'assets/decks/EN · 13.png'}
     ]},
-  { slug:'domino-mvp', meta:'Domino · 2022', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
+  { slug:'domino-mvp', meta:'Domino · 2022–2024', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
+    kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
     kvHero:'assets/decks/EN · 19.png',
+    heroSlides:['EN · 22','EN · 23','EN · 24','EN · 25','EN · 28'],
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
-    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6']],
+    stats:[['\u20a910B','about $7M raised; design and UX differentiation cited by the lead investor'],['Apple feature','within 2 months of launch; Google Play Top 10 in 6'],['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
     blocks:[
       {tag:'1 Discover', h:'Problem areas to solve', p:'Highly engaged investors were managing a dozen services with outdated brokerage apps and spreadsheets. No instant view of how live prices changed holdings; funds, gold, and derivatives left unmanaged.', from:'EN · 24', src:'assets/decks/EN · 24.png'},
       {tag:'2 Strategy', h:'Priorities and problem framing', p:'Five product value propositions and a scoring model (customer need, business opportunity, confidence, effort) turned a flood of ideas into a sequenced roadmap. Information architecture everyone could navigate, down to the business team and new hires.', from:'EN · 26', src:'assets/decks/EN · 26.png'},
       {tag:'3 Delivery', h:'Quality at scale', p:'A design system with semantic naming and scalable tokens, a twice-weekly critique, and a handoff process. One mentoring case turned a filter 35% of users failed to recognize into an intuitive, asset-type-aware system.', from:'WEB 43', src:'assets/decks/WEB 43.png'},
-      {tag:'3 Outcome', h:'Market validation and talent inflow', p:'Featured by Apple, Google Play Top 10, rising organic traffic and lower CAC. Highly engaged investors joined the team, and candidates applied because of the design.', from:'EN · 37', src:'assets/decks/EN · 37.png'}
-    ]},
-  { slug:'domino-mydata', meta:'Domino · 2023', title:'Account-centric product model', line:'A high-stakes trade-off, made and socialized: build for the trading architecture, not the legacy manual groups.',
-    kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
-    kvHero:'assets/decks/EN · 33.png',
-    accent:'#81ff46', stat:{n:'+153.84%', l:'D7 retention, 8.47% \u2192 21.5%'},
-    lead:'Ahead of MyData integration, Domino had to choose: keep the type-centric home and add linked accounts, or rebuild the home around real brokerage accounts and lay the foundation for multi-brokerage trading. I made the case, aligned the CEO, PM, and CTO, defined the metrics before launch, and the team shipped it.',
-    role:'Role · Product strategy, product decision, design brief with the CEO and PM, metrics design',
-    stats:[['+153.84%','D7 retention, 8.47% \u2192 21.5%'],['3\u00d7','DAU among MyData active users'],['77%','core-user retention, sustained']],
-    blocks:[
-      {tag:'1 Discover', h:'Users were already building accounts by hand', p:'33% of holding memos were brokerage names. Watch groups like \u201cwife\u2019s account\u201d showed what heavy users wanted: account separation and per-account management.', from:'EN · 29', src:'assets/decks/EN · 29.png'},
-      {tag:'2 Trade-off', h:'Keep the structure, or change it', p:'Five Whys with leadership. Keeping the home meant low migration cost and weak account value. Shifting to accounts meant accepting change for manual users to unlock multi-brokerage viewing and future trading. We chose the second, and sequenced it as stage 2 of a three-stage roadmap.', from:'EN · 30', src:'assets/decks/EN · 30.png'},
-      {tag:'2 Hypothesis', h:'Metrics before launch', p:'Primary: new-user D7 retention and MyData active DAU. Secondary: account-switching retention. Guardrail: entry to account Analysis. Defined so the team would know what success looked like before shipping.', from:'EN · 31', src:'assets/decks/EN · 31.png'},
-      {tag:'3 Delivery', h:'Open the app, see live assets, switch accounts', p:'For the first time in Korea, swipe between brokerage accounts without opening each app. One gesture to switch, one home for everything.', from:'EN · 33', src:'assets/decks/EN · 33.png'}
+      {tag:'3 Outcome', h:'Market validation and talent inflow', p:'Featured by Apple, Google Play Top 10, rising organic traffic and lower CAC. Highly engaged investors joined the team, and candidates applied because of the design.', from:'EN · 37', src:'assets/decks/EN · 37.png'},
+      {tag:'4 Account strategy', h:'Account-centric product model', p:'Ahead of MyData integration, Domino had to choose: keep the type-centric home and add linked accounts, or rebuild the home around real brokerage accounts and lay the foundation for multi-brokerage trading. I made the case, aligned the CEO, PM, and CTO, defined the metrics before launch, and the team shipped it.', from:'EN · 27', src:'assets/decks/EN · 27.png'},
+      {tag:'4 Discover', h:'Users were already building accounts by hand', p:'33% of holding memos were brokerage names. Watch groups like \u201cwife\u2019s account\u201d showed what heavy users wanted: account separation and per-account management.', from:'EN · 29', src:'assets/decks/EN · 29.png'},
+      {tag:'4 Trade-off', h:'Keep the structure, or change it', p:'Five Whys with leadership. Keeping the home meant low migration cost and weak account value. Shifting to accounts meant accepting change for manual users to unlock multi-brokerage viewing and future trading. We chose the second, and sequenced it as stage 2 of a three-stage roadmap.', from:'EN · 30', src:'assets/decks/EN · 30.png'},
+      {tag:'4 Hypothesis', h:'Metrics before launch', p:'Primary: new-user D7 retention and MyData active DAU. Secondary: account-switching retention. Guardrail: entry to account Analysis. Defined so the team would know what success looked like before shipping.', from:'EN · 31', src:'assets/decks/EN · 31.png'},
+      {tag:'5 Delivery', h:'Open the app, see live assets, switch accounts', p:'For the first time in Korea, swipe between brokerage accounts without opening each app. One gesture to switch, one home for everything.', from:'EN · 33', src:'assets/decks/EN · 33.png'}
     ]},
   { slug:'meta', meta:'Meta · 2020', title:'Remote-work adoption, Manager\u00a01:1\u00a0tool', line:'Cross-functional product strategy inside Enterprise Engineering: hypotheses, an XFN sprint, and measured launch.',
     kvHero:'assets/decks/EN · 44.png',
@@ -349,10 +347,8 @@ const CASES = [
 const DECKS = {
   'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
     chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
-  'domino-mvp': { slides:["EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37"],
-    chapters:[["1 Discover",0],["2 Product strategy",5],["3 Delivery & impact",7]] },
-  'domino-mydata': { slides:["EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
-    chapters:[["1 Discover",0],["2 Product decisions",1],["3 Delivery & metrics",6]] },
+  'domino-mvp': { slides:["EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
+    chapters:[["1 Discover",0],["2 Product strategy",5],["3 Delivery & impact",7],["4 Account strategy",11],["5 Delivery & metrics",17]] },
   'meta': { slides:["EN · 39","EN · 40","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
     chapters:[["1 Understanding",0],["2 Research",2],["3 Design solution",5]] },
   'line': { slides:["WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
@@ -361,7 +357,8 @@ const DECKS = {
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
 const DECK_BASE = 'assets/decks/';
-const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png';
+const DECK_REVISION = '20261005-2';
+const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
   'EN · 33': {src:'assets/videos/domino-account.mp4', x:144, y:98.65, w:432, h:892.216, alt:'Switching between investment accounts'},
@@ -381,11 +378,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 // Keep short connecting words with the phrase they introduce in case headings.
 const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').replace(/live assets/g, 'live&nbsp;assets');
 function slideContents(src, alt='', animate=true){
-  const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
-  const mask = name.startsWith('EN · ') ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(src)}')"></i>` : '';
+  const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.split('?')[0].slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
+  const imageSrc = name ? slideSrc(name) : src;
+  const mask = name.startsWith('EN · ') ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
-  return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
+  return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
 }
 const kvHTML = (kv, cls='') => kv.src
   ? `<div class="kv ${cls}">${slideContents(kv.src, kv.alt||'')}</div>`
@@ -420,6 +418,58 @@ function bindSlideVideos(){
   });
 }
 document.addEventListener('visibilitychange', bindSlideVideos);
+
+function carouselHTML(c){
+  return `<div class="case-carousel" role="region" aria-roledescription="carousel" aria-label="Product strategy highlights" data-carousel="${c.slug}">
+    ${kvHTML({src:slideSrc(c.heroSlides[0]), alt:c.title})}
+    <div class="carousel-controls">
+      <button type="button" data-carousel-prev aria-label="Previous slide">←</button>
+      <span class="carousel-count" aria-live="off">1 / ${c.heroSlides.length}</span>
+      <button type="button" data-carousel-next aria-label="Next slide">→</button>
+      <button type="button" data-carousel-pause aria-label="Pause slideshow">Pause</button>
+    </div>
+  </div>`;
+}
+let carouselState = null;
+function stopCarousel(){
+  if (!carouselState) return;
+  clearTimeout(carouselState.timer);
+  carouselState.observer.disconnect();
+  carouselState = null;
+}
+function syncCarousel(){
+  const s = carouselState; if (!s) return;
+  clearTimeout(s.timer);
+  const r = s.frame.getBoundingClientRect();
+  if (s.paused || !s.root.isConnected || document.hidden || document.body.classList.contains('viewer-open') || r.bottom <= 0 || r.top >= innerHeight) return;
+  s.timer = setTimeout(() => advanceCarousel(1), 5000);
+}
+function advanceCarousel(delta){
+  const s = carouselState; if (!s) return;
+  s.index = (s.index + delta + s.slides.length) % s.slides.length;
+  s.frame.innerHTML = slideContents(slideSrc(s.slides[s.index]), `${s.title}, slide ${s.index+1}`);
+  s.root.querySelector('.carousel-count').textContent = `${s.index+1} / ${s.slides.length}`;
+  syncCarousel();
+}
+function bindCarousel(){
+  stopCarousel();
+  const root = document.querySelector('[data-carousel]'); if (!root) return;
+  const c = CASES.find(c => c.slug === root.dataset.carousel);
+  const frame = root.querySelector('.kv'), pause = root.querySelector('[data-carousel-pause]');
+  carouselState = {root, frame, title:c.title, slides:c.heroSlides, index:0, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
+  const updatePause = () => {
+    pause.textContent = carouselState.paused ? 'Play' : 'Pause';
+    pause.setAttribute('aria-label', carouselState.paused ? 'Play slideshow' : 'Pause slideshow');
+  };
+  root.querySelector('[data-carousel-prev]').onclick = () => advanceCarousel(-1);
+  root.querySelector('[data-carousel-next]').onclick = () => advanceCarousel(1);
+  pause.onclick = () => { carouselState.paused = !carouselState.paused; updatePause(); syncCarousel(); };
+  updatePause();
+  carouselState.observer.observe(frame);
+  c.heroSlides.slice(1).forEach(name => { const img = new Image(); img.src = slideSrc(name); });
+  syncCarousel();
+}
+document.addEventListener('visibilitychange', syncCarousel);
 
 function renderHome(){
   document.title = 'Minjung Kim — Product Designer';
@@ -484,7 +534,7 @@ function renderCase(slug){
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title})}
+      ${c.heroSlides ? carouselHTML(c) : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title})}
     </section>
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
@@ -577,8 +627,16 @@ function renderAbout(){
    ROUTER
    ============================================================ */
 function route(){
-  const h = location.hash.replace(/^#\/?/, '');
+  let h = location.hash.replace(/^#\/?/, '');
+  // Preserve existing links to the account case and each of its slides.
+  if (h === 'work/domino-mydata' || h.startsWith('work/domino-mydata/')) {
+    const parts = h.split('/');
+    const offset = DECKS['domino-mvp'].slides.indexOf('EN · 29');
+    h = 'work/domino-mvp' + (parts[2] === 'deck' ? `/deck/${offset + Math.max(1, parseInt(parts[3],10)||1)}` : '');
+    history.replaceState(null, '', '#/' + h);
+  }
   stopMorph();
+  stopCarousel();
   stopSlideVideos();
   closeViewer(true);
   if (h.startsWith('work/')) {
@@ -589,6 +647,7 @@ function route(){
   else if (h === 'about') renderAbout();
   else renderHome();
   bindSlideVideos();
+  bindCarousel();
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === (h === 'about' ? 'about' : 'home')));
 }
 window.addEventListener('hashchange', route);
@@ -607,6 +666,7 @@ function openViewer(slug, i, silent){
   V.chips.innerHTML = d.chapters.map(([n,at]) => `<button class="chip" type="button" data-at="${at}">${esc(n)}</button>`).join('');
   V.chips.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => goSlide(parseInt(b.dataset.at,10))));
   V.el.classList.add('open'); document.body.classList.add('viewer-open');
+  syncCarousel();
   paint();
   if (!silent) location.hash = `#/work/${slug}/deck/${V.i+1}`;
 }
@@ -616,6 +676,7 @@ function closeViewer(silent){
   V.el.classList.remove('open'); document.body.classList.remove('viewer-open'); V.stage.innerHTML='';
   if (!silent && V.slug) history.replaceState(null, '', `#/work/${V.slug}`);
   bindSlideVideos();
+  syncCarousel();
 }
 function goSlide(i){
   const d = DECKS[V.slug]; if (!d) return;

@@ -13,6 +13,7 @@ Detail visuals and decks use 2× PNG exports (3840×2160), displayed at 16:9.
 `EN · NN` images come from [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2192-715).
 `WEB 42–44` (Domino mentorship) and `WEB 77–84` (LINE) supplement that selection from the English frames in [Interview Deck 25.12.15](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=1660-4743).
 Keep the exported Figma frame names as filenames; `CASES` and `DECKS` in `index.html` own their placement and order.
+Update `DECK_REVISION` when refreshing exports so visitors receive the latest images immediately.
 Original Figma page numbers are covered only in the web presentation; exported PNGs remain unchanged.
 The light theme uses `--surface-light` as its default background, one step lighter than `--surface`.
 
@@ -22,3 +23,5 @@ The light theme uses `--surface-light` as its default background, one step light
 - `domino-filter.mp4` — `WEB 44`, from `asset_filter.mov`.
 
 `SLIDE_VIDEOS` keeps their placement aligned to the 1920×1080 Figma frames. Videos loop while visible in a detail page or deck viewer; the original slide stays underneath as a fallback.
+
+Domino's founding strategy and account-centric work share the `domino-mvp` case, using the original account cover. Its hero cycles through EN 22–25 and EN 28 every five seconds while visible, with previous/next and pause controls. Reduced-motion visitors can start the slideshow manually. Old `domino-mydata` links redirect to the merged case and preserve their original deck slide.

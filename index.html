@@ -427,7 +427,7 @@ function renderCase(slug){
   const hero = c.blocks[c.blocks.length - 1];
   app.innerHTML = `
     <section class="c-hero wrap">
-      <div class="meta">${esc(c.meta)} · Case ${i+1} of ${CASES.length}</div>
+      <div class="meta">${esc(c.meta)}</div>
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>

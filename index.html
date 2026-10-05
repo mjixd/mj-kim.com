@@ -172,6 +172,20 @@
   .deck-strip .thumb img{ width:100%; height:100%; object-fit:cover; }
   .deck-strip .thumb span{ position:absolute; left:10px; bottom:8px; font-size:11px; color:var(--muted); }
   .deck-strip .thumb.more{ display:grid; place-items:center; font-weight:600; color:var(--text); font-size:18px; }
+  .deck-strip .thumb.more::after{ content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent 0%, var(--bg) 100%); }
+  .deck-strip .thumb.more .remaining{ z-index:1; inset:0; display:grid; place-items:center; font-size:clamp(18px,3vw,32px); color:var(--text); }
+  .solution-accordion{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(24px,4vw,56px); max-width:1100px; margin:48px auto 0; text-align:left; align-items:start; }
+  .solution-item{ border-top:1px solid var(--line); }
+  .solution-item:last-child{ border-bottom:1px solid var(--line); }
+  .solution-item h3{ margin:0; font-size:inherit; }
+  .solution-toggle{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px 0; background:none; border:0; color:var(--text); font:inherit; font-size:clamp(17px,1.6vw,22px); text-align:left; cursor:pointer; }
+  .solution-toggle .indicator{ font-size:26px; font-weight:400; flex-shrink:0; }
+  .solution-item .solution-description{ margin:0 0 26px; font-size:16px; line-height:1.55; color:var(--muted); max-width:none; }
+  .solution-visual{ display:block; position:relative; aspect-ratio:14/13; overflow:hidden; border-radius:20px; }
+  .solution-visual img{ width:100%; height:100%; object-fit:contain; }
+  .solution-accordion [hidden]{ display:none; }
+  .solution-toggle:focus-visible, .solution-visual:focus-visible, a.kv:focus-visible, .thumb:focus-visible{ outline:3px solid var(--sky); outline-offset:5px; }
+  @media (max-width:820px){ .solution-accordion{ grid-template-columns:1fr; gap:28px; } }
   .tag{ display:inline-block; color:#0f1a05; font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:600; padding:7px 14px; border-radius:999px;
     background:linear-gradient(90deg, #eefbc6 0%, #c3f56a 50%, #eefbc6 100%); }
   /* ---------- about ---------- */
@@ -196,32 +210,11 @@
   footer .wrap{ display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; padding-top:28px; padding-bottom:40px; font-size:13px; color:var(--muted); }
 
 
-  /* ---------- viewer ---------- */
-  .viewer{ position:fixed; inset:0; z-index:50; background:#0b0b0b; color:#fff; display:none; flex-direction:column; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
-  .viewer.open{ display:flex; }
-  .viewer-bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; font-size:13px; }
-  .viewer-bar .title{ font-weight:600; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .viewer-bar .counter{ opacity:.75; white-space:nowrap; }
-  .viewer-bar button{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:999px; min-height:36px; padding:0 14px; cursor:pointer; font-size:13px; }
-  .viewer-stage{ flex:1; display:grid; place-items:center; padding:0 clamp(8px,2vw,24px); min-height:0; touch-action:pan-y pinch-zoom; container-type:size; }
-  .viewer-stage .slide-frame{ position:relative; width:min(100cqw, calc(100cqh * 16 / 9)); aspect-ratio:16/9; overflow:hidden; border-radius:6px; }
-  .viewer-stage img{ display:block; width:100%; height:100%; object-fit:contain; background:#111; }
+  /* ---------- slide media ---------- */
   /* Cover the Figma page number with the blank footer immediately below it.
      The source PNG stays intact, including its original background colors. */
   .slide-number-mask{ position:absolute; left:90.520833%; top:96.481481%; width:5.729167%; height:2.592593%; background-size:1745.454545% 13500%; background-position:96.022099% 99.813433%; background-repeat:no-repeat; pointer-events:none; }
   .slide-video{ position:absolute; object-fit:cover; }
-  .viewer-stage .ph{ width:min(100%, calc((100vh - 160px) * 16 / 9)); aspect-ratio:16/9; display:grid; place-items:center; border:1px dashed rgba(255,255,255,.25); border-radius:6px; color:rgba(255,255,255,.6); font-size:14px; text-align:center; padding:16px; }
-  .viewer-nav{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 16px 14px; }
-  .viewer-nav .chips{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
-  .viewer-nav .chips::-webkit-scrollbar{ display:none; }
-  .viewer-nav .chip{ background:transparent; color:#fff; border-color:rgba(255,255,255,.25); white-space:nowrap; }
-  .viewer-nav .chip.active{ background:#fff; color:#000; border-color:#fff; }
-  .viewer-nav .arrows{ display:flex; gap:8px; }
-  .viewer-nav .arrows button{ width:44px; height:44px; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff; font-size:18px; cursor:pointer; }
-  .viewer-nav .arrows button:disabled{ opacity:.3; cursor:default; }
-  .viewer-progress{ height:2px; background:rgba(255,255,255,.12); }
-  .viewer-progress i{ display:block; height:100%; background:var(--lime); width:0; transition:width .2s; }
-  body.viewer-open{ overflow:hidden; }
 
   /* ---------- page transitions ---------- */
   #app{ animation:fade .35s ease both; }
@@ -244,24 +237,10 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter><filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 34 -14"/></filter></defs></svg>
 <main id="app" aria-live="polite"></main>
 
-<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Full case study">
-  <div class="viewer-bar">
-    <div class="title" id="vTitle"></div>
-    <div class="counter" id="vCounter"></div>
-    <button type="button" id="vClose">Close ✕</button>
-  </div>
-  <div class="viewer-progress"><i id="vProg"></i></div>
-  <div class="viewer-stage" id="vStage"></div>
-  <div class="viewer-nav">
-    <div class="chips" id="vChips"></div>
-    <div class="arrows"><button type="button" id="vPrev" aria-label="Previous slide">←</button><button type="button" id="vNext" aria-label="Next slide">→</button></div>
-  </div>
-</div>
-
 <footer>
   <div class="wrap">
     <span>© 2026 Minjung Kim</span>
-    <span>Full case studies on each project page · <a href="mailto:mjkiminfo@gmail.com">mjkiminfo@gmail.com</a></span>
+    <span>Full case studies available on request · <a href="mailto:mjkiminfo@gmail.com">mjkiminfo@gmail.com</a></span>
   </div>
 </footer>
 
@@ -351,8 +330,8 @@ const CASES = [
 const DECKS = {
   'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
     chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
-  'domino-mvp': { slides:["EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
-    chapters:[["1 Discover",0],["2 Product strategy",5],["3 Delivery & impact",7],["4 Account strategy",11],["5 Delivery & metrics",17]] },
+  'domino-mvp': { slides:["EN · 21","EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","WEB 43","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
+    chapters:[["1 Discover",0],["2 Product strategy",6],["3 Delivery & impact",8],["4 Account strategy",12],["5 Delivery & metrics",18]] },
   'meta': { slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
     chapters:[["1 Understanding",0],["2 Planning",2],["3 Research",4],["4 Design solution",7]] },
   'line': { slides:["WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
@@ -360,8 +339,9 @@ const DECKS = {
   'leadership': { slides:["EN · 48","EN · 49","EN · 50","EN · 51","EN · 52","EN · 53","EN · 54"],
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
+const META_SOLUTIONS = [{"key":"upcoming","title":"CTA for Upcoming 1:1s","description":"Start from an upcoming meeting. Open the shared 1:1 note directly from Home, so preparation begins in the flow of the workday.","src":"assets/meta/solution-upcoming.png"},{"key":"event-notes","title":"Event details with 1:1 notes","description":"Keep the meeting and its shared notes together. Review the agenda from event details before joining the conversation.","src":"assets/meta/solution-event-notes.png"},{"key":"quick-editor","title":"Quick editor","description":"Add or update talking points in place. A focused editor makes it easy to capture context without leaving the meeting flow.","src":"assets/meta/solution-quick-editor.png"},{"key":"discover","title":"Discover & Add your 1:1s","description":"Find existing 1:1s and create a new one from a single list. Recurring conversations stay easy to return to.","src":"assets/meta/solution-discover.png"}];
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261005-5';
+const DECK_REVISION = '20261005-6';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
@@ -390,16 +370,23 @@ function slideContents(src, alt='', animate=true){
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
   return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}`;
 }
-const kvHTML = (kv, cls='') => kv.src
-  ? `<div class="kv ${cls}">${slideContents(kv.src, kv.alt||'')}</div>`
-  : `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
+function requestHref(slug=''){
+  const c = CASES.find(c => c.slug === slug), title = c ? c.title : 'Selected projects';
+  return 'mailto:mjkiminfo@gmail.com?subject=' + encodeURIComponent('Case study request — ' + title) + '&body=' + encodeURIComponent('Hi Minjung,\n\nI would like to see the full case study for ' + title + '.\n\nName / company:\nContext for my request:\n\nThank you!');
+}
+function kvHTML(kv, cls=''){
+  if (!kv.src) return `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
+  const contents = slideContents(kv.src, kv.alt||'');
+  return kv.request
+    ? `<a class="kv ${cls}" href="${esc(requestHref(kv.request))}" aria-label="Request the full case study: ${esc(kv.alt||'')}">${contents}</a>`
+    : `<div class="kv ${cls}">${contents}</div>`;
+}
 
 let videoObserver = null, slideVideos = [];
 function videoVisible(video){
   const r = video.getBoundingClientRect();
-  const viewerOpen = document.body.classList.contains('viewer-open');
   return video.isConnected && !document.hidden && !video.hidden &&
-    (!viewerOpen || !!video.closest('.viewer')) && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+    r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
 }
 function stopSlideVideos(){
   if (videoObserver) videoObserver.disconnect();
@@ -427,7 +414,7 @@ document.addEventListener('visibilitychange', bindSlideVideos);
 function carouselHTML(c, blockIndex){
   const block = c.blocks[blockIndex];
   return `<div class="case-carousel" role="region" aria-roledescription="carousel" aria-label="${esc(block.h)}" data-carousel="${c.slug}" data-block-index="${blockIndex}">
-    ${kvHTML({src:slideSrc(block.slides[0]), alt:block.h})}
+    ${kvHTML({src:slideSrc(block.slides[0]), alt:block.h, request:c.slug})}
     <div class="carousel-controls">
       <button type="button" data-carousel-prev aria-label="Previous slide">←</button>
       <span class="carousel-count" aria-live="off">1 / ${block.slides.length}</span>
@@ -447,7 +434,7 @@ function syncCarousel(){
   const s = carouselState; if (!s) return;
   clearTimeout(s.timer);
   const r = s.frame.getBoundingClientRect();
-  if (s.paused || !s.root.isConnected || document.hidden || document.body.classList.contains('viewer-open') || r.bottom <= 0 || r.top >= innerHeight) return;
+  if (s.paused || !s.root.isConnected || document.hidden || r.bottom <= 0 || r.top >= innerHeight) return;
   s.timer = setTimeout(() => advanceCarousel(1), 5000);
 }
 function advanceCarousel(delta){
@@ -523,9 +510,29 @@ function observeKV(){
   }));
   document.querySelectorAll('.kv').forEach(el => kvRO.observe(el));
 }
-function bindDeckButtons(){
-  document.querySelectorAll('[data-deck]').forEach(el => el.addEventListener('click', () => {
-    location.hash = `#/work/${el.dataset.deck}/deck/${(parseInt(el.dataset.at,10)||0)+1}`;
+function solutionAccordionHTML(c){
+  return `<div class="solution-accordion" aria-label="Four workflow solutions">
+    <div class="solution-list">${META_SOLUTIONS.map((s,i) => `<div class="solution-item">
+      <h3><button class="solution-toggle" type="button" id="solution-toggle-${s.key}" data-solution="${i}" aria-expanded="${i === 0}" aria-controls="solution-description-${s.key}">${esc(s.title)}<span class="indicator" aria-hidden="true">${i === 0 ? '−' : '+'}</span></button></h3>
+      <p class="solution-description" id="solution-description-${s.key}"${i === 0 ? '' : ' hidden'}>${esc(s.description)}</p>
+    </div>`).join('')}</div>
+    <a class="solution-visual" href="${esc(requestHref(c.slug))}" aria-label="Request the full Meta case study">
+      ${META_SOLUTIONS.map((s,i) => `<img src="${esc(s.src)}" alt="${esc(s.title)}" width="1680" height="1560" loading="lazy"${i === 0 ? '' : ' hidden'}>`).join('')}
+    </a>
+  </div>`;
+}
+function bindSolutionAccordion(){
+  const root = document.querySelector('.solution-accordion'); if (!root) return;
+  const buttons = [...root.querySelectorAll('.solution-toggle')], images = [...root.querySelectorAll('.solution-visual img')];
+  buttons.forEach((button,i) => button.addEventListener('click', () => {
+    const expand = button.getAttribute('aria-expanded') !== 'true';
+    buttons.forEach((item,k) => {
+      const open = expand && i === k;
+      item.setAttribute('aria-expanded', String(open));
+      document.getElementById(item.getAttribute('aria-controls')).hidden = !open;
+      item.querySelector('.indicator').textContent = open ? '−' : '+';
+    });
+    if (expand) images.forEach((img,k) => { img.hidden = k !== i; });
   }));
 }
 function renderCase(slug){
@@ -541,7 +548,7 @@ function renderCase(slug){
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title})}
+      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title, request:c.slug})}
     </section>
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
@@ -549,7 +556,8 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           <p>${esc(b.p)}</p>
-          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h})}
+          ${b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug})}
+          ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>
       </section>`).join('')}
     <section class="band dark">
@@ -562,13 +570,11 @@ function renderCase(slug){
     <section class="band">
       <div class="deck-band wrap">
         <span class="tag">Full case study</span>
-        <h2>Read the whole story, ${d.slides.length} slides</h2>
-        <p>Process, trade-offs, and metrics behind the key visuals above. Swipe or use arrow keys; jump by chapter.</p>
-        <div class="deck-chapters">${d.chapters.map(([n,at]) => `<button class="chip" type="button" data-deck="${c.slug}" data-at="${at}">${esc(n)}</button>`).join('')}</div>
-        <button class="btn" type="button" data-deck="${c.slug}" data-at="0">Open full case study →</button>
+        <h2>The whole story, ${d.slides.length} slides</h2>
+        <p>Explore a preview below. The full case study—including process, trade-offs, and outcomes—is available on request.</p>
+        <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study ↗</a>
         <div class="deck-strip">
-          ${d.slides.slice(0,2).map((n,k) => `<div class="thumb" data-deck="${c.slug}" data-at="${k}">${slideContents(slideSrc(n), '', false)}<span>${k+1}</span></div>`).join('')}
-          <div class="thumb more" data-deck="${c.slug}" data-at="2">+${d.slides.length - 2}</div>
+          ${d.slides.slice(0,3).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more slides' : 'preview ' + (k+1)}">${slideContents(slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
         </div>
       </div>
     </section>` : ''}
@@ -579,7 +585,7 @@ function renderCase(slug){
       </div>
     </nav>`;
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
-  bindDeckButtons();
+  bindSolutionAccordion();
   observeKV();
 }
 
@@ -623,8 +629,8 @@ function renderAbout(){
       </div>
       <div class="note">
         <span class="tag">Full case studies</span>
-        <p>Each project page opens with the key visuals and decisions, then a full case study you can page through: process, trade-offs, and metrics, chapter by chapter. If you\u2019d rather have the deck as a file, email me.</p>
-        <a href="mailto:mjkiminfo@gmail.com">mjkiminfo@gmail.com</a>
+        <p>Project pages share selected visuals and key decisions. Full case studies—including process, trade-offs, and detailed outcomes—are available on request. Get in touch to explore the work in depth.</p>
+        <a href="${esc(requestHref())}">Request full case studies · mjkiminfo@gmail.com</a>
       </div>
     </section>`;
   window.scrollTo({top:0});
@@ -635,21 +641,18 @@ function renderAbout(){
    ============================================================ */
 function route(){
   let h = location.hash.replace(/^#\/?/, '');
-  // Preserve existing links to the account case and each of its slides.
+  // Old deck URLs now return to the public project preview.
   if (h === 'work/domino-mydata' || h.startsWith('work/domino-mydata/')) {
-    const parts = h.split('/');
-    const offset = DECKS['domino-mvp'].slides.indexOf('EN · 29');
-    h = 'work/domino-mvp' + (parts[2] === 'deck' ? `/deck/${offset + Math.max(1, parseInt(parts[3],10)||1)}` : '');
-    history.replaceState(null, '', '#/' + h);
+    h = 'work/domino-mvp';
   }
+  if (/^work\/[^/]+\/deck(?:\/|$)/.test(h)) h = h.split('/').slice(0,2).join('/');
+  if ('#/' + h !== location.hash && h.startsWith('work/')) history.replaceState(null, '', '#/' + h);
   stopMorph();
   stopCarousel();
   stopSlideVideos();
-  closeViewer(true);
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');
     renderCase(parts[0]);
-    if (parts[1] === 'deck') openViewer(parts[0], Math.max(0, (parseInt(parts[2],10) || 1) - 1), true); else closeViewer(true);
   }
   else if (h === 'about') renderAbout();
   else renderHome();
@@ -660,66 +663,6 @@ function route(){
 window.addEventListener('hashchange', route);
 window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 8), {passive:true});
 
-
-/* ============================================================
-   DECK VIEWER — paginated full case study
-   ============================================================ */
-const V = { el:document.getElementById('viewer'), title:document.getElementById('vTitle'), counter:document.getElementById('vCounter'), stage:document.getElementById('vStage'), chips:document.getElementById('vChips'), prog:document.getElementById('vProg'), prev:document.getElementById('vPrev'), next:document.getElementById('vNext'), slug:null, i:0 };
-function openViewer(slug, i, silent){
-  const d = DECKS[slug]; if (!d) return;
-  const c = CASES.find(x => x.slug === slug);
-  V.slug = slug; V.i = Math.min(Math.max(0,i), d.slides.length - 1);
-  V.title.textContent = c ? c.title : slug;
-  V.chips.innerHTML = d.chapters.map(([n,at]) => `<button class="chip" type="button" data-at="${at}">${esc(n)}</button>`).join('');
-  V.chips.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => goSlide(parseInt(b.dataset.at,10))));
-  V.el.classList.add('open'); document.body.classList.add('viewer-open');
-  syncCarousel();
-  paint();
-  if (!silent) location.hash = `#/work/${slug}/deck/${V.i+1}`;
-}
-function closeViewer(silent){
-  if (!V.el.classList.contains('open')) return;
-  stopSlideVideos();
-  V.el.classList.remove('open'); document.body.classList.remove('viewer-open'); V.stage.innerHTML='';
-  if (!silent && V.slug) history.replaceState(null, '', `#/work/${V.slug}`);
-  bindSlideVideos();
-  syncCarousel();
-}
-function goSlide(i){
-  const d = DECKS[V.slug]; if (!d) return;
-  V.i = Math.min(Math.max(0,i), d.slides.length - 1);
-  history.replaceState(null, '', `#/work/${V.slug}/deck/${V.i+1}`);
-  paint();
-}
-function paint(){
-  const d = DECKS[V.slug]; const name = d.slides[V.i];
-  V.counter.textContent = `${V.i+1} / ${d.slides.length}`;
-  V.prog.style.width = ((V.i+1) / d.slides.length * 100) + '%';
-  V.prev.disabled = V.i === 0; V.next.disabled = V.i === d.slides.length - 1;
-  // active chapter chip
-  let active = 0; d.chapters.forEach(([n,at],k) => { if (V.i >= at) active = k; });
-  V.chips.querySelectorAll('.chip').forEach((b,k) => b.classList.toggle('active', k === active));
-  stopSlideVideos();
-  V.stage.innerHTML = `<div class="slide-frame">${slideContents(slideSrc(name), `${V.title.textContent}, slide ${V.i+1}`)}</div>`;
-  const img = V.stage.querySelector('img'); img.loading = 'eager';
-  img.onerror = () => { const ph = document.createElement('div'); ph.className = 'ph'; ph.innerHTML = `<div><strong>${esc(name)}</strong><br><span style="opacity:.7">Export this frame from Figma to ${esc(DECK_BASE + name + '.png')}</span></div>`; V.stage.innerHTML=''; V.stage.appendChild(ph); };
-  bindSlideVideos();
-  // preload neighbors
-  [V.i-1, V.i+1].forEach(k => { if (d.slides[k]) { const p = new Image(); p.src = slideSrc(d.slides[k]); } });
-}
-V.prev.addEventListener('click', () => goSlide(V.i-1));
-V.next.addEventListener('click', () => goSlide(V.i+1));
-document.getElementById('vClose').addEventListener('click', () => closeViewer());
-document.addEventListener('keydown', e => {
-  if (!V.el.classList.contains('open')) return;
-  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goSlide(V.i+1); }
-  else if (e.key === 'ArrowLeft') { e.preventDefault(); goSlide(V.i-1); }
-  else if (e.key === 'Escape') closeViewer();
-});
-// swipe
-let sx = 0, sy = 0;
-V.stage.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
-V.stage.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) goSlide(V.i + (dx < 0 ? 1 : -1)); }, {passive:true});
 
 /* ============================================================
    GOOEY TEXT MORPH — two word slots (front noun × position). The

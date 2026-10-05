@@ -23,6 +23,10 @@ The light theme uses `--surface-light` as its default background, one step light
 - `domino-account.mp4` — `EN · 33`, from `RPReplay_Final1706341379 2.mov`.
 - `domino-filter.mp4` — `WEB 44`, from `asset_filter.mov`.
 
-`SLIDE_VIDEOS` keeps their placement aligned to the 1920×1080 Figma frames. Videos loop while visible in a detail page or deck viewer; the original slide stays underneath as a fallback.
+`SLIDE_VIDEOS` keeps their placement aligned to the 1920×1080 Figma frames. Videos loop while visible in a detail page; the original slide stays underneath as a fallback.
 
-Domino's founding strategy and account-centric work share the `domino-mvp` case, using the original account cover. The image below “Problem areas to solve” cycles through EN 22–25 every five seconds while visible, with previous/next and pause controls. The hero stays on EN 19, and EN 28 appears separately in “Build alignment through research.” Reduced-motion visitors can start the slideshow manually. Old `domino-mydata` links redirect to the merged case and preserve their original deck slide.
+Domino's founding strategy and account-centric work share the `domino-mvp` case, using the original account cover. The image below “Problem areas to solve” cycles through EN 22–25 every five seconds while visible, with previous/next and pause controls. The hero stays on EN 19, and EN 28 appears separately in “Build alignment through research.” Reduced-motion visitors can start the slideshow manually. EN 21 opens the full-story preview sequence. Old `domino-mydata` links redirect to the merged case.
+
+Full case studies are available on request. Each project shows three deck previews; the third uses the actual slide under a rightward fade and a remaining-slide count. Slide images and request links open a prefilled email to `mjkiminfo@gmail.com`. Legacy `#/work/<slug>/deck/<index>` routes return to the public project page. This is a presentation strategy, not access control: exported assets remain public.
+
+Meta keeps EN 44 and adds an interactive four-solution accordion after it. `META_SOLUTIONS` owns the descriptions and corresponding `assets/meta/solution-*.png` panels. These 2× panels are exported from the four editable [Figma accordion states](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2314-428), each with its own mesh gradient.

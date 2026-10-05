@@ -18,6 +18,8 @@ Update `DECK_REVISION` when refreshing exports so visitors receive the latest im
 Original Figma page numbers are covered only in the web presentation; exported PNGs remain unchanged.
 The light theme uses `--surface-light` as its default background, one step lighter than `--surface`.
 
+Manager Landing uses a case-scoped light presentation: a neutral background, subtle blue/lilac gradients, large paired mobile screens, and short benefit headings. `MANAGER_SCREENS` defines CSS viewports into the unchanged EN 44 export in 1920×1080 coordinates; do not redraw or replace the historical UI. The original workflow slide remains available in a disclosure and the full deck. Project copy, dates, metrics, People Products · Enterprise Engineering attribution, internal-product context, Planning autoplay, and all 11 deck slides are retained. This presentation does not imply a relationship to any later product.
+
 `assets/videos/` contains muted H.264 copies of the original Figma recordings:
 
 - `domino-account.mp4` — `EN · 33`, from `RPReplay_Final1706341379 2.mov`.

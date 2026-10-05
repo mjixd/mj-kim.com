@@ -572,7 +572,7 @@ function renderCase(slug){
         <span class="tag">Full case study</span>
         <h2>The whole story, ${d.slides.length} slides</h2>
         <p>Explore a preview below. The full case study—including process, trade-offs, and outcomes—is available on request.</p>
-        <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study ↗</a>
+        <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study</a>
         <div class="deck-strip">
           ${d.slides.slice(0,3).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more slides' : 'preview ' + (k+1)}">${slideContents(slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
         </div>

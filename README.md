@@ -38,3 +38,24 @@ Remote-work adoption challenge combines the Manager Landing context with four sq
 - Whole story preview selections: Domino EN · 21 / 32 / 34 (D7 retention); Meta EN · 42 / 43 / 46 (D7 retention). These slides are not repeated in the public body or hero.
 
 The four `assets/meta/context-*.png` previews were produced with the built-in image generator. Prompt: extract only the corresponding browser UI; show one front-facing, unrotated screen on a pale ice-blue/lilac background; bake in strong blur so names, faces, numbers and text are unreadable; no caption inside the image. The final topics are workspace, team signal, H2 scheduling, and the next phase. Final image paths: `assets/meta/context-workspace.png`, `assets/meta/context-team-signal.png`, `assets/meta/context-schedule.png`, and `assets/meta/context-next-phase.png`. The scheduling prompt extracts only the PDF page 4 table with its weekly columns, green workload bars, and blue highlighted month, then blurs all text.
+
+## SVA thesis: hello,w
+
+The `hello-w` case follows the five professional cases and is linked from About → Education. Its purpose is to show research-led problem framing, assumptions, interaction design, and learning from qualitative evaluation. It is explicitly an individual 2020 MFA research prototype; it makes no shipped-product, retention, or career-impact claim. The scope band says “Research scope” rather than “Impact.”
+
+Sources: Minjung Kim's final `MinjungKim_Thesis_2020.pdf` (49 pages) and `MJKim_Thesis_ProcessBook.pdf` (45 spreads). Page numbers below refer to PDF order, not printed folios.
+
+| Public content | Source |
+| --- | --- |
+| 16 primary interview participants | Written thesis 17; process book 15. This is a participant count, not a count of interview sessions. |
+| Confidence, interest, role models, stereotypes | Process book 18; synthesis includes literature and primary research. |
+| Assumptions and AR-to-mentoring hypothesis | Process book 19, 22, 24–27. |
+| Original AR, mentor, and question/answer screens | Process book 32–35. |
+| Qualitative feedback and iteration priorities | Process book 39–40; written thesis 41–44. |
+| Prototype limits and need for longer-term validation | Process book 41–42; written thesis 45–47. |
+
+The documents disagree on usability sample totals (written page 39: 14, with a 2+8 breakdown; process spread 37: 10; a separate testing description mentions 6). The public summary does not aggregate or repeat those conflicting totals. The proposed next study in the final section is a forward-looking recommendation, not a completed study.
+
+Both complete documents are archived below the existing [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2346-404): process section `2346:404`, written section `2346:405`. PDF pages were converted to SVG, with original vector geometry and embedded raster images retained. Glyphs are outlined paths, not editable Figma text. Adjacent glyph paths were combined to keep the imported file manageable without changing appearance. Original page/spread sizes and ordering are preserved.
+
+Only eight curated SVGs in `assets/thesis/` are public. The cover/hero and experience compositions embed losslessly encoded source screens; `research.svg` is an editorial visualization of the four source themes. Three original vector spreads (20 competitive landscape, 25 journey, 39 testing synthesis) are fitted within 16:9 previews without stretching or cropping. Neither complete PDF nor the full set of page SVGs is published. Every preview opens the contextual email request; the +43 count includes the partially visible third spread. The original screenshots remain prototype artifacts, including their example profile content.

@@ -338,7 +338,73 @@ const CASES = [
       {tag:'Delivery', h:'Cross-functional delivery', p:'Kickoff, design with PM and server, client engineering and QA, release. A flow that runs from scope to store submission and hotfix response.', from:'EN · 52', src:'assets/decks/EN · 52.png'},
       {tag:'Context', h:'Shared product context', p:'Product structure and section rules made explicit so engineering, design, PM, and business talk in the same terms, and new hires can find what they need.', from:'EN · 53', src:'assets/decks/EN · 53.png'},
       {tag:'Visibility', h:'Knowledge and visibility', p:'Work and progress documented so partner teams can reach the latest context themselves. Transparency as an operating habit, not a report.', from:'EN · 54', src:'assets/decks/EN · 54.png'}
-    ]}
+    ]},
+  {
+  "slug": "hello-w",
+  "meta": "SVA IxD · MFA Thesis · 2020",
+  "title": "hello,w — Pathways into engineering",
+  "line": "Research, assumption mapping, and prototype testing: connecting an accessible first experience with people who make a future feel possible.",
+  "kvHome": "assets/thesis/cover.svg",
+  "kvHomeAlt": "Original hello,w prototype screens for AR discovery, a mentor profile, and a video response",
+  "kvHero": "assets/thesis/hero.svg",
+  "accent": "#6550aa",
+  "stat": {
+    "n": "Research prototype",
+    "l": "AR exploration and asynchronous mentoring"
+  },
+  "lead": "For my SVA Interaction Design thesis, I explored how teenage girls could discover an interest in engineering and see a path into it. hello,w combines AR mini-games with asynchronous video mentoring: a familiar object opens the door, and a role model helps make the next step imaginable.",
+  "role": "Role · Individual MFA thesis: research, problem framing, interaction design, prototyping, and qualitative evaluation · 2020",
+  "outcomeLabel": "Research scope",
+  "stats": [
+    [
+      "16",
+      "primary interview participants"
+    ],
+    [
+      "2 modes",
+      "AR exploration + asynchronous mentoring"
+    ],
+    [
+      "2020",
+      "MFA research prototype"
+    ]
+  ],
+  "blocks": [
+    {
+      "tag": "1 Research",
+      "h": "Look beyond confidence",
+      "p": "Primary research with 16 interview participants, together with a literature review, surfaced four connected barriers: confidence, interest, access to role models, and gender stereotypes. The design question became how to offer both an approachable first experience and a person who could help someone imagine continuing.",
+      "src": "assets/thesis/research.svg",
+      "alt": "Four research themes: confidence, interest, role models, and stereotypes"
+    },
+    {
+      "tag": "2 Hypothesis",
+      "h": "Make curiosity a way in",
+      "p": "The hypothesis was that a short, tangible experience could make engineering feel relevant before asking someone to commit to it. The prototype uses an everyday object—a scooter—as the entry to an AR mini-game. Assumption mapping helped separate an appealing concept from questions that still needed evidence.",
+      "src": "assets/thesis/explore.svg",
+      "alt": "Two original AR prototype screens: discover a scooter and explore the engineering game"
+    },
+    {
+      "tag": "3 Experience",
+      "h": "Connect an interest to a person",
+      "p": "After exploring, learners could find women engineers, read about their work and life journeys, and ask a question by video, audio, or text. Asynchronous replies were intended to make mentoring less dependent on matching schedules. The concept linked a moment of curiosity to a conversation someone could return to.",
+      "src": "assets/thesis/mentoring.svg",
+      "alt": "Original mentor profile, life journey, and video-question review screens"
+    },
+    {
+      "tag": "4 Learning",
+      "h": "The transition mattered as much as the features",
+      "p": "Qualitative testing surfaced interest in both AR and mentoring, but their connection was not always clear. Feedback pointed to a stronger bridge between the two, more mentor context, clearer game guidance, and better question review and response tracking. A discouraging statistic in onboarding also showed how the framing could undermine the invitation to begin.",
+      "textOnly": true
+    },
+    {
+      "tag": "5 Next questions",
+      "h": "A concept to test over time",
+      "p": "This was an exploratory prototype, with self-selected participants and AR interactions that still needed fuller implementation. It did not establish sustained learning, retention, or career outcomes. The next study would test whether learners move from exploration to a useful mentoring exchange, then return—and whether that changes their confidence over time.",
+      "textOnly": true
+    }
+  ]
+}
 ];
 
 
@@ -346,6 +412,8 @@ const CASES = [
    Main source: Interview Deck · AI Strategy. WEB frames supplement LINE and Domino mentorship.
    ML3 and ML6 are supplied Meta planning images, retained at their original resolution. */
 const DECKS = {
+  'hello-w': {title:'Inside the research', unit:'spreads', description:'Preview the competitive landscape, experience journey, and testing synthesis. The complete 45-spread process book and 49-page written thesis are available on request.', previews:['assets/thesis/process-20.svg','assets/thesis/process-25.svg','assets/thesis/process-39.svg'], slides:Array.from({length:45}, (_,i) => 'Process Book · ' + (i+1))},
+
   'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
     chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
   'domino-mvp': { previews:['EN · 21','EN · 32','EN · 34'], slides:["EN · 21","EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","2072","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
@@ -591,13 +659,13 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
-          ${b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.h, request:c.slug})}
+          ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>
       </section>`).join('')}
     <section class="band dark">
       <div class="impact wrap">
-        <div class="eyebrow">Impact</div>
+        <div class="eyebrow">${esc(c.outcomeLabel || 'Impact')}</div>
         <div class="stats${c.stats.length === 4 ? ' stats-four' : ''}">${c.stats.map(([n,l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
       </div>
     </section>
@@ -605,11 +673,11 @@ function renderCase(slug){
     <section class="band">
       <div class="deck-band wrap">
         <span class="tag">Full case study</span>
-        <h2>The whole story, ${d.slides.length} slides</h2>
-        <p>Explore a preview below. The full case study—including process, trade-offs, and outcomes—is available on request.</p>
+        <h2>${esc(d.title || 'The whole story, ' + d.slides.length + ' slides')}</h2>
+        <p>${esc(d.description || 'Explore a preview below. The full case study—including process, trade-offs, and outcomes—is available on request.')}</p>
         <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study</a>
         <div class="deck-strip">
-          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more slides' : 'preview ' + (k+1)}">${slideContents(slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
+          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more ' + (d.unit || 'slides') : 'preview ' + (k+1)}">${slideContents(n.startsWith('assets/') ? n : slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
         </div>
       </div>
     </section>` : ''}
@@ -654,7 +722,7 @@ function renderAbout(){
         <div class="row"><b>HCI &amp; product</b><p>Human behavior, systems thinking, product strategy, experimentation, data-informed decisions, global product experience.</p></div>
       </div>
       <div class="rows" aria-label="Education">
-        <div class="row"><b>MFA, Human-Computer Interaction</b><p>School of Visual Arts, New York · CIP 30.3101 (STEM-designated) · Full-ride scholarship</p></div>
+        <div class="row"><b>MFA, Human-Computer Interaction</b><p>School of Visual Arts, New York · CIP 30.3101 (STEM-designated) · Full-ride scholarship<br><a href="#/work/hello-w">Explore my thesis: hello,w</a></p></div>
         <div class="row"><b>BA, Communication Design</b><p>Seoul National University of Science and Technology</p></div>
       </div>
       <div class="rows" aria-label="How I use AI">

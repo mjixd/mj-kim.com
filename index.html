@@ -385,7 +385,8 @@ const CASES = [
       "h": "Make curiosity a way in",
       "p": "The hypothesis was that a short, tangible experience could make engineering feel relevant before asking someone to commit to it. The prototype uses a familiar everyday object, a scooter, as the entry to an AR mini-game. Assumption mapping helped separate an appealing concept from questions that still needed evidence.",
       "src": "assets/thesis/explore-v2.svg",
-      "alt": "Two original AR prototype screens: discover a scooter and explore the engineering game"
+      "alt": "Two original AR prototype screens: discover a scooter and explore the engineering game",
+      "demo": {"href":"hello-w-play/", "label":"Play the hello,w exploration", "note":"A new 2026 browser experience inspired by the thesis prototype."}
     },
     {
       "tag": "3 Experience",
@@ -663,6 +664,7 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
+          ${b.demo ? `<p><a class="btn" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p><p class="role">${esc(b.demo.note)}</p>` : ''}
           ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>

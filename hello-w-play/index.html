@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6550aa">
+<meta name="description" content="A playable hello,w exploration: move, build, and sequence your way into engineering. Inspired by Minjung Kim’s SVA Interaction Design thesis.">
+<title>hello,w: A little curiosity goes a long way</title>
+<link rel="icon" href="../favicon-32.png"><link rel="stylesheet" href="style.css">
+<script defer src="game.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="./" aria-label="hello,w home">hello,w<span>●</span></a>
+  <nav aria-label="Main navigation"><span class="nav-current">Explore</span><button class="text-button" id="open-mentor">Meet a mentor</button><a href="../#/work/hello-w">The thesis <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+  <div class="intro"><div><p class="eyebrow">A SMALL START IN SOFTWARE ENGINEERING</p><h1>Let’s find a way.</h1></div><p>A little experimenting.<br>A new way of thinking.</p></div>
+  <div class="workspace">
+    <section class="play-area" aria-label="Interactive block puzzle">
+      <div class="stage" id="stage">
+        <video id="camera" muted autoplay playsinline aria-hidden="true"></video>
+        <div class="stage-top"><span class="stage-label"><i></i><span id="stage-label">YOUR EXPLORATION</span></span><button id="camera-toggle" class="camera-button" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l1.5-2h5L16 5h4a1 1 0 011 1v13H3V6a1 1 0 011-1z"/><circle cx="12" cy="12" r="4"/></svg><span>Camera overlay</span></button></div>
+        <svg id="board" viewBox="0 0 800 570" role="img" aria-label="White block path with a purple ball and a purple destination"></svg>
+        <div class="stage-bottom"><span id="position">Start · 0 moves</span><span>Follow your curiosity.</span></div>
+      </div>
+      <p id="camera-status" class="camera-status" role="status" hidden></p>
+      <div class="controls">
+        <div class="movement"><div class="dpad" aria-label="Movement controls"><button data-direction="N" class="north" aria-label="Move north">↗</button><button data-direction="W" class="west" aria-label="Move west">↖</button><span class="dpad-center" aria-hidden="true">●</span><button data-direction="E" class="east" aria-label="Move east">↘</button><button data-direction="S" class="south" aria-label="Move south">↙</button></div><span class="keyboard-hint">Arrow keys or WASD<br>also work.</span></div>
+        <div class="edit-controls"><button id="undo" class="quiet-button">↶ <span>Undo move</span></button><button id="reset" class="quiet-button">↺ <span>Start over</span></button></div>
+      </div>
+    </section>
+    <aside class="challenge-panel" aria-label="Challenge instructions">
+      <div class="chapter-tabs" aria-label="Choose a challenge"><button data-level="0" aria-pressed="true">01<span>Explore</span></button><button data-level="1" aria-pressed="false">02<span>Build</span></button><button data-level="2" aria-pressed="false">03<span>Sequence</span></button></div>
+      <div class="challenge-copy"><p class="eyebrow" id="concept">SPATIAL THINKING</p><h2 id="challenge-title">Every path starts<br>with one move.</h2><p id="challenge-description">Move the purple ball along the white blocks. Find your way to the purple destination.</p></div>
+      <div id="bridge-tools" hidden><button id="build-bridge" class="primary-button">＋ Add the missing block</button><p class="hint">You can also tap the outlined gap.</p></div>
+      <div id="program-tools" hidden><div class="queue-heading"><span>Your sequence</span><span id="queue-count">0 / 24</span></div><ol id="queue" aria-label="Queued directions"></ol><div class="program-actions"><button id="run" class="primary-button">▶ Run sequence</button><button id="remove-command" class="quiet-button" aria-label="Remove last command">⌫</button><button id="clear-queue" class="quiet-button">Clear</button></div><p class="hint">Add moves with the arrows. Run always starts from the first block.</p></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite">There’s no rush. Try a direction.</div>
+      <div id="success" class="success" hidden><span class="success-icon" aria-hidden="true">✓</span><h3>You found a way.</h3><p id="insight"></p><button id="next" class="primary-button">Try the next idea <span aria-hidden="true">→</span></button></div>
+      <div class="mentor-invite"><span class="tiny-orbit" aria-hidden="true">w</span><div><strong>Wondering what comes next?</strong><p>Turn a small discovery into a question.</p><button id="ask-mentor" class="text-button">Talk it through <span aria-hidden="true">↗</span></button></div></div>
+    </aside>
+  </div>
+  <footer class="experience-note"><p><b>From play to possibility.</b> A 2026 interactive exploration of hello,w, Minjung Kim’s 2020 SVA IxD thesis.</p><p>Browser puzzle · Optional camera backdrop, without spatial tracking.<br><a href="../#/work/hello-w">Read the research behind it</a></p></footer>
+</main>
+<dialog id="mentor-dialog" aria-labelledby="mentor-title">
+  <button id="close-mentor" class="close-button" aria-label="Close mentoring preview">×</button>
+  <div class="mentor-profile"><img src="assets/mentor.jpg" width="80" height="96" alt="AI-generated fictional mentor"><div><p class="eyebrow">MENTORING CONCEPT</p><h2 id="mentor-title">Curiosity is a good<br>conversation starter.</h2></div></div>
+  <p class="dialog-intro">What would you ask a software engineer about what you just tried?</p>
+  <div class="prompt-choices" aria-label="Question starters"><button data-prompt="work">Connect it to real work</button><button data-prompt="start">Find a next step</button></div>
+  <label for="question">Your question</label><textarea id="question" rows="4" maxlength="1000"></textarea>
+  <div class="dialog-action"><button id="preview-question" class="primary-button">Preview my question</button><span>Local demo · Nothing is sent.</span></div>
+  <section id="question-preview" hidden aria-live="polite"><p class="eyebrow">YOUR QUESTION PREVIEW</p><p id="preview-text"></p></section>
+  <p class="disclosure">Fictional AI-generated mentor portrait. This explores the thesis’s asynchronous mentoring idea; it isn’t a live mentoring service.</p>
+</dialog>
+</body></html>

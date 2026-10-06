@@ -6,6 +6,7 @@
 <meta name="description" content="A playable hello,w exploration: move, build, and sequence your way into engineering. Inspired by Minjung Kim’s SVA Interaction Design thesis.">
 <title>hello,w: A little curiosity goes a long way</title>
 <link rel="icon" href="../favicon-32.png"><link rel="stylesheet" href="style.css">
+<script type="module" src="models.js"></script>
 <script defer src="game.js"></script><script defer src="app.js"></script>
 </head>
 <body>
@@ -14,7 +15,28 @@
   <nav aria-label="Main navigation"><span class="nav-current">Explore</span><button class="text-button" id="open-mentor">Meet a mentor</button><a href="../#/work/hello-w">The thesis <span aria-hidden="true">↗</span></a></nav>
 </header>
 <main>
-  <div class="intro"><div><p class="eyebrow">A SMALL START IN SOFTWARE ENGINEERING</p><h1>Let’s find a way.</h1></div><p>A little experimenting.<br>A new way of thinking.</p></div>
+<section id="field-selection" aria-labelledby="selection-title">
+  <div class="selection-intro"><p class="eyebrow">HELLO, POSSIBILITY.</p><h1 id="selection-title">What makes you curious?</h1><p>Discover the engineering in everyday things.<br>Choose a field. Turn an idea into your first experiment.</p></div>
+  <div class="discovery-space">
+    <img class="space-photo" src="assets/space.jpg" alt="Sunlit real interior with white columns and an open floor" fetchpriority="high" width="2000" height="1500">
+    <div class="object-stage">
+      <p class="space-label">YOUR WORLD. NEW POSSIBILITIES.</p>
+      <div id="model-view" tabindex="0" role="group" aria-label="Interactive 3D scooter. Drag horizontally or use left and right arrow keys to rotate." aria-describedby="model-status"></div>
+      <div class="object-caption"><span id="object-name">An everyday ride.</span><span id="object-detail">A closer look at how things move.</span></div>
+      <div class="orbit-tools"><button id="rotate-left" aria-label="Rotate model left">↶</button><button id="reset-view" aria-label="Reset model view">Reset view</button><button id="rotate-right" aria-label="Rotate model right">↷</button></div>
+      <p id="model-status" role="status">Loading the 3D model…</p>
+    </div>
+    <div class="field-panel"><p class="step-label">01 / FIND YOUR START</p><h2>Pick your curiosity.</h2><div class="field-options" role="group" aria-label="Engineering fields">
+      <button data-field="mechanical" aria-label="Mechanical engineering" aria-pressed="true"><span class="field-number">01</span><span><strong>Mechanical engineering</strong><small>How do things move?</small></span><span class="field-check" aria-hidden="true">✓</span></button>
+      <button data-field="civil" aria-label="Civil engineering" aria-pressed="false"><span class="field-number">02</span><span><strong>Civil engineering</strong><small>What makes a structure work?</small></span><span class="field-check" aria-hidden="true">✓</span></button>
+      <button data-field="software" aria-label="Software engineering" aria-pressed="false"><span class="field-number">03</span><span><strong>Software engineering</strong><small>How does an idea become an action?</small></span><span class="field-check" aria-hidden="true">✓</span></button>
+    </div><p id="field-summary" aria-live="polite">Start with movement. Find a path, one step at a time.</p><button id="start-exploring" class="primary-button">Start exploring <span aria-hidden="true">→</span></button><p class="choice-note">No right answer. You can change your mind.</p></div>
+  </div>
+  <div class="selection-foot"><span>Look closer. Try something. Ask someone.</span><a href="https://unsplash.com/photos/a0X9tAAxzaA" target="_blank" rel="noopener">Space photograph: Dimmis Vart / Unsplash</a></div>
+</section>
+<section id="game-content" hidden aria-labelledby="game-title">
+<div class="journey-bar"><span id="selected-field">Mechanical engineering</span><button id="change-field" class="text-button">Change field</button></div>
+  <div class="intro"><div><p class="eyebrow" id="game-eyebrow">A SMALL START IN ENGINEERING</p><h1 id="game-title" tabindex="-1">Let’s find a way.</h1></div><p>A little experimenting.<br>A new way of thinking.</p></div>
   <div class="workspace">
     <section class="play-area" aria-label="Interactive block puzzle">
       <div class="stage" id="stage">
@@ -39,6 +61,7 @@
       <div class="mentor-invite"><span class="tiny-orbit" aria-hidden="true">w</span><div><strong>Wondering what comes next?</strong><p>Turn a small discovery into a question.</p><button id="ask-mentor" class="text-button">Talk it through <span aria-hidden="true">↗</span></button></div></div>
     </aside>
   </div>
+</section>
   <footer class="experience-note"><p><b>From play to possibility.</b> A 2026 interactive exploration of hello,w, Minjung Kim’s 2020 SVA IxD thesis.</p><p>Browser puzzle · Optional camera backdrop, without spatial tracking.<br><a href="../#/work/hello-w">Read the research behind it</a></p></footer>
 </main>
 <dialog id="mentor-dialog" aria-labelledby="mentor-title">

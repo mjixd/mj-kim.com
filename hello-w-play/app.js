@@ -4,6 +4,12 @@
   const $ = id => document.getElementById(id);
   const arrows = {N:'↗',E:'↘',S:'↙',W:'↖'};
   const directions = {N:'north',E:'east',S:'south',W:'west'};
+  const fields = {
+    mechanical: {name:'Mechanical engineering', level:0, object:'An everyday ride.', detail:'A closer look at how things move.', summary:'Start with movement. Find a path, one step at a time.', question:'What can a scooter teach me about motion, balance, and mechanical engineering?'},
+    civil: {name:'Civil engineering', level:1, object:'A connection worth building.', detail:'Small pieces. Stronger together.', summary:'Start with a structure. Add the missing link to connect a path.', question:'How do civil engineers decide where a bridge needs support, and what could I build to learn about it?'},
+    software: {name:'Software engineering', level:2, object:'Small instructions. Big possibilities.', detail:'See the logic behind everyday technology.', summary:'Start with a sequence. Give your idea a set of instructions.', question:'How do software engineers turn a sequence of instructions into something that works in the real world?'}
+  };
+  let selectedField = 'mechanical', exploring = false;
   const chapters = [
     {concept:'SPATIAL THINKING',title:'Every path starts <br>with one move.',description:'Move the purple ball along the white blocks. Find your way to the purple destination.',hint:'There’s no rush. Try a direction.',insight:'You broke a big journey into small steps. That’s the beginning of an algorithm.',question:'I found a path by trying one move at a time. How do software engineers break a bigger problem into small steps?'},
     {concept:'PROBLEM SOLVING',title:'A gap is an <br>invitation to build.',description:'Something is missing. Find the gap, add a block, and help your ball continue its journey.',hint:'A missing piece doesn’t have to be the end.',insight:'You changed the path instead of giving up on it. Sometimes the solution is to change the conditions.',question:'I had to add a missing block to finish the path. How do you decide whether to work around a problem or change the system?'},
@@ -90,7 +96,7 @@
     return moved;
   }
   function input(direction) {
-    if(running||state.won)return;
+    if(!exploring||running||state.won)return;
     if(state.level===2) {
       if(queue.length>=24){say('Your sequence has 24 moves. Remove a step or run it.');return;}
       queue.push(direction);say('Plan ready? Run your sequence to try it.');
@@ -131,7 +137,7 @@
   $('remove-command').addEventListener('click',()=>{if(!running){queue.pop();activeCommand=-1;render();}});
   $('next').addEventListener('click',()=>state.level===2?openMentor():selectLevel(state.level+1));
   window.addEventListener('keydown',e=>{
-    if($('mentor-dialog').open||e.target.matches('input,textarea,select,[contenteditable=true]')||e.ctrlKey||e.metaKey||e.altKey)return;
+    if(!exploring||$('mentor-dialog').open||e.target.matches('input,textarea,select,[contenteditable=true]')||e.ctrlKey||e.metaKey||e.altKey)return;
     const direction={ArrowUp:'N',ArrowRight:'E',ArrowDown:'S',ArrowLeft:'W',w:'N',d:'E',s:'S',a:'W'}[e.key];
     if(direction){e.preventDefault();input(direction);}
   });
@@ -171,13 +177,14 @@
 
   function openMentor() {
     if(running){stopRun();say('Stopped for a moment of reflection.');render();}
-    $('question').value=chapters[state.level].question;$('question-preview').hidden=true;
+    $('question').value=fields[selectedField].question;$('question-preview').hidden=true;
+    document.querySelector('.dialog-intro').textContent=`What would you ask someone working in ${fields[selectedField].name.toLowerCase()}?`;
     $('mentor-dialog').showModal();
   }
   $('open-mentor').addEventListener('click',openMentor);$('ask-mentor').addEventListener('click',openMentor);
   $('close-mentor').addEventListener('click',()=>$('mentor-dialog').close());
   document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{
-    $('question').value=b.dataset.prompt==='work'?chapters[state.level].question:'I enjoyed this small engineering challenge. What would be a good first project to try next, and what helped you get started?';
+    $('question').value=b.dataset.prompt==='work'?fields[selectedField].question:'I enjoyed this small engineering challenge. What would be a good first project to try next, and what helped you get started?';
     $('question-preview').hidden=true;$('question').focus();
   }));
   $('question').addEventListener('input',()=>{$('question-preview').hidden=true;});
@@ -185,6 +192,29 @@
     const question=$('question').value.trim();
     if(!question){$('question').focus();$('question').setCustomValidity('Add a question to preview.');$('question').reportValidity();$('question').setCustomValidity('');return;}
     $('preview-text').textContent=question;$('question-preview').hidden=false;
+  });
+  document.querySelectorAll('[data-field]').forEach(button=>button.addEventListener('click',()=>{
+    selectedField=button.dataset.field;
+    const field=fields[selectedField];
+    document.querySelectorAll('[data-field]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+    $('field-summary').textContent=field.summary;
+    $('object-name').textContent=field.object;
+    $('object-detail').textContent=field.detail;
+    window.dispatchEvent(new CustomEvent('fieldchange',{detail:selectedField}));
+  }));
+  $('start-exploring').addEventListener('click',()=>{
+    exploring=true;
+    $('field-selection').hidden=true;$('game-content').hidden=false;
+    $('selected-field').textContent=fields[selectedField].name;
+    $('game-eyebrow').textContent='A SMALL START IN '+fields[selectedField].name.toUpperCase();
+    selectLevel(fields[selectedField].level);
+    $('game-title').focus();window.scrollTo(0,0);
+  });
+  $('change-field').addEventListener('click',()=>{
+    stopRun();closeCamera();exploring=false;
+    $('game-content').hidden=true;$('field-selection').hidden=false;
+    document.querySelector(`[data-field="${selectedField}"]`).focus();
+    window.scrollTo(0,0);
   });
   selectLevel(0);
 })();

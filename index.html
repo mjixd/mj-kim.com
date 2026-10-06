@@ -344,9 +344,11 @@ const CASES = [
   "meta": "SVA IxD · MFA Thesis · 2020",
   "title": "hello,w — Pathways into engineering",
   "line": "Research, assumption mapping, and prototype testing: connecting an accessible first experience with people who make a future feel possible.",
-  "kvHome": "assets/thesis/cover.svg",
-  "kvHomeAlt": "Original hello,w prototype screens for AR discovery, a mentor profile, and a video response",
-  "kvHero": "assets/thesis/hero.svg",
+  "kvHome": "assets/thesis/cover-v2.svg",
+  "kvHomeAlt": "hello,w AR prototype and mentoring screens with AI-generated fictional characters",
+  "kvHero": "assets/thesis/hero-v2.svg",
+  "kvHeroAlt": "hello,w AR prototype and mentoring screens with AI-generated fictional characters",
+  "visualNote": "Mentoring portraits use AI-generated fictional characters in a 2026 visual reconstruction of the 2020 prototype. Original interface copy is retained; these are not research participant photographs.",
   "accent": "#6550aa",
   "stat": {
     "n": "Research prototype",
@@ -381,15 +383,15 @@ const CASES = [
       "tag": "2 Hypothesis",
       "h": "Make curiosity a way in",
       "p": "The hypothesis was that a short, tangible experience could make engineering feel relevant before asking someone to commit to it. The prototype uses an everyday object—a scooter—as the entry to an AR mini-game. Assumption mapping helped separate an appealing concept from questions that still needed evidence.",
-      "src": "assets/thesis/explore.svg",
+      "src": "assets/thesis/explore-v2.svg",
       "alt": "Two original AR prototype screens: discover a scooter and explore the engineering game"
     },
     {
       "tag": "3 Experience",
       "h": "Connect an interest to a person",
       "p": "After exploring, learners could find women engineers, read about their work and life journeys, and ask a question by video, audio, or text. Asynchronous replies were intended to make mentoring less dependent on matching schedules. The concept linked a moment of curiosity to a conversation someone could return to.",
-      "src": "assets/thesis/mentoring.svg",
-      "alt": "Original mentor profile, life journey, and video-question review screens"
+      "src": "assets/thesis/mentoring-v2.svg",
+      "alt": "AI-reconstructed mentoring flow: mentor profile, learner reviewing a video question, and mentor replying"
     },
     {
       "tag": "4 Learning",
@@ -651,7 +653,8 @@ function renderCase(slug){
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.title, request:c.slug})}
+      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">

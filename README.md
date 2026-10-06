@@ -4,10 +4,10 @@ Portfolio site for Minjung Kim. Single-file static site (index.html) hosted on G
 
 사용자가 `/올려줘`라고 요청하면 승인한 변경을 이 포트폴리오 사이트에 적용하고 검증 후 배포한다.
 
-- `index.html` — the whole site (hash routing: `#/work/<slug>`, `#/about`)
-- `assets/decks/` — full case-study slide images (Figma exports and supplied planning images)
-- `CNAME` — custom domain for GitHub Pages
-- `og.png`, `favicon*.png`, `apple-touch-icon.png` — share card and icons
+- `index.html`: the whole site (hash routing: `#/work/<slug>`, `#/about`)
+- `assets/decks/`: full case-study slide images (Figma exports and supplied planning images)
+- `CNAME`: custom domain for GitHub Pages
+- `og.png`, `favicon*.png`, `apple-touch-icon.png`: share card and icons
 
 Figma detail visuals and decks use 2× PNG exports (3840×2160), displayed at 16:9.
 Meta's Planning section uses the supplied `ML3.png` and `ML6.png` originals (8000×4500), cycling in that order every three seconds. Both also appear after EN 40 in the full Meta deck.
@@ -20,8 +20,8 @@ The light theme uses `--surface-light` as its default background, one step light
 
 `assets/videos/` contains muted H.264 copies of the original Figma recordings:
 
-- `domino-account.mp4` — `EN · 33`, from `RPReplay_Final1706341379 2.mov`.
-- `domino-filter.mp4` — `WEB 44`, from `asset_filter.mov`.
+- `domino-account.mp4`: `EN · 33`, from `RPReplay_Final1706341379 2.mov`.
+- `domino-filter.mp4`: `WEB 44`, from `asset_filter.mov`.
 
 `SLIDE_VIDEOS` keeps their placement aligned to the 1920×1080 Figma frames. Videos loop while visible in a detail page; the original slide stays underneath as a fallback.
 
@@ -31,7 +31,7 @@ Full case studies are available on request. Each project shows three deck previe
 
 Meta keeps EN 44 and adds an interactive four-solution accordion after it. `META_SOLUTIONS` owns the descriptions and corresponding `assets/meta/solution-*.png` panels. These 2× panels are exported from the four editable [Figma accordion states](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2314-428), each with its own mesh gradient.
 
-Remote-work adoption challenge combines the Manager Landing context with four square cards, replacing the EN 40 body thumbnail. Each card has a straight, equally sized browser preview and editable title and description below it. PDF pages 2, 10, 4, and 17 inform the screen previews; the reviewed context excludes pages 1, 5, 6, and 18. Each card retains Under NDA and the Meta email-request link. The PDF and unblurred page renders are not published. Cards use two columns on desktop and one on mobile, with four distinct soft mesh gradients. The screenshots fade into their backgrounds above the editable copy. Meta’s homepage cover uses the supplied `assets/covers/cover_meta.png` unchanged; EN 44 remains the detail hero. Play/pause controls use icons with accessible labels.
+Remote-work adoption challenge combines the Manager Landing context with four square cards, replacing the EN 40 body thumbnail. Each card has a straight, equally sized browser preview and editable title and description below it. PDF pages 2, 10, 4, and 17 inform the screen previews; the reviewed context excludes pages 1, 5, 6, and 18. Each card retains Under NDA and the Meta email-request link. The PDF and unblurred page renders are not published. Cards use two columns on desktop and one on mobile, with four distinct soft mesh gradients. The screenshots fade into their backgrounds above the editable copy. Meta’s homepage cover uses the supplied `assets/covers/cover_meta.png` unchanged. The detail hero uses four mobile screens in a 16:9 image (`assets/meta/hero-four-screens.png`). Play/pause controls use icons with accessible labels.
 
 - Domino EN · 19 uses the refreshed 2× Figma export and a muted, looping H.264 chart video, cropped to the Figma video bounds. The exported app icon stays above the video. Playback pauses outside the viewport.
 - Quality at scale uses frame 2072, titled “Design critique → Clearer filter UX”; the former WEB 43 asset is preserved.
@@ -59,3 +59,7 @@ The documents disagree on usability sample totals (written page 39: 14, with a 2
 Both complete documents are archived below the existing [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2346-404): process section `2346:404`, written section `2346:405`. PDF pages were converted to SVG, with original vector geometry and embedded raster images retained. Glyphs are outlined paths, not editable Figma text. Adjacent glyph paths were combined to keep the imported file manageable without changing appearance. Original page/spread sizes and ordering are preserved.
 
 Only eight curated SVGs in `assets/thesis/` are public. The cover/hero and experience compositions embed losslessly encoded source screens; `research.svg` is an editorial visualization of the four source themes. Three original vector spreads (20 competitive landscape, 25 journey, 39 testing synthesis) are fitted within 16:9 previews without stretching or cropping. Neither complete PDF nor the full set of page SVGs is published. Every preview opens the contextual email request; the +43 count includes the partially visible third spread. The original screenshots remain prototype artifacts, including their example profile content.
+
+Portfolio copy must not use the em dash (U+2014). Use natural sentences, commas, or colons; use a vertical bar between the page title and name in browser and social titles. This applies to covers, descriptions, body copy, alt text, and email request copy.
+
+Meta context previews preserve their source proportions in a 16:9 window and crop the bottom. Top and side insets are equal at 8%; Under NDA follows the body copy at 12px (8px on the smallest screens). Narrow mobile cards grow with their text. The solution accordion divides the available column width 40:60 and stacks on mobile.

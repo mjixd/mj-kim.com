@@ -63,3 +63,11 @@ Only eight curated SVGs in `assets/thesis/` are public. The cover/hero and exper
 Portfolio copy must not use the em dash (U+2014). Use natural sentences, commas, or colons; use a vertical bar between the page title and name in browser and social titles. This applies to covers, descriptions, body copy, alt text, and email request copy.
 
 Meta context previews preserve their source proportions in a 16:9 window and crop the bottom. Top and side insets are equal at 8%; Under NDA follows the body copy at 12px (8px on the smallest screens). Narrow mobile cards grow with their text. The solution accordion divides the available column width 40:60 and stacks on mobile.
+
+## Playable hello,w exploration
+
+`hello-w-play/` is a standalone HTML/CSS/JavaScript experience linked from the thesis hypothesis section. Open `hello-w-play/index.html` locally or serve the repository and visit `/hello-w-play/`. It needs no build step, external runtime, or account. The original purple ball and white block concept comes from process-book spread 33. Three new challenges explore movement, building a missing bridge, and executing a sequence. This is a 2026 interpretation, not evidence of outcomes from the 2020 study.
+
+`game.js` owns pure movement rules; `app.js` owns UI, cancellable sequence playback, camera lifetime, and local mentoring previews. Arrow keys/WASD and touch controls are equivalent. Run starts the queued program from the beginning; Stop freezes it, while reset and challenge changes discard pending steps.
+
+Camera mode requires an explicit action and a secure browser context. It overlays the puzzle on a live video backdrop, without plane detection, spatial anchoring, recording, or upload. Denied/unavailable camera access leaves the virtual game usable. Closing the camera, backgrounding, or leaving the page stops its tracks. Mentoring is an editable local question preview with an approved fictional AI mentor portrait; it sends nothing.

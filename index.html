@@ -699,7 +699,7 @@ function renderCase(slug){
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
           ${b.demo ? `<p><a class="btn" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p><p class="role">${esc(b.demo.note)}</p>` : ''}
-          ${b.playable ? `<div class="hello-w-demo"><iframe src="hello-w-play/?embed=1" title="hello,w interactive block game" loading="lazy"></iframe></div><p class="demo-note">Use the direction buttons or arrow keys to move. Press Jump or Space to jump. This browser demonstration reconstructs the AR interaction without surface tracking. It is a 2026 extension of the research, not a result from the original study.</p><p class="demo-links"><a href="hello-w-play/" target="_blank" rel="noopener">Open the full experience ↗</a></p>` : ''}
+          ${b.playable ? `<div class="hello-w-demo"><iframe src="hello-w-play/?embed=1" title="hello,w interactive block game" loading="lazy"></iframe></div><p class="demo-note">Use the direction buttons or arrow keys to move. Press Jump or Space to jump. This browser demonstration reconstructs the AR interaction without surface tracking.</p>` : ''}
           ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>

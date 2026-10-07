@@ -56,10 +56,9 @@
   .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:saturate(1.2) blur(10px); border-bottom:1px solid transparent; transition:border-color .2s; }
   .nav.scrolled{ border-bottom-color:var(--line); }
   .nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .brand{ display:flex;align-items:center;gap:8px;min-width:0; font-weight:600; font-size:15px; letter-spacing:-.01em; }
-  #nav-role{color:var(--muted);white-space:nowrap;font-size:inherit;font-weight:400}
-  #nav-role[hidden]{display:none}
-  .brand .name{white-space:nowrap}
+  .brand{display:block;position:relative;flex:0 1 180px;min-width:0;height:1.5em;line-height:1.5;font-weight:600;font-size:15px;letter-spacing:-.01em}
+  .brand-word{position:absolute;left:0;top:0;white-space:nowrap}
+  .brand-next{opacity:0}
   .links{ flex-shrink:0;display:flex; align-items:center; gap:28px; font-size:15px; }
   .links a{ font-weight:500; color:var(--muted); opacity:.5; cursor:pointer; transition:opacity .15s; } .links a.active, .links a:hover{ color:var(--text); opacity:1; }
   .links .theme{ background:transparent; border:0; width:40px; height:40px; border-radius:999px; cursor:pointer; display:grid; place-items:center; padding:0; overflow:hidden; transition:border-color .2s, background .2s; }
@@ -74,8 +73,8 @@
   @media (prefers-reduced-motion: reduce){ .eclipse, .eclipse *{ transition:none !important; } }
   @media (max-width:640px){ .links{ gap:20px; font-size:14px; } .nav .wrap{ height:56px; } }
 
-  @media(max-width:640px){.nav .wrap{gap:10px}.brand{flex-direction:column;align-items:flex-start;gap:1px;font-size:13px;line-height:1.3}#nav-role{font-size:12px}.links{gap:14px;font-size:13px}.links .theme{width:32px;height:40px}}
-  @media(max-width:360px){.brand{font-size:12px}#nav-role{font-size:11px}.links{gap:10px;font-size:12px}}
+  @media(max-width:640px){.nav .wrap{gap:10px}.brand{font-size:13px}.links{gap:14px;font-size:13px}.links .theme{width:32px;height:40px}}
+  @media(max-width:360px){.brand{font-size:12px}.links{gap:10px;font-size:12px}}
   .hello-w-demo{margin:36px auto 0;max-width:1200px;border-radius:22px;overflow:hidden;background:#111216;text-align:left}
   .hello-w-demo iframe{display:block;width:100%;height:810px;border:0;background:#111216}
   .slide .demo-note{max-width:850px;margin:22px auto 0;font-size:14px;line-height:1.6;color:var(--muted)}
@@ -253,7 +252,7 @@
 <body>
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="#/"><span id="nav-role" hidden>Product Designer</span><span class="name">Minjung Kim</span></a>
+    <a class="brand" href="#/" aria-label="Minjung Kim"><span class="brand-word brand-current" aria-hidden="true">Minjung Kim</span><span class="brand-word brand-next" aria-hidden="true"></span></a>
     <nav class="links" aria-label="Primary">
       <a href="#/" data-nav="home">Work</a>
       <a href="#/about" data-nav="about">About</a>
@@ -325,17 +324,22 @@ const CASES = [
       {tag:'4 Solution', h:'Workflow integration', p:'Recurring check-ins, mid-cycle, performance, and career conversations in a familiar flow. Meetings as the entry point, so preparation and follow-up became part of everyday work.', from:'EN · 44', textOnly:true},
       {tag:'4 Extension', h:'Rooms integration', p:'A shared 1:1 note that starts automatically when a 1:1 is detected in a Room and continues across desktop and mobile. The workflow extended beyond its original team.', from:'EN · 47', src:'assets/decks/EN · 47.png'}
     ]},
-  { slug:'line', meta:'LINE · 2017', title:'LINE AI Speaker', line:'Initial CLOVA project. Voice-first interaction, first-time setup, and the structure that merged voice and hand.',
-    kvHero:'assets/decks/WEB 78.png',
-    accent:'#19e300', stat:{n:'5 months', l:'concept to commercialization cycle'},
-    lead:'The initial CLOVA project. Exploratory UX for the Friends smart speaker, from music and search to kids\u2019 content and smart-home pairing, and a first-time experience that teaches the AI your name.',
-    role:'Role · Human-AI interaction, conversational AI strategy, HCI · 2017 Q3 · 5 months',
-    stats:[['5 months','from concept through the commercialization cycle'],['WWDC 2016','selected to represent the company at Apple']],
+  { slug:'line', meta:'LINE projects · 2016–2017', title:'Siri for LINE', line:'Designing voice interactions across messaging and connected devices. SiriKit exploration, followed by LINE AI Speaker.',
+    kvHome:'assets/covers/cover_line_siri.png', kvHomeAlt:'Siri for LINE, a clearly labeled 2016-style reconstruction of a message confirmation screen',
+    kvHero:'assets/decks/LINE Siri 01.png', kvHeroAlt:'Siri for LINE pre-release exploration: reconstructed 2016 UI, pending original designs',
+    accent:'#19e300', stat:{n:'WWDC 2016', l:'selected UI designer for a private pre-release SiriKit lab'},
+    lead:'Selected as a UI designer to participate in an onsite private session lab at Apple in Cupertino, I worked on integrating a pre-release version of SiriKit into LINE messenger. The LINE work below begins with that exploration and continues with the AI Speaker project.',
+    role:'Role · UI / UX design, voice interaction · SiriKit exploration, 2016 · LINE AI Speaker, 2017',
+    outcomeLabel:'Project scope',
+    stats:[['2016','pre-release SiriKit exploration for LINE'],['UI / UX','private onsite lab participation at Apple'],['5 months','LINE AI Speaker concept-to-commercialization cycle']],
     blocks:[
-      {tag:'1 Understanding', h:'Background', p:'Music recommendations, NAVER search, kids\u2019 content, and smart-home Bluetooth pairing, inside one app for a smart speaker.', from:'WEB 77', src:'assets/decks/WEB 77.png'},
-      {tag:'2 Concept', h:'Scenarios first', p:'Question-and-answer scenarios for messenger, maps, clock, and video, iterated with leadership to set direction before screens.', from:'WEB 80', src:'assets/decks/WEB 80.png'},
-      {tag:'3 Output', h:'Voice-interactive connection', p:'The screens before, during, and after pairing. Simplicity with a reason: one structure for voice and hand.', from:'WEB 82', src:'assets/decks/WEB 82.png'},
-      {tag:'3 Output', h:'Select Friends', p:'Swipe 3D LINE characters to pick a favorite, a small personal moment inside a first-time setup.', from:'WEB 83', src:'assets/decks/WEB 83.png'}
+      {tag:'01 · Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote; it is the visual reference for the temporary reconstruction here.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference',note:'Public WeChat demonstration. The LINE proposal was separate private-lab work.'}},
+      {tag:'01 · Siri for LINE', h:'Speak. Review. Send.', p:'A spoken request becomes a message the person can review before sending. These editable 2016-style screens reconstruct the request, confirmation, and sent states from public references. They are provisional illustrations, not the original LINE proposal; those designs will replace them when added.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
+      {tag:'01 · Siri for LINE', h:'Clear intent. Visible control.', p:'The reconstructed study keeps the recipient and message together, preserves LINE’s familiar message styling, and separates Cancel from Send. It makes the interaction understandable while the original design archive is being added.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
+      {tag:'02 · LINE AI Speaker', h:'LINE AI Speaker', p:'A separate LINE project in 2017: exploratory UX for the Friends smart speaker, from music recommendations and NAVER search to kids’ content and smart-home Bluetooth pairing. The first-time experience introduced the relationship between voice and hand.', from:'WEB 77', src:'assets/decks/WEB 77.png'},
+      {tag:'02 · LINE AI Speaker', h:'Scenarios first', p:'Question-and-answer scenarios for messenger, maps, clock, and video, iterated with leadership to set direction before screens.', from:'WEB 80', src:'assets/decks/WEB 80.png'},
+      {tag:'02 · LINE AI Speaker', h:'Voice-interactive connection', p:'The screens before, during, and after pairing. Simplicity with a reason: one structure for voice and hand.', from:'WEB 82', src:'assets/decks/WEB 82.png'},
+      {tag:'02 · LINE AI Speaker', h:'Select Friends', p:'Swipe 3D LINE characters to pick a favorite, a small personal moment inside a first-time setup.', from:'WEB 83', src:'assets/decks/WEB 83.png'}
     ]},
   { slug:'leadership', meta:'Leadership', title:'Strategy & organizational leadership', line:'Shared priorities, clear expectations, coordinated delivery, visible progress. The systems a team runs on.',
     kvHero:'assets/decks/EN · 50.png',
@@ -454,14 +458,14 @@ const DECKS = {
     chapters:[["1 Discover",0],["2 Product strategy",6],["3 Delivery & impact",8],["4 Account strategy",12],["5 Delivery & metrics",18]] },
   'meta': { previews:['EN · 42','EN · 43','EN · 46'], slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
     chapters:[["1 Understanding",0],["2 Planning",2],["3 Research",4],["4 Design solution",7]] },
-  'line': { slides:["WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
-    chapters:[["1 Understanding",0],["2 Design solution",2],["3 Design output",4]] },
+  'line': { previews:['WEB 79','WEB 81','WEB 84'], slides:["LINE Siri 01","LINE Siri 02","LINE Siri 03","LINE Siri 04","WEB 77","WEB 78","WEB 79","WEB 80","WEB 81","WEB 82","WEB 83","WEB 84"],
+    chapters:[["1 Siri for LINE",0],["2 LINE AI Speaker",4],["3 Speaker design output",8]] },
   'leadership': { slides:["EN · 48","EN · 49","EN · 50","EN · 51","EN · 52","EN · 53","EN · 54"],
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
 const META_SOLUTIONS = [{"key":"upcoming","title":"CTA for Upcoming 1:1s","description":"Start from an upcoming meeting. Open the shared 1:1 note directly from Home, so preparation begins in the flow of the workday.","src":"assets/meta/solution-upcoming.png"},{"key":"event-notes","title":"Event details with 1:1 notes","description":"Keep the meeting and its shared notes together. Review the agenda from event details before joining the conversation.","src":"assets/meta/solution-event-notes.png"},{"key":"quick-editor","title":"Quick editor","description":"Add or update talking points in place. A focused editor makes it easy to capture context without leaving the meeting flow.","src":"assets/meta/solution-quick-editor.png"},{"key":"discover","title":"Discover & Add your 1:1s","description":"Find existing 1:1s and create a new one from a single list. Recurring conversations stay easy to return to.","src":"assets/meta/solution-discover.png"}];
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261007-en31-2';
+const DECK_REVISION = '20261007-line-siri-1';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
@@ -486,7 +490,7 @@ function slideContents(src, alt='', animate=true){
   const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.split('?')[0].slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
   const imageSrc = name ? slideSrc(name) : src;
   // These updated Figma visuals no longer contain page numbers.
-  const mask = name.startsWith('EN · ') && !['EN · 28', 'EN · 37'].includes(name) ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
+  const mask = /^(EN · |LINE Siri )/.test(name) && !['EN · 28', 'EN · 37'].includes(name) ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
   const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
   const o = v && v.overlay;
@@ -749,7 +753,7 @@ function renderAbout(){
         <div class="row"><b>Samsung Electronics Co., Ltd.<span class="company-location">South Korea</span></b><p>AI validation operating model recognized by center leadership for broader reuse. Deterministic checks automated; ambiguous decisions routed to people.</p></div>
         <div class="row"><b>FastForward, Inc. (Domino)<span class="company-location">South Korea</span></b><p>D7 retention +153.84% (8.47% \u2192 21.5%) and DAU 3\u00d7 after an account-centric product decision. \u20a910B (about $7M) raised with design cited by the lead investor.</p></div>
         <div class="row"><b>Meta Platforms, Inc.<span class="company-location">United States</span></b><p>Manager WAP +195.65% (2.3% \u2192 6.8%) and D7 retention +33.94% (49.8% \u2192 66.7%) for the 1:1 tool inside Enterprise Engineering.</p></div>
-        <div class="row"><b>LINE Plus Corp.<span class="company-location">South Korea</span></b><p>Selected designer at Apple WWDC 2016, integrating pre-release SiriKit into LINE in a private Apple lab. Supported the CLOVA voice assistant app and led LINE UX Task Force usability studies in Tokyo and Taipei.</p></div>
+        <div class="row"><b>LINE Plus Corp.<span class="company-location">South Korea</span></b><p>Selected UI designer for an onsite private lab at Apple during WWDC 2016, working on pre-release SiriKit integration for LINE. Supported the CLOVA voice assistant app and led LINE UX Task Force usability studies in Tokyo and Taipei.</p></div>
         <div class="row"><b>NAVER Corp.<span class="company-location">South Korea</span></b><p>New concept interfaces and interaction design, one presented at IDG\u2019s UX World as a future NAVER product. Shopping and commerce web design, and the mobile conversion of a cloud service.</p></div>
       </div>
       <div class="rows" aria-label="How I work">
@@ -802,14 +806,46 @@ function route(){
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === (h === 'about' ? 'about' : 'home')));
 }
 window.addEventListener('hashchange', route);
+const headerMorph={active:false,showRole:false,timer:0,raf:0};
+function resetHeaderMorph(){
+  clearTimeout(headerMorph.timer);cancelAnimationFrame(headerMorph.raf);
+  headerMorph.active=false;headerMorph.showRole=false;
+  const brand=document.querySelector('.brand'),current=brand.querySelector('.brand-current'),next=brand.querySelector('.brand-next');
+  brand.setAttribute('aria-label','Minjung Kim');current.textContent='Minjung Kim';next.textContent='';
+  current.style.opacity=1;current.style.filter='';next.style.opacity=0;next.style.filter='';
+}
+function advanceHeaderMorph(){
+  if(!headerMorph.active)return;
+  const brand=document.querySelector('.brand'),current=brand.querySelector('.brand-current'),next=brand.querySelector('.brand-next');
+  const source=document.querySelector('#slotRole .l1');
+  if(!source){resetHeaderMorph();return;}
+  const nextWord=headerMorph.showRole?'Minjung Kim':source.textContent;
+  next.textContent=nextWord;
+  const commit=()=>{
+    current.textContent=nextWord;brand.setAttribute('aria-label',nextWord);next.textContent='';
+    current.style.opacity=1;current.style.filter='';next.style.opacity=0;next.style.filter='';
+    headerMorph.showRole=!headerMorph.showRole;
+    headerMorph.timer=setTimeout(advanceHeaderMorph,2000);
+  };
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){commit();return;}
+  const start=performance.now();
+  const frame=now=>{
+    if(!headerMorph.active)return;
+    const t=Math.min(1,(now-start)/380);
+    current.style.opacity=1-t;current.style.filter=`blur(${t*6}px)`;
+    next.style.opacity=t;next.style.filter=`blur(${(1-t)*6}px)`;
+    if(t<1)headerMorph.raf=requestAnimationFrame(frame);else commit();
+  };
+  headerMorph.raf=requestAnimationFrame(frame);
+}
 function syncHeaderRole(){
   const scrolled=window.scrollY>8;
   document.getElementById('nav').classList.toggle('scrolled',scrolled);
-  const role=document.getElementById('nav-role'), source=document.querySelector('#slotRole .l1');
-  role.hidden=!scrolled||!source;
-  if(source)role.textContent=source.textContent;
+  if(!scrolled||!document.querySelector('#slotRole .l1')||document.hidden){resetHeaderMorph();return;}
+  if(!headerMorph.active){headerMorph.active=true;headerMorph.timer=setTimeout(advanceHeaderMorph,2000);}
 }
 window.addEventListener('scroll',syncHeaderRole,{passive:true});
+document.addEventListener('visibilitychange',syncHeaderRole);
 window.addEventListener('message',event=>{
   const frame=document.querySelector('.hello-w-demo iframe');
   if(event.origin!==location.origin||event.source!==frame?.contentWindow||event.data?.type!=='hello-w-resize')return;

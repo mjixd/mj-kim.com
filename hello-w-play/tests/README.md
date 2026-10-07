@@ -45,7 +45,7 @@ GAME_URL=http://127.0.0.1:8789/hello-w-play/ node hello-w-play/tests/header-role
 
 - Jump state: cardinal landing rules across every tile origin, missing bridge traversal, invalid/won no-ops, immutable input, one-action history, undo, and exact-goal detection. A synthetic origin isolates goal landing because the fixed paths have no reachable tile two cells from their goal.
 - Jump and embedding: direct playable iframe, permission nonactivation, parent/frame keyboard focus, responsive controls, route cleanup, directional Jump/Space, queued jump interpretation, cancellation, mentoring text input, actual 3D render changes, WebGL-unavailable SVG play, and pointer/keyboard bridge controls after context loss and reset.
-- Header role: current committed second morph slot, home scroll visibility, all seven role nouns at 320/390/1280 pixels, navigation separation, comparable type size, return-to-top hiding, and route changes during animation. Browser-clock advancement exercises the existing timers without introducing a separate role timer.
+- Header role: one-line alternation between Minjung Kim and the role sampled from the current second hero slot at 320/390/1280 pixels, approximately two-second holds and brief morphs in both directions, accessible committed labels, mobile gutters and navigation separation, no blur with reduced motion, static name at the top or on other pages, and route changes during animation. Browser-clock advancement exercises the real timers.
 
 The jump contract tests were drafted in an independent context before logic implementation. A temporary no-op jump API produced four behavioral failures in ten checks; the unchanged page separately failed the missing inline demo and header-role expectations. Focused Red evidence is in `/tmp/hello-w-jump-red/`. Existing test expectations remain unchanged. Visual fidelity is assessed from browser captures, separately from these state and geometry assertions.
 
@@ -54,3 +54,7 @@ The route-during-morph test additionally reproduced a stale animation callback t
 `home-responsive.cjs` verifies the exact home manifesto sentence, one line at 1440/1920 pixels, natural wrapping at 320/390/640 pixels, mobile navigation gutters aligned to the main content, and brand/navigation separation at the top and after scrolling. It also loads and decodes the EN31 image referenced by the Domino page. Run with the same browser environment variables as the other browser tests.
 
 The pre-change baseline failed four of 24 checks: 320px navigation used 16px instead of the main content's 20px gutters, and both wide viewports wrapped the manifesto. Evidence: `/tmp/hello-w-home-responsive-red/home-responsive-results.json`.
+
+The single-line alternating header supersedes the earlier simultaneous role/name layout. The old layout failed ten of 25 focused checks before implementation (`/tmp/hello-w-header-alternation-red/header-role-results.json`). The agreed timing is a 2000ms hold and 380ms transition; reduced motion switches immediately.
+
+Alternating-header geometry tests hold each valid hero role noun in a reduced-motion fixture before its next header entry. This checks every label without assuming the independent hero and header timers visit all roles in one cycle. Native scroll events settle before advancing the browser clock.

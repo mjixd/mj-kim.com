@@ -49,15 +49,18 @@
     font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
   img{ max-width:100%; display:block; }
   a{ color:inherit; text-decoration:none; }
-  .wrap{ max-width:var(--max); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
+  .wrap{ max-width:var(--max); margin:0 auto; padding-left:max(var(--gutter),env(safe-area-inset-left,0px)); padding-right:max(var(--gutter),env(safe-area-inset-right,0px)); }
   .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
   /* ---------- nav ---------- */
   .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:saturate(1.2) blur(10px); border-bottom:1px solid transparent; transition:border-color .2s; }
   .nav.scrolled{ border-bottom-color:var(--line); }
   .nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .brand{ font-weight:600; font-size:15px; letter-spacing:-.01em; }
-  .links{ display:flex; align-items:center; gap:28px; font-size:15px; }
+  .brand{ display:flex;align-items:center;gap:8px;min-width:0; font-weight:600; font-size:15px; letter-spacing:-.01em; }
+  #nav-role{color:var(--muted);white-space:nowrap;font-size:inherit;font-weight:400}
+  #nav-role[hidden]{display:none}
+  .brand .name{white-space:nowrap}
+  .links{ flex-shrink:0;display:flex; align-items:center; gap:28px; font-size:15px; }
   .links a{ font-weight:500; color:var(--muted); opacity:.5; cursor:pointer; transition:opacity .15s; } .links a.active, .links a:hover{ color:var(--text); opacity:1; }
   .links .theme{ background:transparent; border:0; width:40px; height:40px; border-radius:999px; cursor:pointer; display:grid; place-items:center; padding:0; overflow:hidden; transition:border-color .2s, background .2s; }
   .links .theme:active .eclipse{ transform:scale(.9); }
@@ -71,6 +74,13 @@
   @media (prefers-reduced-motion: reduce){ .eclipse, .eclipse *{ transition:none !important; } }
   @media (max-width:640px){ .links{ gap:20px; font-size:14px; } .nav .wrap{ height:56px; } }
 
+  @media(max-width:640px){.nav .wrap{gap:10px}.brand{flex-direction:column;align-items:flex-start;gap:1px;font-size:13px;line-height:1.3}#nav-role{font-size:12px}.links{gap:14px;font-size:13px}.links .theme{width:32px;height:40px}}
+  @media(max-width:360px){.brand{font-size:12px}#nav-role{font-size:11px}.links{gap:10px;font-size:12px}}
+  .hello-w-demo{margin:36px auto 0;max-width:1200px;border-radius:22px;overflow:hidden;background:#111216;text-align:left}
+  .hello-w-demo iframe{display:block;width:100%;height:810px;border:0;background:#111216}
+  .slide .demo-note{max-width:850px;margin:22px auto 0;font-size:14px;line-height:1.6;color:var(--muted)}
+  .demo-links{font-size:15px;text-decoration:underline;text-underline-offset:4px}
+  @media(max-width:760px){.hello-w-demo{border-radius:16px}.hello-w-demo iframe{height:1130px}.slide .demo-note{font-size:13px}}
   /* ---------- hero ---------- */
   .hero{ padding-top:clamp(56px,9vw,112px); padding-bottom:clamp(40px,6vw,72px); }
   .hero-kicker{ font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:500; margin:0 0 18px; }
@@ -86,7 +96,7 @@
   .morph.static{ filter:none; }
   @media (max-width:640px){ .morph .slot{ display:block; } .morph .slot + .slot{ margin-left:0; } }
   .hero p.sub{ margin:24px 0 0; max-width:60ch; font-size:clamp(15px,1.4vw,18px); color:var(--muted); }
-  .hero p.manifesto{ margin:28px 0 0; max-width:52ch; text-wrap:pretty; font-size:clamp(17px,1.7vw,22px); line-height:1.45; color:var(--text); letter-spacing:-.01em; }
+  .hero p.manifesto{ margin:28px 0 0; font-size:clamp(17px,1.7vw,22px); line-height:1.45; color:var(--text); letter-spacing:-.01em; }
   .hero .meta{ margin-top:36px; display:flex; flex-wrap:wrap; gap:10px 28px; font-size:14px; color:var(--muted); }
 
   /* ---------- home: full-bleed strips ---------- */
@@ -243,7 +253,7 @@
 <body>
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="#/">Minjung Kim</a>
+    <a class="brand" href="#/"><span id="nav-role" hidden>Product Designer</span><span class="name">Minjung Kim</span></a>
     <nav class="links" aria-label="Primary">
       <a href="#/" data-nav="home">Work</a>
       <a href="#/about" data-nav="about">About</a>
@@ -367,8 +377,8 @@ const CASES = [
       "AR exploration + asynchronous mentoring"
     ],
     [
-      "2020",
-      "MFA research prototype"
+      "4 themes",
+      "research themes informing the concept"
     ]
   ],
   "blocks": [
@@ -400,6 +410,13 @@ const CASES = [
       "src": "assets/thesis/explore-v2.svg",
       "alt": "Two original AR prototype screens: discover a scooter and explore the engineering game",
       "demo": {"href":"hello-w-play/", "label":"Play the hello,w exploration", "note":"A new 2026 browser experience inspired by the thesis prototype."}
+    },
+    {
+      "tag": "Demonstration",
+      "h": "A small move. A new possibility.",
+      "p": "Try the interaction here: move the purple ball across the white blocks, jump toward a landing two spaces ahead, or build a missing connection. Three challenges introduce spatial thinking, problem solving, and sequencing. A discovery can then become a question for a mentor.",
+      "textOnly": true,
+      "playable": true
     },
     {
       "tag": "3 Experience",
@@ -444,7 +461,7 @@ const DECKS = {
 };
 const META_SOLUTIONS = [{"key":"upcoming","title":"CTA for Upcoming 1:1s","description":"Start from an upcoming meeting. Open the shared 1:1 note directly from Home, so preparation begins in the flow of the workday.","src":"assets/meta/solution-upcoming.png"},{"key":"event-notes","title":"Event details with 1:1 notes","description":"Keep the meeting and its shared notes together. Review the agenda from event details before joining the conversation.","src":"assets/meta/solution-event-notes.png"},{"key":"quick-editor","title":"Quick editor","description":"Add or update talking points in place. A focused editor makes it easy to capture context without leaving the meeting flow.","src":"assets/meta/solution-quick-editor.png"},{"key":"discover","title":"Discover & Add your 1:1s","description":"Find existing 1:1s and create a new one from a single list. Recurring conversations stay easy to return to.","src":"assets/meta/solution-discover.png"}];
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261007-footer-1';
+const DECK_REVISION = '20261007-en31-2';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
@@ -678,6 +695,7 @@ function renderCase(slug){
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
           ${b.demo ? `<p><a class="btn" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p><p class="role">${esc(b.demo.note)}</p>` : ''}
+          ${b.playable ? `<div class="hello-w-demo"><iframe src="hello-w-play/?embed=1" title="hello,w interactive block game" loading="lazy"></iframe></div><p class="demo-note">Use the direction buttons or arrow keys to move. Press Jump or Space to jump. This browser demonstration reconstructs the AR interaction without surface tracking. It is a 2026 extension of the research, not a result from the original study.</p><p class="demo-links"><a href="hello-w-play/" target="_blank" rel="noopener">Open the full experience ↗</a></p>` : ''}
           ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c) : ''}
         </div>
@@ -780,10 +798,24 @@ function route(){
   else renderHome();
   bindSlideVideos();
   bindCarousel();
+  syncHeaderRole();
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === (h === 'about' ? 'about' : 'home')));
 }
 window.addEventListener('hashchange', route);
-window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 8), {passive:true});
+function syncHeaderRole(){
+  const scrolled=window.scrollY>8;
+  document.getElementById('nav').classList.toggle('scrolled',scrolled);
+  const role=document.getElementById('nav-role'), source=document.querySelector('#slotRole .l1');
+  role.hidden=!scrolled||!source;
+  if(source)role.textContent=source.textContent;
+}
+window.addEventListener('scroll',syncHeaderRole,{passive:true});
+window.addEventListener('message',event=>{
+  const frame=document.querySelector('.hello-w-demo iframe');
+  if(event.origin!==location.origin||event.source!==frame?.contentWindow||event.data?.type!=='hello-w-resize')return;
+  const height=event.data.height;
+  if(Number.isFinite(height))frame.style.height=Math.max(500,Math.min(2400,height))+'px';
+});
 
 
 /* ============================================================
@@ -796,7 +828,7 @@ window.addEventListener('scroll', () => document.getElementById('nav').classList
 let morphState = null;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function stopMorph(){ if (morphState){ cancelAnimationFrame(morphState.raf); clearTimeout(morphState.timer); clearTimeout(morphState.timer2); if (morphState.ro) morphState.ro.disconnect(); morphState = null; } }
+function stopMorph(){ if (morphState){ cancelAnimationFrame(morphState.raf); clearTimeout(morphState.timer); clearTimeout(morphState.timer2); if (morphState.ro) morphState.ro.disconnect(); if(morphState.cleanup)morphState.cleanup(); morphState = null; } }
 
 function startMorph(){
   const host = document.getElementById('morph'), sr = document.getElementById('morphText');
@@ -821,12 +853,12 @@ function startMorph(){
     const widest = () => Math.max(widthOf(PREFIXES[idx.pre]), widthOf(ROLES[idx.role]));
     while (widest() > maxW && fs > 16){ fs -= 1; host.style.fontSize = fs + 'px'; probe.style.fontSize = fs + 'px'; }
   };
-  const setLayers = (key, cur, next) => { const el = slots[key]; el.querySelector('.l1').textContent = cur; el.querySelector('.l2').textContent = next || ''; };
+  const setLayers = (key, cur, next) => { const el = slots[key]; el.querySelector('.l1').textContent = cur; el.querySelector('.l2').textContent = next || ''; if(key==='role')syncHeaderRole(); };
 
   if (reduceMotion){
     host.classList.add('static');
     const tick = () => { const key = turn++ % 2 === 0 ? 'pre' : 'role'; idx[key] = (idx[key] + 1) % words[key].length; setLayers(key, words[key][idx[key]], ''); sizeSlot(key, words[key][idx[key]], true); sr.textContent = phrase(); morphState.timer = setTimeout(tick, COOLDOWN + MORPH); };
-    fit(); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true); morphState = { timer: setTimeout(tick, COOLDOWN + MORPH), raf: 0 }; return;
+    fit(); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true); morphState = { host, timer: setTimeout(tick, COOLDOWN + MORPH), raf: 0 }; return;
   }
 
   // blur scales with the hero font size: ~8px at 56px, ~4px at 30px (mobile)
@@ -840,13 +872,14 @@ function startMorph(){
     sizeSlot(key, nextWord, false);           // the slot (and the word after it) slides while the text melts
     const t0 = performance.now(); active++;
     const frame = now => {
+      if(morphState?.host!==host)return;
       const f = Math.min(1, (now - t0) / MORPH);
       // Valgo-style: outgoing blur grows, incoming blur shrinks; the threshold filter does the gooey join.
       const inF = Math.max(0.001, f), outF = Math.max(0.001, 1 - f);
       l2.style.filter = `blur(${Math.min(K / inF - K, CAP)}px)`;  l2.style.opacity = Math.pow(inF, 0.4);
       l1.style.filter = `blur(${Math.min(K / outF - K, CAP)}px)`; l1.style.opacity = Math.pow(outF, 0.4);
       if (f < 1) morphState.raf = requestAnimationFrame(frame);
-      else { l1.textContent = nextWord; l1.style.filter = ''; l1.style.opacity = 1; l2.textContent = ''; l2.style.filter = ''; l2.style.opacity = 0; active--; pending[key] = null; sizeSlot(key, nextWord, true); }
+      else { l1.textContent = nextWord; l1.style.filter = ''; l1.style.opacity = 1; l2.textContent = ''; l2.style.filter = ''; l2.style.opacity = 0; active--; pending[key] = null; sizeSlot(key, nextWord, true); if(key==='role')syncHeaderRole(); }
     };
     morphState.raf = requestAnimationFrame(frame);
   }
@@ -862,25 +895,26 @@ function startMorph(){
   }
   function schedule(){ morphState.timer = setTimeout(() => { if (!isAnimating()) step(); schedule(); }, COOLDOWN + MORPH + STAGGER); }
 
-  morphState = { raf: 0, timer: 0 };
+  morphState = { host, raf: 0, timer: 0 };
   window.__morphRedraw = () => {};
   fit(); setLayers('pre', PREFIXES[0], ''); setLayers('role', ROLES[0], ''); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true);
   // entrance: melt in once
   const K0 = blurK(), CAP0 = K0 * 10;
   for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${K0 * 2.5}px)`; l1.style.opacity = 0; }
   const t0 = performance.now();
-  const enter = now => { const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(K0 / ff - K0, CAP0)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } };
+  const enter = now => { if(morphState?.host!==host)return; const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(K0 / ff - K0, CAP0)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } };
   morphState.raf = requestAnimationFrame(enter);
   schedule();
 
   const relayout = () => {
-    if (!document.getElementById('morph')) return;
+    if(morphState?.host!==host)return;
     fit();
     sizeSlot('pre', pending.pre || PREFIXES[idx.pre], true);
     sizeSlot('role', pending.role || ROLES[idx.role], true);
   };
   let rt; const onResize = () => { clearTimeout(rt); rt = setTimeout(relayout, 60); };
   window.addEventListener('resize', onResize);
+  morphState.cleanup=()=>{clearTimeout(rt);window.removeEventListener('resize',onResize);};
   if (window.ResizeObserver){ const ro = new ResizeObserver(onResize); ro.observe(host.parentElement); morphState.ro = ro; }
   document.fonts && document.fonts.ready.then(relayout);
 }

@@ -15,6 +15,7 @@ Meta's Planning section uses the supplied `ML3.png` and `ML6.png` originals (800
 `WEB 42–44` (Domino mentorship) and `WEB 77–84` (LINE) supplement that selection from the English frames in [Interview Deck 25.12.15](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=1660-4743).
 Keep the exported Figma frame names as filenames; `CASES` and `DECKS` in `index.html` own their placement and order.
 Update `DECK_REVISION` when refreshing exports so visitors receive the latest images immediately.
+EN · 31 was refreshed separately from Figma node `2259:773` at 3840×2160 on 2026-10-07.
 Original Figma page numbers are covered only in the web presentation; exported PNGs remain unchanged.
 The light theme uses `--surface-light` as its default background, one step lighter than `--surface`.
 
@@ -75,3 +76,10 @@ Camera mode requires an explicit action and a secure browser context. It overlay
 The entry screen places original procedural 3D models over a real interior photograph. Mechanical, civil, and software engineering select the movement, bridge, and sequence challenges respectively, with field-specific mentoring questions. Visitors explicitly start the game and can change their field; returning cancels any running sequence and pending or active camera session. Drag horizontally, use arrow keys, or use the rotation buttons to inspect the model. Models render only on interaction/resize, with no idle motion. If WebGL is unavailable, field selection and the full game remain usable.
 
 `models.js` constructs the scooter, bridge, and logic board from primitives using locally vendored Three.js 0.186.1 (MIT; `vendor/THREE-LICENSE.txt`). Source: https://registry.npmjs.org/three/-/three-0.186.1.tgz. `assets/space.jpg` is Dimmis Vart’s real interior photo, https://unsplash.com/photos/a0X9tAAxzaA, used under the Unsplash License. It is a supplied photographic backdrop, not a scan of the visitor’s room. No spatial AR anchoring is claimed. The photography-first entry uses the provided DESIGN-apple.md as a visual reference while retaining hello,w’s purple identity.
+
+The hello,w detail page embeds the playable demonstration at `hello-w-play/?embed=1`, entering the game directly without requesting camera access. The standalone page retains engineering-field selection. The embed height follows its contents using messages checked against the iframe origin and source. Demonstration copy distinguishes the current browser reconstruction from the original study and from spatial AR tracking. The research-scope band uses the four source-backed research themes instead of a year/prototype stat.
+
+`block-scene.js` renders white stacked blocks and a glossy purple ball on a dark background, with an SVG fallback when WebGL is unavailable. Direction controls and a round Jump control mirror the thesis reference. Jump lands two cells along the last attempted direction only when the landing is walkable; failed landings leave state unchanged. Space jumps when the game surface has focus. Sequence mode queues jumps as commands. The visible bridge gap has an accessible button positioned using the 3D camera projection.
+
+After home-page scrolling, the sticky header shows the committed second morph word before Minjung Kim. Mobile stacks that role above the name and retains separate Work/About navigation. It hides at the top and on other pages; it shares the hero’s role state rather than running another timer. Morph callbacks check their owning page before continuing after navigation.
+The header uses the same side gutters as the main content, respecting device safe areas. The main manifesto sentence uses the full content width so it stays on one line on wide screens and wraps naturally on mobile.

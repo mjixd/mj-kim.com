@@ -226,3 +226,46 @@ textarea{font-family:inherit}
 .model-fallback>span{font-size:64px}.model-fallback strong{font-size:23px}.model-fallback p{font-size:14px;line-height:1.6;color:var(--ink)}
 @media(max-width:1000px){.discovery-space{grid-template-columns:minmax(0,1fr) 300px;padding:24px;gap:8px}.field-panel{padding:24px 18px}.field-options strong{font-size:14px}.field-options button{gap:8px}#model-view{height:360px}.object-stage{justify-content:center}.space-label{font-size:9px}.selection-intro{padding-top:44px}}
 @media(max-width:760px){.site-header{padding:16px 20px;min-height:65px}.site-header nav{font-size:12px}.selection-intro{padding:36px 0 28px}.selection-intro h1{font-size:38px;letter-spacing:-1.4px}.selection-intro>p:last-child{font-size:16px;margin-top:16px}.discovery-space{grid-template-columns:1fr;padding:20px 16px;gap:24px;border-radius:18px}.space-photo{object-position:center bottom;height:450px}.object-stage{min-height:370px}.space-label{align-self:center;font-size:9px}#model-view{height:265px}#object-name{font-size:22px}#object-detail{font-size:13px}.field-panel{padding:24px;width:100%}.field-panel h2{font-size:28px}.field-options strong{font-size:16px}.field-options small{font-size:13px}.field-options button{min-height:84px}.field-number{font-size:12px}#field-summary{min-height:0}.choice-note{font-size:11px}.selection-foot{flex-direction:column;gap:8px;font-size:10px;padding-bottom:24px}.orbit-tools{margin-top:12px}.journey-bar{font-size:12px}.primary-button{font-size:14px}}
+
+/* White architectural blocks, violet ball, and a quiet dark play space. */
+.stage{background:#18191d;border:1px solid #292a31;border-radius:22px}
+.stage-label,.stage-bottom{color:#cbc8d5}
+.stage-label i{background:#a995e4}
+.camera-button{color:#ded9eb;background:#282831;border-color:#484450;min-height:40px}
+.camera-button:hover:not(:disabled){color:#fff}
+#block-scene{position:absolute;inset:0;pointer-events:none}
+#block-scene canvas{display:block;width:100%;height:100%}
+.has-3d #board{opacity:0}
+.controls{position:relative;gap:18px;justify-content:flex-start}
+.dpad{border-radius:50%;background:#fafafd;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;padding:8px;gap:0;border:1px solid #e1dde9;box-shadow:0 3px 0 #dcd8e2}
+.dpad button{background:none;border-radius:50%;color:#8e829e;font-size:30px;font-weight:400}
+.dpad button:hover:not(:disabled){background:#eee8f7;color:#6543b0}
+.dpad-center{background:#e5e3eb;box-shadow:inset 0 1px 3px #aaa6b24d;border-radius:50%;font-size:0;margin:4px}
+.jump-button{display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;border-radius:50%;width:82px;height:82px;background:#fafafd;border:1px solid #e1dde9;box-shadow:0 3px 0 #dcd8e2;color:var(--purple);font-size:11px;gap:0}
+.jump-button svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.jump-button svg circle{fill:currentColor;stroke:none}
+.jump-button:hover:not(:disabled){background:#eee8f7}
+.edit-controls{margin-left:auto}
+.camera-active{background:#18191d}
+.camera-active #camera{z-index:0}
+.camera-active #block-scene,.camera-active #board{position:relative;z-index:1}
+.camera-active #block-scene{position:absolute}
+.embedded-game body{background:#111216;color:#f5f5f7}
+.embedded-game .site-header,.embedded-game .experience-note,.embedded-game .journey-bar,.embedded-game .intro,.embedded-game #camera-toggle{display:none}
+.embedded-game main{max-width:none;padding:24px}
+.embedded-game .workspace{grid-template-columns:minmax(0,1fr) 260px;gap:28px}
+.embedded-game .stage{border:0;background:#18191d}
+.embedded-game .challenge-copy{padding-top:28px}
+.embedded-game .challenge-copy h2{font-size:28px}
+.embedded-game .challenge-copy>p:last-child,.embedded-game .hint,.embedded-game .mentor-invite p,.embedded-game .quiet-button,.embedded-game .keyboard-hint{color:#b4b0c0}
+.embedded-game .feedback,.embedded-game .text-button,.embedded-game .eyebrow,.embedded-game .success-icon{color:#bba2f1}
+.embedded-game .chapter-tabs{border-color:#3a3643}
+.embedded-game .chapter-tabs button[aria-pressed=true]{color:#cdb9f6}
+.embedded-game .mentor-invite,.embedded-game .success{border-color:#3a3643}
+.embedded-game #queue{background:#26232d}
+.embedded-game dialog{color:var(--ink)}
+@media(max-width:760px){.controls{gap:16px}.dpad{grid-template-columns:40px 40px 40px;grid-template-rows:40px 40px 40px;padding:7px}.dpad button{font-size:28px}.jump-button{width:70px;height:70px}.movement .keyboard-hint{display:none}.edit-controls{gap:0}.edit-controls .quiet-button{font-size:11px}.embedded-game main{padding:16px}.embedded-game .workspace{display:flex;gap:8px}.embedded-game #board{min-height:330px}.embedded-game .challenge-copy{padding-top:18px}.embedded-game .mentor-invite{padding-top:18px}.embedded-game .challenge-copy h2{font-size:25px}}
+@media(max-width:360px){.controls{gap:9px}.dpad{grid-template-columns:36px 36px 36px;grid-template-rows:36px 36px 36px}.jump-button{width:64px;height:64px}.edit-controls .quiet-button{font-size:10px}}
+.has-3d #board{pointer-events:none}
+.scene-gap{position:absolute;transform:translate(-50%,-50%);width:48px;height:48px;color:#d0b8ff;font-size:28px;line-height:1;pointer-events:auto;padding:0;z-index:2}
+.scene-gap:focus-visible{outline:2px solid #d0b8ff;border-radius:8px}

@@ -8,7 +8,7 @@ function fallback() {
   status.textContent='3D preview unavailable. All fields and challenges are still ready.';
   rotationButtons.forEach(button=>button.disabled=true);
 }
-try {
+if(!document.documentElement.classList.contains('embedded-game')) try {
   const T = await import('./vendor/three.module.js');
   const renderer = new T.WebGLRenderer({alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));

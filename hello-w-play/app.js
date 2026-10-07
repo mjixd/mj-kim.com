@@ -2,14 +2,15 @@
   'use strict';
   const G = window.HelloWGame;
   const $ = id => document.getElementById(id);
-  const arrows = {N:'↗',E:'↘',S:'↙',W:'↖'};
-  const directions = {N:'north',E:'east',S:'south',W:'west'};
+  const arrows = {N:'↑',E:'→',S:'↓',W:'←',J:'⤴'};
+  const directions = {N:'north',E:'east',S:'south',W:'west',J:'jump'};
   const fields = {
     mechanical: {name:'Mechanical engineering', level:0, object:'An everyday ride.', detail:'A closer look at how things move.', summary:'Start with movement. Find a path, one step at a time.', question:'What can a scooter teach me about motion, balance, and mechanical engineering?'},
     civil: {name:'Civil engineering', level:1, object:'A connection worth building.', detail:'Small pieces. Stronger together.', summary:'Start with a structure. Add the missing link to connect a path.', question:'How do civil engineers decide where a bridge needs support, and what could I build to learn about it?'},
     software: {name:'Software engineering', level:2, object:'Small instructions. Big possibilities.', detail:'See the logic behind everyday technology.', summary:'Start with a sequence. Give your idea a set of instructions.', question:'How do software engineers turn a sequence of instructions into something that works in the real world?'}
   };
   let selectedField = 'mechanical', exploring = false;
+  let facing = 'N';
   const chapters = [
     {concept:'SPATIAL THINKING',title:'Every path starts <br>with one move.',description:'Move the purple ball along the white blocks. Find your way to the purple destination.',hint:'There’s no rush. Try a direction.',insight:'You broke a big journey into small steps. That’s the beginning of an algorithm.',question:'I found a path by trying one move at a time. How do software engineers break a bigger problem into small steps?'},
     {concept:'PROBLEM SOLVING',title:'A gap is an <br>invitation to build.',description:'Something is missing. Find the gap, add a block, and help your ball continue its journey.',hint:'A missing piece doesn’t have to be the end.',insight:'You changed the path instead of giving up on it. Sometimes the solution is to change the conditions.',question:'I had to add a missing block to finish the path. How do you decide whether to work around a problem or change the system?'},
@@ -49,8 +50,11 @@
     $('board').dataset.won=state.won;
     $('position').textContent=state.won?`Destination reached · ${state.steps} moves`:`${state.steps===0?'Start':'On your way'} · ${state.steps} moves`;
   }
-  function render() {
+  function render(motion='none') {
     drawBoard();
+    window.dispatchEvent(new CustomEvent('gameviewchange',{detail:{state,motion}}));
+    $('jump').disabled=running||state.won;
+    $('jump').setAttribute('aria-label',state.level===2?'Queue jump':'Jump');
     document.querySelectorAll('[data-level]').forEach(button=>{
       const n=Number(button.dataset.level);
       button.setAttribute('aria-pressed',n===state.level?'true':'false');
@@ -81,7 +85,7 @@
     runVersion++; clearTimeout(timer); timer=null; running=false; activeCommand=-1;
   }
   function selectLevel(level) {
-    stopRun(); state=G.createState(level);queue=[];
+    stopRun(); state=G.createState(level);queue=[];facing='N';
     const c=chapters[level];
     $('concept').textContent=c.concept;
     $('challenge-title').innerHTML=c.title;
@@ -89,10 +93,11 @@
     say(c.hint);render();
   }
   function attempt(direction) {
-    const next=G.move(state,direction), moved=next!==state;
+    if(direction!=='J')facing=direction;
+    const next=direction==='J'?G.jump(state,facing):G.move(state,direction), moved=next!==state;
     state=next;
     if(state.won) completed.add(state.level);
-    else say(moved?'One small step. What comes next?':state.level===1&&!state.bridge?'There’s no block there yet. Look for the outlined gap.':'There’s no block in that direction. Try another way.');
+    else say(moved?'One small step. What comes next?':direction==='J'?'No landing block two spaces ahead. Try another direction.':state.level===1&&!state.bridge?'There’s no block there yet. Add the bridge, or jump across.':'There’s no block in that direction. Try another way.');
     return moved;
   }
   function input(direction) {
@@ -101,23 +106,23 @@
       if(queue.length>=24){say('Your sequence has 24 moves. Remove a step or run it.');return;}
       queue.push(direction);say('Plan ready? Run your sequence to try it.');
     } else attempt(direction);
-    render();
+    render(state.level===2?'none':direction==='J'?'jump':'move');
   }
   function runQueue() {
     if(running){stopRun();say('Stopped here. Run again to try your sequence from the start.');render();return;}
     if(!queue.length)return;
-    stopRun();state=G.createState(2);running=true;
+    stopRun();state=G.createState(2);facing='N';running=true;
     const version=runVersion;let cursor=0;
     const step=()=>{
       if(version!==runVersion||!running)return;
       activeCommand=cursor;
-      const moved=attempt(queue[cursor]);cursor++;
+      const command=queue[cursor], moved=attempt(command);cursor++;
       if(!moved||state.won||cursor===queue.length){
         running=false;timer=null;
         if(!state.won)say(!moved?`Step ${cursor} meets a gap. Edit your sequence and try again.`:'Your sequence ended before the destination. Add more steps and try again.');
-        render();return;
+        render(command==='J'?'jump':'move');return;
       }
-      say(`Running step ${cursor} of ${queue.length}…`);render();timer=setTimeout(step,550);
+      say(`Running step ${cursor} of ${queue.length}…`);render(command==='J'?'jump':'move');timer=setTimeout(step,550);
     };
     render();timer=setTimeout(step,250);
   }
@@ -127,6 +132,7 @@
   }
   document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>selectLevel(Number(b.dataset.level))));
   document.querySelectorAll('[data-direction]').forEach(b=>b.addEventListener('click',()=>input(b.dataset.direction)));
+  $('jump').addEventListener('click',()=>input('J'));
   $('reset').addEventListener('click',()=>selectLevel(state.level));
   $('undo').addEventListener('click',()=>{if(running)return;state=G.undo(state);say('One step back. Try another direction.');render();});
   $('build-bridge').addEventListener('click',addBridge);
@@ -140,6 +146,7 @@
     if(!exploring||$('mentor-dialog').open||e.target.matches('input,textarea,select,[contenteditable=true]')||e.ctrlKey||e.metaKey||e.altKey)return;
     const direction={ArrowUp:'N',ArrowRight:'E',ArrowDown:'S',ArrowLeft:'W',w:'N',d:'E',s:'S',a:'W'}[e.key];
     if(direction){e.preventDefault();input(direction);}
+    if(e.code==='Space'&&!e.target.closest('button,a')){e.preventDefault();if(!e.repeat)input('J');}
   });
 
   function closeCamera(message='Camera off. You’re back in the virtual space.') {
@@ -202,19 +209,27 @@
     $('object-detail').textContent=field.detail;
     window.dispatchEvent(new CustomEvent('fieldchange',{detail:selectedField}));
   }));
-  $('start-exploring').addEventListener('click',()=>{
+  function startExploring(focus=true){
     exploring=true;
     $('field-selection').hidden=true;$('game-content').hidden=false;
     $('selected-field').textContent=fields[selectedField].name;
     $('game-eyebrow').textContent='A SMALL START IN '+fields[selectedField].name.toUpperCase();
     selectLevel(fields[selectedField].level);
-    $('game-title').focus();window.scrollTo(0,0);
-  });
+    if(focus){$('game-title').focus();window.scrollTo(0,0);}
+  }
+  $('start-exploring').addEventListener('click',()=>startExploring());
   $('change-field').addEventListener('click',()=>{
     stopRun();closeCamera();exploring=false;
     $('game-content').hidden=true;$('field-selection').hidden=false;
     document.querySelector(`[data-field="${selectedField}"]`).focus();
     window.scrollTo(0,0);
   });
+  window.helloWGameSnapshot=()=>state;
   selectLevel(0);
+  if(document.documentElement.classList.contains('embedded-game')){
+    startExploring(false);
+    if(window.parent!==window)new ResizeObserver(()=>{
+      window.parent.postMessage({type:'hello-w-resize',height:Math.ceil(document.body.getBoundingClientRect().height)+8},location.origin);
+    }).observe(document.body);
+  }
 })();

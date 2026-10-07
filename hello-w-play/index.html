@@ -6,7 +6,9 @@
 <meta name="description" content="A playable hello,w exploration: move, build, and sequence your way into engineering. Inspired by Minjung Kim’s SVA Interaction Design thesis.">
 <title>hello,w: A little curiosity goes a long way</title>
 <link rel="icon" href="../favicon-32.png"><link rel="stylesheet" href="style.css">
+<script>if(new URLSearchParams(location.search).get("embed")==="1")document.documentElement.classList.add("embedded-game");</script>
 <script type="module" src="models.js"></script>
+<script type="module" src="block-scene.js"></script>
 <script defer src="game.js"></script><script defer src="app.js"></script>
 </head>
 <body>
@@ -39,15 +41,17 @@
   <div class="intro"><div><p class="eyebrow" id="game-eyebrow">A SMALL START IN ENGINEERING</p><h1 id="game-title" tabindex="-1">Let’s find a way.</h1></div><p>A little experimenting.<br>A new way of thinking.</p></div>
   <div class="workspace">
     <section class="play-area" aria-label="Interactive block puzzle">
-      <div class="stage" id="stage">
+      <div class="stage" id="stage" tabindex="0" aria-label="Block game. Arrow keys move, Space jumps.">
         <video id="camera" muted autoplay playsinline aria-hidden="true"></video>
         <div class="stage-top"><span class="stage-label"><i></i><span id="stage-label">YOUR EXPLORATION</span></span><button id="camera-toggle" class="camera-button" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l1.5-2h5L16 5h4a1 1 0 011 1v13H3V6a1 1 0 011-1z"/><circle cx="12" cy="12" r="4"/></svg><span>Camera overlay</span></button></div>
+        <div id="block-scene" aria-hidden="true"></div>
         <svg id="board" viewBox="0 0 800 570" role="img" aria-label="White block path with a purple ball and a purple destination"></svg>
         <div class="stage-bottom"><span id="position">Start · 0 moves</span><span>Follow your curiosity.</span></div>
       </div>
       <p id="camera-status" class="camera-status" role="status" hidden></p>
       <div class="controls">
-        <div class="movement"><div class="dpad" aria-label="Movement controls"><button data-direction="N" class="north" aria-label="Move north">↗</button><button data-direction="W" class="west" aria-label="Move west">↖</button><span class="dpad-center" aria-hidden="true">●</span><button data-direction="E" class="east" aria-label="Move east">↘</button><button data-direction="S" class="south" aria-label="Move south">↙</button></div><span class="keyboard-hint">Arrow keys or WASD<br>also work.</span></div>
+        <div class="movement"><div class="dpad" aria-label="Movement controls"><button data-direction="N" class="north" aria-label="Move north">↑</button><button data-direction="W" class="west" aria-label="Move west">←</button><span class="dpad-center" aria-hidden="true">●</span><button data-direction="E" class="east" aria-label="Move east">→</button><button data-direction="S" class="south" aria-label="Move south">↓</button></div><span class="keyboard-hint">Arrow keys / WASD<br>Space to jump.</span></div>
+        <button id="jump" class="jump-button" aria-label="Jump"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 29V17a11 11 0 0122 0v9m-6-5 6 6 5-6"/><circle cx="31" cy="32" r="2"/></svg><span>Jump</span></button>
         <div class="edit-controls"><button id="undo" class="quiet-button">↶ <span>Undo move</span></button><button id="reset" class="quiet-button">↺ <span>Start over</span></button></div>
       </div>
     </section>

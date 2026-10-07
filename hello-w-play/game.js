@@ -8,9 +8,15 @@
   function createState(level) { return {level,position:[...LEVELS[level].start],steps:0,history:[],bridge:false,won:false}; }
   const DELTAS = {N:[0,-1],E:[1,0],S:[0,1],W:[-1,0]};
   function move(state, direction) {
+    return travel(state, direction, 1);
+  }
+  function jump(state, direction) {
+    return travel(state, direction, 2);
+  }
+  function travel(state, direction, distance) {
     const delta = DELTAS[direction];
     if (!delta || state.won) return state;
-    const [x,y] = state.position.map((n,i) => n + delta[i]);
+    const [x,y] = state.position.map((n,i) => n + delta[i] * distance);
     if (!isWalkable(state,x,y)) return state;
     const goal = LEVELS[state.level].goal;
     return {...state,position:[x,y],steps:state.steps+1,
@@ -29,7 +35,7 @@
     return level.tiles.some(p => p[0]===x && p[1]===y) ||
       Boolean(state.bridge && level.gap && level.gap[0]===x && level.gap[1]===y);
   }
-  const api = {LEVELS,createState,move,undo,buildBridge,isWalkable};
+  const api = {LEVELS,createState,move,jump,undo,buildBridge,isWalkable};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HelloWGame = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -150,6 +150,8 @@
   .slide .tag{ margin-bottom:16px; }
   .slide h2{ margin:0 auto; font-size:clamp(30px,4.6vw,56px); font-weight:600; letter-spacing:-.03em; line-height:1.08; max-width:18ch; }
   .slide p{ margin:18px auto 0; font-size:clamp(17px,1.8vw,21px); line-height:1.45; color:var(--muted); max-width:58ch; }
+  .slide-list{ max-width:58ch; margin:24px auto 0; padding-left:1.3em; text-align:left; font-size:clamp(17px,1.8vw,21px); line-height:1.6; color:var(--muted); }
+  .slide-list li + li{ margin-top:8px; }
   .slide .kv{ max-width:1100px; margin:clamp(28px,4.5vw,48px) auto 0; }
   .context-cards{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; max-width:1100px; margin:clamp(28px,4.5vw,48px) auto 0; text-align:left; }
   .context-card{ display:grid; grid-template-rows:auto 1fr; min-width:0; overflow:hidden; border-radius:28px; background:radial-gradient(ellipse at 5% 5%,var(--context-a),transparent 70%),radial-gradient(ellipse at 100% 65%,var(--context-b),transparent 75%),var(--context-base); color:#10212c; }
@@ -325,7 +327,7 @@ const CASES = [
       {tag:'4 Extension', h:'Rooms integration', p:'A shared 1:1 note that starts automatically when a 1:1 is detected in a Room and continues across desktop and mobile. The workflow extended beyond its original team.', from:'EN · 47', src:'assets/decks/EN · 47.png'}
     ]},
   { slug:'line', meta:'LINE projects · 2016–2017', title:'Siri for LINE', line:'Designing voice interactions across messaging and connected devices. SiriKit exploration, followed by LINE AI Speaker.',
-    kvHome:'assets/covers/cover_line_siri.png', kvHomeAlt:'Siri for LINE, a clearly labeled 2016-style reconstruction of a message confirmation screen',
+    kvHome:'assets/covers/cover_line_siri_wave.png', kvHomeAlt:'Multicolored Siri waveform on a black background',
     kvHero:'assets/decks/LINE Siri 01.png', kvHeroAlt:'Siri for LINE pre-release exploration: reconstructed 2016 UI, pending original designs',
     accent:'#19e300', stat:{n:'WWDC 2016', l:'selected UI designer for a private pre-release SiriKit lab'},
     lead:'Selected as a UI designer to participate in an onsite private session lab at Apple in Cupertino, I worked on integrating a pre-release version of SiriKit into LINE messenger. The LINE work below begins with that exploration and continues with the AI Speaker project.',
@@ -333,6 +335,8 @@ const CASES = [
     outcomeLabel:'Project scope',
     stats:[['2016','pre-release SiriKit exploration for LINE'],['UI / UX','private onsite lab participation at Apple'],['5 months','LINE AI Speaker concept-to-commercialization cycle']],
     blocks:[
+      {tag:'Background · WWDC 2016', h:'Siri opens to third-party apps', p:'The types of apps that can take advantage of the newly opened Siri. Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
+      {tag:'Background · 2016 SiriKit', h:'Supported Domains', p:'To make use of SiriKit, your app has to be in one or more of the following domains:', bullets:['VoIP calling (for example, Skype)','Messaging (WhatsApp)','Payments (Square, PayPal)','Photo (Photos)','Workouts (Runtastic)','Ride booking (Uber, Lyft)','CarPlay (automotive vendors only)','Restaurant reservations (requires additional support from Apple)'], textOnly:true},
       {tag:'01 · Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote; it is the visual reference for the temporary reconstruction here.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference',note:'Public WeChat demonstration. The LINE proposal was separate private-lab work.'}},
       {tag:'01 · Siri for LINE', h:'Speak. Review. Send.', p:'A spoken request becomes a message the person can review before sending. These editable 2016-style screens reconstruct the request, confirmation, and sent states from public references. They are provisional illustrations, not the original LINE proposal; those designs will replace them when added.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
       {tag:'01 · Siri for LINE', h:'Clear intent. Visible control.', p:'The reconstructed study keeps the recipient and message together, preserves LINE’s familiar message styling, and separates Cancel from Send. It makes the interaction understandable while the original design archive is being added.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
@@ -698,6 +702,7 @@ function renderCase(slug){
           <span class="tag">${esc(b.tag)}</span>
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
+          ${b.bullets ? `<ul class="slide-list">${b.bullets.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}
           ${b.demo ? `<p><a class="btn" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p><p class="role">${esc(b.demo.note)}</p>` : ''}
           ${b.playable ? `<div class="hello-w-demo"><iframe src="hello-w-play/?embed=1" title="hello,w interactive block game" loading="lazy"></iframe></div><p class="demo-note">Use the direction buttons or arrow keys to move. Press Jump or Space to jump. This browser demonstration reconstructs the AR interaction without surface tracking.</p>` : ''}
           ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}

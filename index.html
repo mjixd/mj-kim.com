@@ -59,6 +59,7 @@
   .brand{display:block;position:relative;flex:0 1 180px;min-width:0;height:1.5em;line-height:1.5;font-weight:600;font-size:15px;letter-spacing:-.01em}
   .brand-word{position:absolute;left:0;top:0;white-space:nowrap}
   .brand-next{opacity:0}
+  .brand.is-morphing{filter:url(#header-threshold)}
   .links{ flex-shrink:0;display:flex; align-items:center; gap:28px; font-size:15px; }
   .links a{ font-weight:500; color:var(--muted); opacity:.5; cursor:pointer; transition:opacity .15s; } .links a.active, .links a:hover{ color:var(--text); opacity:1; }
   .links .theme{ background:transparent; border:0; width:40px; height:40px; border-radius:999px; cursor:pointer; display:grid; place-items:center; padding:0; overflow:hidden; transition:border-color .2s, background .2s; }
@@ -263,7 +264,7 @@
   </div>
 </header>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter><filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 34 -14"/></filter></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="header-threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 32 -9"/></filter><filter id="threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter><filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 34 -14"/></filter></defs></svg>
 <main id="app" aria-live="polite"></main>
 
 <footer>
@@ -816,6 +817,7 @@ function resetHeaderMorph(){
   clearTimeout(headerMorph.timer);cancelAnimationFrame(headerMorph.raf);
   headerMorph.active=false;headerMorph.showRole=false;headerMorph.roleIndex=0;
   const brand=document.querySelector('.brand'),current=brand.querySelector('.brand-current'),next=brand.querySelector('.brand-next');
+  brand.classList.remove('is-morphing');
   brand.setAttribute('aria-label','Minjung Kim');current.textContent='Minjung Kim';next.textContent='';
   current.style.opacity=1;current.style.filter='';next.style.opacity=0;next.style.filter='';
 }
@@ -826,18 +828,22 @@ function advanceHeaderMorph(){
   const nextWord=headerMorph.showRole?'Minjung Kim':(source?.textContent||ROLES[headerMorph.roleIndex++ % ROLES.length]);
   next.textContent=nextWord;
   const commit=()=>{
+    brand.classList.remove('is-morphing');
     current.textContent=nextWord;brand.setAttribute('aria-label',nextWord);next.textContent='';
     current.style.opacity=1;current.style.filter='';next.style.opacity=0;next.style.filter='';
     headerMorph.showRole=!headerMorph.showRole;
     headerMorph.timer=setTimeout(advanceHeaderMorph,2000);
   };
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){commit();return;}
+  brand.classList.add('is-morphing');
+  const blurScale=parseFloat(getComputedStyle(brand).fontSize)*0.07;
   const start=performance.now();
   const frame=now=>{
     if(!headerMorph.active)return;
     const t=Math.min(1,(now-start)/380);
-    current.style.opacity=1-t;current.style.filter=`blur(${t*6}px)`;
-    next.style.opacity=t;next.style.filter=`blur(${(1-t)*6}px)`;
+    const incoming=Math.max(0.001,t),outgoing=Math.max(0.001,1-t);
+    current.style.opacity=Math.pow(outgoing,0.4);current.style.filter=`blur(${Math.min(blurScale/outgoing-blurScale,10)}px)`;
+    next.style.opacity=Math.pow(incoming,0.4);next.style.filter=`blur(${Math.min(blurScale/incoming-blurScale,10)}px)`;
     if(t<1)headerMorph.raf=requestAnimationFrame(frame);else commit();
   };
   headerMorph.raf=requestAnimationFrame(frame);

@@ -811,10 +811,10 @@ function route(){
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === (h === 'about' ? 'about' : 'home')));
 }
 window.addEventListener('hashchange', route);
-const headerMorph={active:false,showRole:false,timer:0,raf:0};
+const headerMorph={active:false,showRole:false,roleIndex:0,timer:0,raf:0};
 function resetHeaderMorph(){
   clearTimeout(headerMorph.timer);cancelAnimationFrame(headerMorph.raf);
-  headerMorph.active=false;headerMorph.showRole=false;
+  headerMorph.active=false;headerMorph.showRole=false;headerMorph.roleIndex=0;
   const brand=document.querySelector('.brand'),current=brand.querySelector('.brand-current'),next=brand.querySelector('.brand-next');
   brand.setAttribute('aria-label','Minjung Kim');current.textContent='Minjung Kim';next.textContent='';
   current.style.opacity=1;current.style.filter='';next.style.opacity=0;next.style.filter='';
@@ -823,8 +823,7 @@ function advanceHeaderMorph(){
   if(!headerMorph.active)return;
   const brand=document.querySelector('.brand'),current=brand.querySelector('.brand-current'),next=brand.querySelector('.brand-next');
   const source=document.querySelector('#slotRole .l1');
-  if(!source){resetHeaderMorph();return;}
-  const nextWord=headerMorph.showRole?'Minjung Kim':source.textContent;
+  const nextWord=headerMorph.showRole?'Minjung Kim':(source?.textContent||ROLES[headerMorph.roleIndex++ % ROLES.length]);
   next.textContent=nextWord;
   const commit=()=>{
     current.textContent=nextWord;brand.setAttribute('aria-label',nextWord);next.textContent='';
@@ -846,7 +845,7 @@ function advanceHeaderMorph(){
 function syncHeaderRole(){
   const scrolled=window.scrollY>8;
   document.getElementById('nav').classList.toggle('scrolled',scrolled);
-  if(!scrolled||!document.querySelector('#slotRole .l1')||document.hidden){resetHeaderMorph();return;}
+  if(!scrolled||document.hidden){resetHeaderMorph();return;}
   if(!headerMorph.active){headerMorph.active=true;headerMorph.timer=setTimeout(advanceHeaderMorph,2000);}
 }
 window.addEventListener('scroll',syncHeaderRole,{passive:true});

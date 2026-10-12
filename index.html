@@ -53,9 +53,9 @@
   .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
   /* ---------- nav ---------- */
-  .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:saturate(1.2) blur(10px); border-bottom:1px solid transparent; transition:border-color .2s; }
-  .nav.scrolled{ border-bottom-color:var(--line); }
-  .nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; }
+  .nav::before{ content:""; position:absolute; inset:0 0 -48px; z-index:0; pointer-events:none; background:var(--bg); -webkit-backdrop-filter:saturate(1.2) blur(10px); backdrop-filter:saturate(1.2) blur(10px); -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); }
+  .nav .wrap{ position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; height:64px; }
   .brand{display:block;position:relative;flex:0 1 180px;min-width:0;height:1.5em;line-height:1.5;font-weight:600;font-size:15px;letter-spacing:-.01em}
   .brand-word{position:absolute;left:0;top:0;white-space:nowrap}
   .brand-next{opacity:0}
@@ -86,7 +86,8 @@
   .hero-kicker{ font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:500; margin:0 0 18px; }
   .hero h1{ margin:0; font-weight:600; letter-spacing:-.025em; line-height:1.12; font-size:clamp(30px, 4.3vw, 56px); max-width:1040px; }
   .hero h1 .static{ display:block; text-wrap:balance; }
-  .morph{ display:block; filter:url(#threshold) blur(0.4px); line-height:1.12; }
+  .morph{ display:block; line-height:1.12; }
+  .morph.is-morphing{ filter:url(#threshold) blur(0.4px); }
   .morph .slot{ display:inline-block; position:relative; height:1.12em; vertical-align:top; transition:width .45s cubic-bezier(.2,.8,.2,1); }
   .morph .slot + .slot{ margin-left:.24em; }
   /* Avoid will-change here: WebKit skips the parent SVG threshold (webkit.org/b/219729). */
@@ -236,7 +237,6 @@
   .note a{ font-weight:600; text-decoration:underline; text-underline-offset:4px; }
 
   /* ---------- footer ---------- */
-  footer{ border-top:1px solid var(--line); }
   footer .wrap{ display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; padding-top:28px; padding-bottom:40px; font-size:13px; color:var(--muted); }
 
 
@@ -916,7 +916,7 @@ function startMorph(){
     const K = blurK(), CAP = K * 10;
     l2.textContent = nextWord; l2.style.opacity = 0; l2.style.filter = `blur(${K * 2.5}px)`;
     sizeSlot(key, nextWord, false);           // the slot (and the word after it) slides while the text melts
-    const t0 = performance.now(); active++;
+    const t0 = performance.now(); active++; host.classList.add('is-morphing');
     const frame = now => {
       if(morphState?.host!==host)return;
       const f = Math.min(1, (now - t0) / MORPH);
@@ -925,7 +925,7 @@ function startMorph(){
       l2.style.filter = `blur(${Math.min(K / inF - K, CAP)}px)`;  l2.style.opacity = Math.pow(inF, 0.4);
       l1.style.filter = `blur(${Math.min(K / outF - K, CAP)}px)`; l1.style.opacity = Math.pow(outF, 0.4);
       if (f < 1) morphState.raf = requestAnimationFrame(frame);
-      else { l1.textContent = nextWord; l1.style.filter = ''; l1.style.opacity = 1; l2.textContent = ''; l2.style.filter = ''; l2.style.opacity = 0; active--; pending[key] = null; sizeSlot(key, nextWord, true); if(key==='role')syncHeaderRole(); }
+      else { l1.textContent = nextWord; l1.style.filter = ''; l1.style.opacity = 1; l2.textContent = ''; l2.style.filter = ''; l2.style.opacity = 0; active--; if (!isAnimating()) host.classList.remove('is-morphing'); pending[key] = null; sizeSlot(key, nextWord, true); if(key==='role')syncHeaderRole(); }
     };
     morphState.raf = requestAnimationFrame(frame);
   }
@@ -945,10 +945,11 @@ function startMorph(){
   window.__morphRedraw = () => {};
   fit(); setLayers('pre', PREFIXES[0], ''); setLayers('role', ROLES[0], ''); sizeSlot('pre', PREFIXES[0], true); sizeSlot('role', ROLES[0], true);
   // entrance: melt in once
+  host.classList.add('is-morphing');
   const K0 = blurK(), CAP0 = K0 * 10;
   for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${K0 * 2.5}px)`; l1.style.opacity = 0; }
   const t0 = performance.now();
-  const enter = now => { if(morphState?.host!==host)return; const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(K0 / ff - K0, CAP0)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } };
+  const enter = now => { if(morphState?.host!==host)return; const f = Math.min(1, (now - t0) / 1100); const ff = Math.max(0.001, f); for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter = `blur(${Math.min(K0 / ff - K0, CAP0)}px)`; l1.style.opacity = Math.pow(ff, 0.4); } if (f < 1) morphState.raf = requestAnimationFrame(enter); else { for (const key of ['pre','role']){ const l1 = slots[key].querySelector('.l1'); l1.style.filter=''; l1.style.opacity=1; } host.classList.remove('is-morphing'); } };
   morphState.raf = requestAnimationFrame(enter);
   schedule();
 

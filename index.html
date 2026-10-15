@@ -185,7 +185,7 @@
   .deck-band .deck-chapters{ justify-content:center; margin-bottom:24px; }
   .deck-band .deck-strip{ max-width:900px; margin:32px auto 0; }
   .pager{ background:var(--bg-dark); color:var(--text-inverse); }
-  .pager .wrap{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:28px; padding-bottom:28px; }
+  .pager .wrap{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:108px; padding-bottom:108px; }
   .pager a{ display:flex; flex-direction:column; gap:4px; min-height:44px; justify-content:center; }
   .pager small{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; opacity:.7; }
   .pager strong{ font-size:clamp(17px,2vw,22px); font-weight:500; letter-spacing:-.01em; }
@@ -197,8 +197,10 @@
   .chip:hover{ border-color:var(--text); }
   .btn{ display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 22px; border-radius:999px; background:var(--text); color:var(--bg); font-weight:600; font-size:16px; cursor:pointer; border:0; }
   .btn:hover{ opacity:.9; }
+  button.btn{ font-family:inherit; line-height:inherit; }
+  [data-copy-email]:focus-visible{ outline:3px solid var(--sky); outline-offset:5px; }
   .deck-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-  .deck-strip .thumb{ aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:var(--surface-2); position:relative; cursor:pointer; }
+  .deck-strip .thumb{ display:block; width:100%; min-width:0; padding:0; border:0; font:inherit; text-align:inherit; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:var(--surface-2); position:relative; cursor:pointer; }
   .deck-strip .thumb img{ width:100%; height:100%; object-fit:cover; }
   .deck-strip .thumb span{ position:absolute; left:10px; bottom:8px; font-size:11px; color:var(--muted); }
   .deck-strip .thumb.more{ display:grid; place-items:center; font-weight:600; color:var(--text); font-size:18px; }
@@ -264,8 +266,10 @@
   .note a{ font-weight:600; text-decoration:underline; text-underline-offset:4px; }
 
   /* ---------- footer ---------- */
-  footer .wrap{ display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; padding-top:28px; padding-bottom:40px; font-size:13px; color:var(--muted); }
+  footer .wrap{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 24px; justify-content:space-between; padding-top:34px; padding-bottom:34px; font-size:13px; color:var(--muted); }
 
+  .copy-toast{ position:fixed; z-index:50; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); width:max-content; max-width:calc(100% - 40px); padding:14px 20px; border-radius:14px; background:var(--text); color:var(--bg); box-shadow:0 6px 24px #0002; font-size:14px; text-align:center; overflow-wrap:anywhere; user-select:text; }
+  .copy-toast:empty{ padding:0; box-shadow:none; }
 
   /* ---------- slide media ---------- */
   /* Cover the Figma page number with the blank footer immediately below it.
@@ -300,6 +304,7 @@
     <span>Full case studies available on request · <a href="mailto:mjkiminfo@gmail.com">mjkiminfo@gmail.com</a></span>
   </div>
 </footer>
+<div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 /* ============================================================
@@ -813,9 +818,9 @@ function renderCase(slug){
         <span class="tag">Full case study</span>
         <h2>${esc(d.title || 'The whole story, ' + d.slides.length + ' slides')}</h2>
         <p>${esc(d.description || 'Explore a preview below. The full case study is available on request and includes process, trade-offs, and outcomes.')}</p>
-        <a class="btn" href="${esc(requestHref(c.slug))}">Request the full case study</a>
+        <button type="button" class="btn" data-copy-email>Request the full case study</button>
         <div class="deck-strip">
-          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<a class="thumb${k === 2 ? ' more' : ''}" href="${esc(requestHref(c.slug))}" aria-label="Request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more ' + (d.unit || 'slides') : 'preview ' + (k+1)}">${slideContents(n.startsWith('assets/') ? n : slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></a>`).join('')}
+          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<button type="button" class="thumb${k === 2 ? ' more' : ''}" data-copy-email aria-label="Copy email address to request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more ' + (d.unit || 'slides') : 'preview ' + (k+1)}">${slideContents(n.startsWith('assets/') ? n : slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></button>`).join('')}
         </div>
       </div>
     </section>` : ''}
@@ -1067,6 +1072,26 @@ document.querySelectorAll('.nav a[href^="#/"]').forEach(a => a.addEventListener(
 document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[href^="#/"]'); if (!a || a.closest('.nav')) return;
   e.preventDefault(); const t = a.getAttribute('href'); if (location.hash === t) route(); else location.hash = t;
+});
+// Case-study requests copy the contact address without leaving the page.
+const contactEmail = 'mjkiminfo@gmail.com';
+const copyToast = document.getElementById('copyToast');
+let copyNoticeTimer, copyRequest = 0;
+function showCopyNotice(message, dismissAfter = 0){
+  clearTimeout(copyNoticeTimer);
+  copyToast.textContent = message;
+  if (dismissAfter) copyNoticeTimer = setTimeout(() => { copyToast.textContent = ''; }, dismissAfter);
+}
+document.addEventListener('click', async e => {
+  if (!e.target.closest?.('[data-copy-email]')) return;
+  const request = ++copyRequest;
+  showCopyNotice('Copying email address…');
+  try {
+    await navigator.clipboard.writeText(contactEmail);
+    if (request === copyRequest) showCopyNotice(contactEmail + ' copied to clipboard', 3500);
+  } catch {
+    if (request === copyRequest) showCopyNotice('Could not copy automatically. Please copy this address: ' + contactEmail);
+  }
 });
 // theme: default light (matches Figma); user toggle persisted per browser
 (function(){

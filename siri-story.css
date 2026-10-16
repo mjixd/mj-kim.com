@@ -34,6 +34,17 @@
 .siri-voice-caption{margin:56px 0 0;font-size:13px;color:#c4d2dd}
 .siri-source{font-size:11px;color:#acbdcb;margin:12px 0 0}
 .siri-source a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+/* Apple iPhone 7 (2016), .theme-dark-alt .card-hero: original #121212. */
+.siri-chip{background:#121212;color:#fff;text-align:center;overflow:hidden;padding-top:clamp(72px,8vw,120px)}
+.siri-chip-copy{max-width:780px}
+.siri-chip h2{color:#fff;font-size:clamp(36px,5vw,64px);font-weight:500;line-height:1.08;letter-spacing:-.035em;margin:20px 0 24px}
+.siri-chip-copy p{font-size:clamp(17px,1.8vw,21px);line-height:1.5;color:#ccc;margin:0}
+.siri-chip-phone{position:relative;width:min(552px,calc(100% - 48px));aspect-ratio:552/596;overflow:hidden;margin:78px auto 0}
+.siri-chip-phone>img{display:block;width:100%;height:auto;max-width:none}
+.siri-chip-display{position:absolute;left:8.15%;right:8.15%;top:18%;bottom:0;background:linear-gradient(180deg,transparent,#000 14%)}
+.siri-chip-wave{position:absolute;left:8.15%;width:83.7%;top:33.89%;aspect-ratio:462/332;background:#000}
+.siri-chip-wave canvas{display:block}
+@media(max-width:735px){.siri-chip-phone{width:min(384px,calc(100% - 48px));margin-top:44px}}
 @media(max-width:1068px){.siri-hero-title{width:220px}.siri-hero-title h1{font-size:54px}}
 @media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}.siri-voice-caption{margin-top:40px}}
 @media(prefers-reduced-motion:reduce){.siri-hero{height:100svh}.siri-hero-stage{position:relative}.siri-device{will-change:auto}}

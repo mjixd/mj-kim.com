@@ -289,7 +289,7 @@
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
-<link rel="stylesheet" href="siri-story.css?v=2016-1">
+<link rel="stylesheet" href="siri-story.css?v=2016-2">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -315,7 +315,8 @@
 <div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script src="domino-zoom.js?v=mobile-memory-1"></script>
-<script src="siri-story.js?v=2016-1"></script>
+<script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
+<script src="siri-story.js?v=2016-2"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -830,7 +831,7 @@ function renderCase(slug){
         ${kvHTML({src:c.kvHero, alt:'Domino product background and investment chart', request:c.slug})}
       </div>
     </section>` : ''}
-    ${c.blocks.map((b, k) => b.voiceFeature ? SiriStory.renderVoice() : `
+    ${c.blocks.map((b, k) => b.voiceFeature ? SiriStory.renderChip() + SiriStory.renderVoice() : `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `

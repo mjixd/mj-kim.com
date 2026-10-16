@@ -46,12 +46,48 @@ window.SiriStory = (() => {
       </div>
     </section>`;
   }
+  function renderChip(){
+    // Original 2016 iPhone 7 chip hero, with a new black display layer over the demo.
+    // https://web.archive.org/web/20161018184700/apple.com/iphone-7/
+    return `<section class="siri-chip" data-siri-chip aria-labelledby="siri-chip-title">
+      <div class="wrap siri-chip-copy">
+        <span class="siri-eyebrow">SiriKit · Voice messaging</span>
+        <h2 id="siri-chip-title">Say it to Siri.<br>Send it with LINE.</h2>
+        <p>A name. A message. One spoken request.</p>
+      </div>
+      <figure class="siri-chip-phone" aria-label="iPhone 7 with a reconstructed 2016 Siri waveform">
+        <img src="${base}apple-iphone7-chip-2016.jpg" width="1104" height="1552" alt="Black iPhone 7, Apple 2016" loading="lazy">
+        <div class="siri-chip-display" aria-hidden="true"></div>
+        <div class="siri-chip-wave" data-siri-chip-wave role="img" aria-label="Animated multicolored Siri waveform"></div>
+      </figure>
+    </section>`;
+  }
+  function mountChip(motion){
+    const container=document.querySelector('[data-siri-chip-wave]');
+    if(!container || !window.SiriWave)return ()=>{};
+    // Fixed, bounded backing store; CSS scales it with the original phone geometry.
+    const wave=new SiriWave({container,style:'ios9',width:462,height:332,ratio:2,
+      cover:true,autostart:false,speed:.12,amplitude:1.4,pixelDepth:.08});
+    // Render a fully formed still immediately, including reduced-motion page entry.
+    for(let frame=0;frame<40;frame++){wave.clear();wave.draw();}
+    let visible=false,dead=false;
+    function sync(){
+      if(dead)return;
+      if(visible && !document.hidden && !motion.matches)wave.start();else wave.stop();
+    }
+    const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();});
+    observer.observe(container);
+    document.addEventListener('visibilitychange',sync);
+    motion.addEventListener('change',sync);
+    return ()=>{dead=true;observer.disconnect();document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();};
+  }
   function mount(){
     dispose();
     const root=document.querySelector('[data-siri-hero]');if(!root)return;
     const stage=root.firstElementChild,devices=[...root.querySelectorAll('.siri-device')];
     const title=root.querySelector('.siri-hero-title'),scrim=root.querySelector('.siri-hero-scrim');
     const motion=matchMedia('(prefers-reduced-motion: reduce)');
+    const disposeChip=mountChip(motion);
     let raf=0,dead=false;
     function paint(){
       raf=0;if(dead)return;
@@ -72,7 +108,7 @@ window.SiriStory = (() => {
     window.addEventListener('scroll',schedule,{passive:true});
     window.addEventListener('resize',schedule);motion.addEventListener('change',schedule);
     paint();
-    dispose=()=>{dead=true;cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);motion.removeEventListener('change',schedule);dispose=()=>{};};
+    dispose=()=>{dead=true;disposeChip();cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);motion.removeEventListener('change',schedule);dispose=()=>{};};
   }
-  return {renderHero,renderVoice,mount,cleanup:()=>dispose()};
+  return {renderHero,renderVoice,renderChip,mount,cleanup:()=>dispose()};
 })();

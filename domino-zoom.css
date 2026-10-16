@@ -1,0 +1,15 @@
+/* Frame 2073: one scroll timeline owns the composition and media visibility. */
+.domino-zoom{position:relative;height:240svh;background:var(--bg,#fff)}
+.domino-zoom__sticky{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate}
+.domino-zoom__board{position:absolute;left:0;top:0;width:10464px;height:8305px;transform-origin:0 0;will-change:transform}
+.domino-zoom__phone{position:absolute;width:1300px;height:2642px;border-radius:18% / 9%;overflow:hidden}
+.domino-zoom__phone img{display:block;width:100%;height:100%;pointer-events:none}
+.domino-zoom__phone video{position:absolute;left:5%;width:90%;object-fit:fill;border-radius:122px;opacity:0;pointer-events:none}
+.domino-zoom__phone video.is-playing{opacity:1}
+.domino-zoom__phone[data-domino-peripheral]{opacity:0;will-change:opacity}
+.domino-zoom__control{position:absolute;right:max(24px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;gap:8px;padding:10px 15px;border:1px solid #8885;border-radius:24px;background:var(--bg,#fff);color:var(--text,#151515);font:inherit;font-size:13px;cursor:pointer}
+.domino-zoom__control svg{width:14px;height:14px;fill:currentColor}
+.domino-zoom__control:focus-visible{outline:3px solid #448aff;outline-offset:4px}
+.domino-zoom.is-static{height:100svh}
+.domino-zoom.is-static .domino-zoom__board{will-change:auto}
+@media(max-width:600px){.domino-zoom__control{right:20px;bottom:20px;font-size:12px}}

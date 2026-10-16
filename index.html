@@ -282,6 +282,7 @@
   @keyframes fade{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 </style>
+<link rel="stylesheet" href="domino-zoom.css">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -306,6 +307,7 @@
 </footer>
 <div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
+<script src="domino-zoom.js"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -793,6 +795,7 @@ function renderCase(slug){
       ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
+    ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
@@ -832,6 +835,7 @@ function renderCase(slug){
     </nav>`;
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   bindSolutionAccordion();
+  DominoZoom.mount();
   observeKV();
 }
 
@@ -897,6 +901,7 @@ function route(){
   stopCarousel();
   stopSlideVideos();
   stopSolutionStory();
+  DominoZoom.cleanup();
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');
     renderCase(parts[0]);

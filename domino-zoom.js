@@ -25,10 +25,11 @@ window.DominoZoom = (() => {
   function render(){
     return `<section class="domino-zoom" data-domino-zoom aria-label="Explore Domino's portfolio tools">
       <div class="domino-zoom__sticky"><div class="domino-zoom__board">
-      ${phones.map(([name,x,y,top,height,label]) => `<div class="domino-zoom__phone" data-domino-phone="${name}" ${name==='overview'?'data-domino-center':'data-domino-peripheral'} style="left:${x}px;top:${y}px">
-        <img class="domino-zoom__buttons" src="${base}buttons.png" alt="" width="1300" height="645" loading="lazy">
-        <img class="domino-zoom__body" src="${base+name}.png?v=2073-final" alt="${label}" width="1280" height="2642" loading="lazy" decoding="async">
-        ${height?`<video data-src="${base+name}.mp4" muted playsinline loop preload="none" aria-label="${label} demonstration" style="top:${top/2642*100}%;height:${height/2642*100}%"></video>`:''}
+      <svg width="0" height="0" aria-hidden="true"><defs><clipPath id="domino-button-clip" clipPathUnits="objectBoundingBox"><path d="M0 0H.007692V.150388H0Z M0 .293023H.007692V.606202H0Z M0 .686822H.007692V1H0Z M.992308 .403101H1V.889922H.992308Z"/></clipPath></defs></svg>
+      ${phones.map(([name,x,y,top,height,label]) => `<div class="domino-zoom__phone" data-domino-phone="${name}" ${name==='overview'?'data-domino-center':'data-domino-peripheral'} data-x="${x}" data-y="${y}">
+        <img class="domino-zoom__buttons" src="${base}mobile/buttons.png" alt="" width="1300" height="645" loading="lazy">
+        <picture>${name==='overview'?'':`<source media="(max-width:1024px)" srcset="${base}mobile/${name}.png">`}<img class="domino-zoom__body" src="${base+name}.png?v=2073-final" alt="${label}" width="1280" height="2642" loading="lazy" decoding="async"></picture>
+        ${height?`<video data-src="${base+name}.mp4" data-mobile-src="${base}mobile/${name}.mp4" muted playsinline loop preload="none" aria-label="${label} demonstration" style="top:${top/2642*100}%;height:${height/2642*100}%"></video>`:''}
       </div>`).join('')}</div>
       <button class="domino-zoom__control" type="button" data-domino-playback aria-label="Pause animations"></button>
       </div></section>`;
@@ -37,12 +38,13 @@ window.DominoZoom = (() => {
     dispose();
     const section=document.querySelector('[data-domino-zoom]');
     if(!section)return;
-    const sticky=section.firstElementChild,board=sticky.firstElementChild;
+    const sticky=section.firstElementChild;
+    const devices=[...section.querySelectorAll('[data-domino-phone]')];
     const peripheral=[...section.querySelectorAll('[data-domino-peripheral]')];
     const videos=[...section.querySelectorAll('video')],button=section.querySelector('[data-domino-playback]');
     const motion=matchMedia('(prefers-reduced-motion: reduce)');
     let dead=false,raf=0,progress=0,userPaused=motion.matches,blocked=false,visible=false;
-    const pending=new WeakSet();
+    const pending=new WeakMap();
     const shouldPlay=()=>!dead && visible && !document.hidden && !userPaused && !blocked && (motion.matches || progress>.42);
     function controls(){
       const paused=userPaused||blocked;
@@ -54,15 +56,21 @@ window.DominoZoom = (() => {
     function media(){
       const play=shouldPlay();
       videos.forEach(video=>{
-        if(!play){video.pause();video.classList.remove('is-playing');return;}
-        if(!video.src){video.src=video.dataset.src;video.muted=true;}
+        if(!play){
+          video.pause();video.classList.remove('is-playing');
+          if((!visible || document.hidden) && video.hasAttribute('src')){pending.delete(video);video.removeAttribute('src');video.load();}
+          return;
+        }
+        const src=sticky.clientWidth<=1024?video.dataset.mobileSrc:video.dataset.src;
+        if(video.getAttribute('src')!==src){pending.delete(video);video.src=src;video.muted=true;}
         if(!video.paused || pending.has(video))return;
-        pending.add(video);
+        const token={};pending.set(video,token);
         const request=video.play();
-        Promise.resolve(request).then(()=>{if(!shouldPlay())video.pause();}).catch(()=>{
+        Promise.resolve(request).then(()=>{if(pending.get(video)===token && !shouldPlay())video.pause();}).catch(()=>{
+          if(pending.get(video)!==token)return;
           if(!shouldPlay())return;
           blocked=true;controls();media();
-        }).finally(()=>pending.delete(video));
+        }).finally(()=>{if(pending.get(video)===token)pending.delete(video);});
       });
     }
     function playing(event){
@@ -82,7 +90,13 @@ window.DominoZoom = (() => {
       const scale=start+(end-start)*t;
       const cx=5114+(5111.5-5114)*t,cy=4273+(4489-4273)*t;
       const targetY=h/2+32*(1-t);
-      board.style.transform=`translate(${w/2-cx*scale}px,${targetY-cy*scale}px) scale(${scale})`;
+      // Keep compositing surfaces at display size, not the 10k Figma canvas size.
+      devices.forEach(phone=>{
+        phone.style.width=`${1300*scale}px`;phone.style.height=`${2642*scale}px`;
+        phone.style.left=`${w/2+(+phone.dataset.x-cx)*scale}px`;
+        phone.style.top=`${targetY+(+phone.dataset.y-cy)*scale}px`;
+        phone.style.setProperty('--phone-scale',scale);
+      });
       peripheral.forEach(phone=>phone.style.opacity=alpha);
       media();
     }

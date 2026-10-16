@@ -75,14 +75,13 @@ window.DominoZoom = (() => {
       visible=rect.top<h && rect.bottom>0;
       progress=motion.matches?1:clamp(-rect.top/Math.max(1,rect.height-h));
       const t=smooth(progress/.82),alpha=motion.matches?1:smooth((progress-.18)/.38);
-      const start=Math.max(w*1.12/1300,h*1.8/2642);
-      // Include the Figma shadows in the final composition bounds.
-      const end=Math.min((w-48)/10635,(h-160)/9214);
+      // Show the complete central device beneath the header at the opening.
+      const start=Math.min((w-48)/1300,(h-128)/2642);
+      // Cover the viewport at the final scale; edge devices may crop naturally.
+      const end=Math.max(w/10135,h/8714);
       const scale=start+(end-start)*t;
-      // Keep the balance readable within the intentional mobile close-up crop.
-      const startX=4464+(w<768?440:650);
-      const cx=startX+(5191.5-startX)*t,cy=3302+(4569-3302)*t;
-      const targetY=96+(h/2+24-96)*t;
+      const cx=5114+(5111.5-5114)*t,cy=4273+(4489-4273)*t;
+      const targetY=h/2+32*(1-t);
       board.style.transform=`translate(${w/2-cx*scale}px,${targetY-cy*scale}px) scale(${scale})`;
       peripheral.forEach(phone=>phone.style.opacity=alpha);
       media();

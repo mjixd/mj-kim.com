@@ -10,6 +10,7 @@ const checks = [];
 const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual });
 const selectors = { section: '[data-domino-zoom]', phone: '[data-domino-phone]', center: '[data-domino-center]', peripheral: '[data-domino-peripheral]', control: '[data-domino-playback]' };
 const settle = page => page.waitForTimeout(150);
+const coversViewport = (rects, width, height) => Math.min(...rects.map(rect => rect.x)) <= 1 && Math.min(...rects.map(rect => rect.y)) <= 1 && Math.max(...rects.map(rect => rect.right)) >= width - 1 && Math.max(...rects.map(rect => rect.bottom)) >= height - 1;
 async function phase(page, progress) {
   await page.locator(selectors.section).evaluate(async (section, progress) => {
     const top = section.getBoundingClientRect().top + scrollY;
@@ -84,8 +85,8 @@ async function visual(page) {
     check('composition contains sixteen phones, ten static originals and six local muted looping inline videos', composition.phones === 16 && composition.staticPhones === 10 && composition.videos === 6 && composition.centerStatic && composition.videosSafe && composition.localSources, composition);
     await phase(page, 0);
     const start = await visual(page);
-    // Final close-up contract: desktop phone exceeds 1.8 viewport heights; clipping is intentional.
-    check('initial stage starts in full central close-up and hides surrounding phones', start.center.height >= 960 * 1.8 && Math.abs(start.center.x + start.center.width / 2 - 720) < 100 && start.opacity.length === 15 && start.opacity.every(value => value < 0.08), start);
+    const headerBottom = await page.locator('header').evaluate(header => header.getBoundingClientRect().bottom);
+    check('initial stage shows the full central device below the header and hides surrounding phones', start.center.height > 960 * 0.5 && start.center.x >= 0 && start.center.right <= 1441 && start.center.y >= headerBottom - 1 && start.center.bottom <= 961 && Math.abs(start.center.x + start.center.width / 2 - 720) < 100 && start.opacity.length === 15 && start.opacity.every(value => value < 0.08), start);
     await stopped(page, 'initially hidden videos do not advance');
     await page.screenshot({ path: path.join(out, `domino-start-${browserName}.png`) });
     const trace = [];
@@ -100,6 +101,7 @@ async function visual(page) {
       const expectedHeight = trace[0].center.height + (trace.at(-1).center.height - trace[0].center.height) * smooth(frame.progress / 0.82);
       return Math.abs(frame.center.height - expectedHeight) < 2 && frame.opacity.every(value => Math.abs(value - smooth((frame.progress - 0.18) / 0.38)) < 0.01);
     }), trace);
+    check('final composition stops scaling and moving from progress 0.82 onward', trace.filter(frame => frame.progress >= 0.82).every(frame => ['x', 'y', 'width', 'height'].every(key => Math.abs(frame.center[key] - trace.at(-1).center[key]) < 2)), trace.filter(frame => frame.progress >= 0.82));
     const reverseTrace = [];
     for (const frame of [...trace].reverse()) {
       await phase(page, frame.progress);
@@ -117,7 +119,7 @@ async function visual(page) {
     const framePositions = [[4464,2952],[7415,1078],[7409,3898],[5939,5323],[2994,1890],[2994,4712],[1524,3382],[5934,2500],[4459,132],[4483,5774],[8879,2220],[8879,5042],[44,2350],[1529,562],[44,5175],[1524,6204]];
     const renderedPhones = await page.locator(selectors.phone).evaluateAll(phones => phones.map(phone => phone.getBoundingClientRect().toJSON()));
     const frameScale = revealed.center.width / 1300;
-    check('fully revealed sixteen-phone arrangement fits the viewport and preserves updated Figma relative positions', renderedPhones.every(rect => rect.x >= 0 && rect.y >= 0 && rect.right <= 1441 && rect.bottom <= 961) && framePositions.every(([x,y]) => renderedPhones.some(rect => Math.abs(rect.x - revealed.center.x - (x-4464)*frameScale) < 2 && Math.abs(rect.y - revealed.center.y - (y-2952)*frameScale) < 2 && Math.abs(rect.width - 1300*frameScale) < 2 && Math.abs(rect.height - 2642*frameScale) < 2)), renderedPhones);
+    check('final sixteen-phone composition covers both viewport axes and preserves Figma relative positions', coversViewport(renderedPhones, 1440, 960) && framePositions.every(([x,y]) => renderedPhones.some(rect => Math.abs(rect.x - revealed.center.x - (x-4464)*frameScale) < 2 && Math.abs(rect.y - revealed.center.y - (y-2952)*frameScale) < 2 && Math.abs(rect.width - 1300*frameScale) < 2 && Math.abs(rect.height - 2642*frameScale) < 2)), renderedPhones);
     await moving(page, 'revealed six videos actually progress');
     await page.screenshot({ path: path.join(out, `domino-revealed-${browserName}.png`) });
     await phase(page, 0);
@@ -168,10 +170,11 @@ async function visual(page) {
       await mobile.goto(base + '#/work/domino-mvp');
       await phase(mobile, 0);
       const mobileStart = await visual(mobile);
-      check(`${width}px: initial central close-up exceeds viewport width while section clips overflow`, mobileStart.center.width >= width * 1.1 && !mobileStart.overflow, mobileStart);
+      const mobileHeaderBottom = await mobile.locator('header').evaluate(header => header.getBoundingClientRect().bottom);
+      check(`${width}px: initial full device is visible below the header without overflow`, mobileStart.center.height > 844 * 0.5 && mobileStart.center.x >= 0 && mobileStart.center.right <= width + 1 && mobileStart.center.y >= mobileHeaderBottom - 1 && mobileStart.center.bottom <= 845 && !mobileStart.overflow, mobileStart);
       await phase(mobile, 0.85);
       const mobilePhones = await mobile.locator(selectors.phone).evaluateAll(phones => phones.map(phone => phone.getBoundingClientRect().toJSON()));
-      check(`${width}px: all sixteen phones fit without horizontal page overflow`, mobilePhones.length === 16 && mobilePhones.every(rect => rect.x >= 0 && rect.y >= 0 && rect.right <= width + 1 && rect.bottom <= 845) && !(await visual(mobile)).overflow, mobilePhones);
+      check(`${width}px: final composition covers the viewport with clipped edges and no page overflow`, mobilePhones.length === 16 && coversViewport(mobilePhones, width, 844) && !(await visual(mobile)).overflow, mobilePhones);
       await mobile.locator('.deck-band .btn').scrollIntoViewIfNeeded();
       check(`${width}px: existing copy CTA remains reachable`, await mobile.locator('.deck-band .btn').isVisible());
       await mobile.locator('.pager').scrollIntoViewIfNeeded();
@@ -184,7 +187,7 @@ async function visual(page) {
     await reduced.goto(base + '#/work/domino-mvp');
     await reduced.locator(selectors.section).scrollIntoViewIfNeeded();
     const reducedBefore = await visual(reduced);
-    check('reduced motion displays complete static composition immediately', reducedBefore.opacity.every(value => value > 0.9) && !reducedBefore.overflow, reducedBefore);
+    check('reduced motion immediately displays static composition with all peripherals revealed', reducedBefore.opacity.every(value => value > 0.9) && !reducedBefore.overflow, reducedBefore);
     await stopped(reduced, 'reduced motion never autoplays videos');
     await reduced.locator(selectors.control).click();
     await moving(reduced, 'reduced motion permits explicit manual playback');

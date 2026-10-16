@@ -289,6 +289,7 @@
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=2073-final">
+<link rel="stylesheet" href="siri-story.css?v=2016-1">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -314,6 +315,7 @@
 <div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script src="domino-zoom.js?v=2073-cover"></script>
+<script src="siri-story.js?v=2016-1"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -380,7 +382,7 @@ const CASES = [
       {tag:'Background · WWDC 2016', h:'Siri opens to third-party apps', p:'The types of apps that can take advantage of the newly opened Siri. Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
       {tag:'Background · 2016 SiriKit', h:'Supported Domains', p:'To make use of SiriKit, your app has to be in one or more of the following domains:', bullets:['VoIP calling (for example, Skype)','Messaging (WhatsApp)','Payments (Square, PayPal)','Photo (Photos)','Workouts (Runtastic)','Ride booking (Uber, Lyft)','CarPlay (automotive vendors only)','Restaurant reservations (requires additional support from Apple)'], textOnly:true},
       {tag:'01 · Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote; it is the visual reference for the temporary reconstruction here.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference',note:'Public WeChat demonstration. The LINE proposal was separate private-lab work.'}},
-      {tag:'01 · Siri for LINE', h:'Speak. Review. Send.', p:'A spoken request becomes a message the person can review before sending. These editable 2016-style screens reconstruct the request, confirmation, and sent states from public references. They are provisional illustrations, not the original LINE proposal; those designs will replace them when added.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
+      {tag:'01 · Siri for LINE', h:'Speak. Review. Send.', voiceFeature:true, p:'A spoken request becomes a message the person can review before sending. These editable 2016-style screens reconstruct the request, confirmation, and sent states from public references. They are provisional illustrations, not the original LINE proposal; those designs will replace them when added.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
       {tag:'01 · Siri for LINE', h:'Clear intent. Visible control.', p:'The reconstructed study keeps the recipient and message together, preserves LINE’s familiar message styling, and separates Cancel from Send. It makes the interaction understandable while the original design archive is being added.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
       {tag:'02 · LINE AI Speaker', h:'LINE AI Speaker', p:'A separate LINE project in 2017: exploratory UX for the Friends smart speaker, from music recommendations and NAVER search to kids’ content and smart-home Bluetooth pairing. The first-time experience introduced the relationship between voice and hand.', from:'WEB 77', src:'assets/decks/WEB 77.png'},
       {tag:'02 · LINE AI Speaker', h:'Scenarios first', p:'Question-and-answer scenarios for messenger, maps, clock, and video, iterated with leadership to set direction before screens.', from:'WEB 80', src:'assets/decks/WEB 80.png'},
@@ -815,12 +817,13 @@ function renderCase(slug){
   document.title = `${c.title} | Minjung Kim`;
   const hero = c.blocks[c.blocks.length - 1];
   app.innerHTML = `
+    ${c.slug === 'line' ? SiriStory.renderHero() : ''}
     <section class="c-hero wrap">
       <div class="meta">${esc(c.meta)}</div>
-      <h1>${caseHeading(c.title)}</h1>
+      ${c.slug === 'line' ? '' : `<h1>${caseHeading(c.title)}</h1>`}
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${c.background ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.background || c.slug === 'line' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
@@ -831,7 +834,7 @@ function renderCase(slug){
         ${kvHTML({src:c.kvHero, alt:'Domino product background and investment chart', request:c.slug})}
       </div>
     </section>` : ''}
-    ${c.blocks.map((b, k) => `
+    ${c.blocks.map((b, k) => b.voiceFeature ? SiriStory.renderVoice() : `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `
@@ -872,6 +875,7 @@ function renderCase(slug){
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   bindSolutionAccordion();
   DominoZoom.mount();
+  SiriStory.mount();
   observeKV();
 }
 
@@ -938,6 +942,7 @@ function route(){
   stopSlideVideos();
   stopSolutionStory();
   DominoZoom.cleanup();
+  SiriStory.cleanup();
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');
     renderCase(parts[0]);

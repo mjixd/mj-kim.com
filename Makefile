@@ -7,3 +7,5 @@ test-motion-transition:
 	TEST_BROWSER=webkit node hello-w-play/tests/domino-zoom.cjs
 	TEST_BROWSER=chromium node hello-w-play/tests/meta-scroll.cjs
 	TEST_BROWSER=webkit node hello-w-play/tests/meta-scroll.cjs
+	TEST_BROWSER=chromium node hello-w-play/tests/siri-story.cjs
+	TEST_BROWSER=webkit node hello-w-play/tests/siri-story.cjs

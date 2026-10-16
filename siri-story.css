@@ -1,0 +1,39 @@
+.siri-hero{height:220svh;background:#fafafa;color:#171717;position:relative}
+.siri-hero-stage{height:100svh;position:sticky;top:0;overflow:hidden;isolation:isolate}
+.siri-device{position:absolute;left:50%;top:50%;width:351px;height:660px;transform-origin:0 0;will-change:transform}
+.siri-device>img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.siri-screen{position:absolute;left:47px;top:86px;width:260px;height:462px;overflow:hidden;background:#10252b url('assets/line/apple-siri-background-2016.jpg') center/cover;color:#fff;font-family:Arial,sans-serif;text-align:left}
+.siri-status{display:flex;justify-content:space-between;padding:6px 9px;font-size:8px}
+.siri-screen .siri-request{font-size:17px;line-height:1.3;text-align:right;margin:20px 12px 0;color:#fff}
+.siri-edit{display:block;text-align:right;margin:9px 12px 0;font-size:12px;color:#fff8}
+.siri-screen .siri-response{font-size:17px;line-height:1.3;margin:26px 12px 13px;color:#fff}
+.siri-message{margin:0 12px;background:#d3dfe2;color:#333;border-radius:10px;overflow:hidden;font-size:14px}
+.siri-message-brand{padding:8px;background:#eff3f3;font-size:10px;color:#16b900}
+.siri-message-content{padding:12px}
+.siri-message-content p{margin:16px 0 0;background:#a6e971;color:#173b10;border-radius:7px;padding:10px;font-size:14px}
+.siri-message-actions{display:flex;justify-content:space-around;background:#edf1f1;padding:12px;font-size:16px}
+.siri-mic{position:absolute;bottom:18px;left:calc(50% - 9px);width:18px;height:26px;fill:none;stroke:#fff;stroke-width:1.5}
+.siri-hero-title{position:absolute;top:50%;left:50%;text-align:center;width:290px;z-index:1;will-change:transform,opacity}
+.siri-hero-title p{margin:0 0 12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#5f6467}
+.siri-hero-title h1{font-size:72px;line-height:1;letter-spacing:-.055em;font-weight:600;margin:0}
+.siri-hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,#fafafaee,#fafafa);opacity:0;pointer-events:none;z-index:2}
+.siri-hero-note{position:absolute;bottom:16px;left:16px;right:16px;z-index:3;margin:0;text-align:center;font-size:11px;color:#51565a;text-shadow:0 1px 4px #fff;background:#fafafae8;width:max-content;max-width:calc(100% - 32px);padding:7px 12px;border-radius:20px;margin-inline:auto}
+.siri-hero.is-static{height:100svh}
+.siri-hero.is-static .siri-hero-stage{position:relative}
+.siri-hero.is-static .siri-device{will-change:auto}
+.siri-voice{background:#081b25 url('assets/line/apple-siri-background-2016.jpg') center bottom/cover no-repeat;color:#fff;text-align:center;padding:clamp(80px,9vw,140px) 0 100px}
+.siri-voice-inner{max-width:1100px}
+.siri-eyebrow{font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:#d6e0e8}
+.siri-voice h2{font-size:clamp(36px,5vw,64px);line-height:1.08;letter-spacing:-.035em;font-weight:600;margin:20px 0 24px;text-wrap:balance}
+.siri-voice-lead{font-size:clamp(17px,1.8vw,21px);line-height:1.5;max-width:53ch;margin:0 auto;color:#e2e9ed}
+.siri-voice blockquote{font-size:clamp(24px,3vw,40px);line-height:1.3;font-weight:400;letter-spacing:-.02em;margin:64px 0}
+.siri-voice-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px;text-align:left}
+.siri-voice-steps span{font-size:12px;color:#8ee6e4;letter-spacing:.1em}
+.siri-voice-steps h3{font-size:22px;margin:14px 0 10px;font-weight:500}
+.siri-voice-steps p{font-size:16px;line-height:1.5;color:#d5dfe6;margin:0}
+.siri-voice-caption{margin:56px 0 0;font-size:13px;color:#c4d2dd}
+.siri-source{font-size:11px;color:#acbdcb;margin:12px 0 0}
+.siri-source a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:1068px){.siri-hero-title{width:220px}.siri-hero-title h1{font-size:54px}}
+@media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}.siri-voice-caption{margin-top:40px}}
+@media(prefers-reduced-motion:reduce){.siri-hero{height:100svh}.siri-hero-stage{position:relative}.siri-device{will-change:auto}}

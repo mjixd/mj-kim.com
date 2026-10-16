@@ -102,7 +102,7 @@ async function layoutChecks(page, width) {
     const heroCopy = await hero.innerText(), voiceCopy = await voice.innerText(), mainCopy = await page.locator('main').innerText();
     check('hero discloses reconstructed visuals', /reconstruct|provisional/i.test(heroCopy), heroCopy);
     check('voice copy describes LINE messaging without inherited HomeKit claims', /LINE/.test(voiceCopy) && /message|messaging|send|recipient/i.test(voiceCopy) && !/HomeKit|on\/off switch|turn (?:on|off).*light|unlock.*door/i.test(voiceCopy), voiceCopy);
-    check('career facts and distinct later AI Speaker work remain', /2016/.test(mainCopy) && /private.*lab/i.test(mainCopy) && /2017/.test(mainCopy) && /LINE AI Speaker/.test(mainCopy), mainCopy);
+    check('Siri career facts remain without AI Speaker work', /2016/.test(mainCopy) && /private.*lab/i.test(mainCopy) && !/AI Speaker|CLOVA|2017|(?:5|five)[\s-]*months?/i.test(mainCopy), mainCopy);
     const requests = await page.locator('a[href^="mailto:"]').evaluateAll(links => links.map(link => link.textContent + ' ' + link.getAttribute('aria-label')));
     check('full case request remains available', requests.some(label => /request|full/i.test(label)), requests);
     const images = await hero.locator('img').evaluateAll(async images => Promise.all(images.map(async image => { try { await image.decode(); } catch {} return { src: image.src, width: image.naturalWidth, height: image.naturalHeight }; })));

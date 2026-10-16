@@ -787,11 +787,12 @@ function bindSolutionAccordion(){
     const index = Math.max(0, Math.min(buttons.length-1, Math.floor((top-root.getBoundingClientRect().top)/step)));
     if (index !== active) select(index);
   }
-  function queueScroll(){ if (!frame) frame = requestAnimationFrame(readScroll); }
+  function queueScroll(){ if (enhanced && !frame) frame = requestAnimationFrame(readScroll); }
   function layout(){
     if (disposed) return;
     // Native scrolling owns position; this component only maps its section to a scene.
-    enhanced = !motion.matches && innerHeight >= 650;
+    // Mobile keeps the tap accordion; only desktop follows scroll position.
+    enhanced = innerWidth > 820 && !motion.matches && innerHeight >= 650;
     root.classList.toggle('is-scroll', enhanced);
     panel.style.minHeight = '';
     visual.style.height = '';

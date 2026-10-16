@@ -1,4 +1,4 @@
-// Independent behavioral contract for Meta's four-step scroll story.
+// Independent contract: desktop scroll story and mobile tap accordion.
 const fs = require('fs');
 const path = require('path');
 const { chromium, webkit } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -40,6 +40,12 @@ async function introChecks(page) {
     await page.setViewportSize({width,height:width===1440?1000:844}); await enter(page); await pause(page);
     const root=page.locator('.solution-accordion'), heading=page.getByRole('heading',{name:'Workflow integration',exact:true});
     check(width+' workflow title and original introduction belong to scroll story',await root.locator('h2').filter({hasText:'Workflow integration'}).count()===1 && (await root.textContent()).includes(copy));
+    if(width<=820) {
+      await introFallbackCheck(page,width+' mobile');
+      await root.scrollIntoViewIfNeeded();
+      await page.screenshot({path:path.join(out,'meta-intro-'+width+'.png')});
+      continue;
+    }
     const entry=await root.evaluate(root=>{
       const sticky=[root,...root.querySelectorAll('*')].find(node=>getComputedStyle(node).position==='sticky');
       return {top:root.getBoundingClientRect().top+scrollY,offset:sticky?parseFloat(getComputedStyle(sticky).top):0};
@@ -133,6 +139,48 @@ async function largeTextChecks(page) {
   await page.screenshot({path:path.join(out,'meta-large-text.png')});
   await stylesheet.evaluate(style=>style.remove());
 }
+async function mobileAccordionChecks(page) {
+  for(const width of [390,320,820]) {
+    await page.setViewportSize({width,height:844}); await enter(page); await pause(page);
+    const story=page.locator('.solution-accordion'), controls=story.locator('.solution-toggle');
+    await controls.first().scrollIntoViewIfNeeded(); await pause(page);
+    const layout=await story.evaluate(root=>({
+      sticky:[root,...root.querySelectorAll('*')].some(node=>['sticky','fixed'].includes(getComputedStyle(node).position)),
+      height:root.getBoundingClientRect().height, content:root.querySelector('.solution-stage').getBoundingClientRect().height,
+      titles:[...root.querySelectorAll('.solution-label')].map(node=>({text:node.textContent,visible:node.getBoundingClientRect().height>0 && getComputedStyle(node).visibility!=='hidden'}))
+    }));
+    check(width+' mobile accordion has no sticky scene or extra scroll runway',!layout.sticky && Math.abs(layout.height-layout.content)<2,layout);
+    check(width+' mobile displays all four title controls',layout.titles.every((title,i)=>title.visible && title.text===expected[i][0]),layout.titles);
+    for(let i=0;i<4;i++) {
+      if((await state(page)).active!==i) await controls.nth(i).click();
+      await pause(page);
+      const s=await state(page);
+      check(width+' tap '+i+' opens matching description and image',s.active===i && matching(s) && sharp(s) && !s.overflow && s.visual.left>=-1 && s.visual.right<=width+1,s);
+      await controls.nth(i).click(); await pause(page);
+      const collapsed=await story.evaluate(root=>({
+        expanded:[...root.querySelectorAll('.solution-toggle')].filter(b=>b.getAttribute('aria-expanded')==='true').length,
+        visibleDescriptions:[...root.querySelectorAll('.solution-description')].filter(p=>!p.hidden && getComputedStyle(p).display!=='none').length
+      }));
+      check(width+' repeated tap '+i+' collapses its description',collapsed.expanded===0 && collapsed.visibleDescriptions===0,collapsed);
+    }
+    await controls.nth(1).click(); await pause(page);
+    const samples=await scrollSweep(page);
+    check(width+' document scrolling preserves tapped selection',samples.every(s=>s.active===1 && s.expanded===1),samples.map(s=>s.active));
+    await controls.nth(1).scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'meta-'+width+'.png')});
+  }
+  await page.setViewportSize({width:1024,height:1000}); await pause(page);
+  const desktop=await scrollSweep(page);
+  check('820 to 1024 resize restores all desktop scroll scenes',JSON.stringify([...new Set(desktop.map(s=>s.active))])==='[0,1,2,3]');
+  await page.setViewportSize({width:390,height:844}); await pause(page);
+  const story=page.locator('.solution-accordion');
+  const layout=await story.evaluate(root=>({sticky:[root,...root.querySelectorAll('*')].some(node=>getComputedStyle(node).position==='sticky'),height:root.offsetHeight,content:root.querySelector('.solution-stage').offsetHeight}));
+  check('desktop to mobile resize removes pinned scene and runway',!layout.sticky && Math.abs(layout.height-layout.content)<2,layout);
+  const control=story.locator('.solution-toggle').nth(2);
+  if((await state(page)).active!==2) await control.click();
+  await control.click(); await pause(page);
+  check('desktop to mobile resize restores repeat-tap collapse',(await state(page)).expanded===0);
+}
 async function finish(browser) {
   await browser.close();
   const result={checks,failures:checks.filter(c=>!c.pass)};
@@ -164,6 +212,7 @@ async function scrollSweep(page, reverse = false) {
   const page = await browser.newPage({viewport:{width:1440,height:1000}});
   page.on('pageerror',error=>errors.push(error.message));
   await enter(page);
+  if(process.env.TEST_FOCUS==='mobile-accordion') { await mobileAccordionChecks(page); check('mobile accordion produces no browser errors',errors.length===0,errors); await finish(browser); return; }
   if(process.env.TEST_FOCUS==='intro') { await introChecks(page); check('intro entry produces no browser errors',errors.length===0,errors); await finish(browser); return; }
   if(process.env.TEST_FOCUS==='large-text') { await largeTextChecks(page); await finish(browser); return; }
   await motionChecks(page);
@@ -194,19 +243,7 @@ async function scrollSweep(page, reverse = false) {
   await story.locator('.solution-toggle').nth(2).focus(); await page.keyboard.press('Space'); await pause(page);
   check('keyboard Space selects third scene',(await state(page)).active===2);
   await page.screenshot({path:path.join(out,'meta-desktop.png')});
-  for(const width of [390,320]) {
-    await page.setViewportSize({width,height:844}); await pause(page);
-    const samples = await scrollSweep(page);
-    check(width+' mobile scrolling visits all four scenes',JSON.stringify([...new Set(samples.map(s=>s.active))])==='[0,1,2,3]');
-    for(let i=0;i<4;i++) {
-      if ((await state(page)).active !== i) await story.locator('.solution-toggle').nth(i).click(); await pause(page);
-      const s=await state(page);
-      check(width+' mobile scene '+i+' is matched and fits viewport',s.active===i && matching(s) && sharp(s) && !s.overflow && s.visual.left>=-1 && s.visual.right<=width+1,s);
-      const content=[s.visual,...s.controls,s.descriptionRect];
-      check(width+' mobile scene '+i+' keeps screen, controls and text readable together',Math.min(...content.map(r=>r.top))>=-1 && Math.max(...content.map(r=>r.bottom))<=845 && (s.descriptionRect.top>=s.visual.bottom-1 || s.descriptionRect.bottom<=s.visual.top+1),content);
-    }
-    await page.screenshot({path:path.join(out,'meta-'+width+'.png')});
-  }
+  await mobileAccordionChecks(page);
   await page.setViewportSize({width:1440,height:1000}); await pause(page);
   const resized = await scrollSweep(page);
   check('mobile to desktop resize restores all scroll scenes',JSON.stringify([...new Set(resized.map(s=>s.active))])==='[0,1,2,3]');
@@ -221,6 +258,11 @@ async function scrollSweep(page, reverse = false) {
   check('live reduced-motion change retains a sharp matched scene',matching(await state(page)) && sharp(await state(page)));
   await enter(page);
   for(let i=0;i<4;i++) { if ((await state(page)).active !== i) await story.locator('.solution-toggle').nth(i).click(); await pause(page); const s=await state(page); check('reduced motion scene '+i+' stays accessible and sharp',s.active===i&&matching(s)&&sharp(s),s); }
+  await story.locator('.solution-toggle').nth(3).click(); await pause(page);
+  check('reduced motion retains normal repeat-tap accordion collapse',(await state(page)).expanded===0);
+  await story.locator('.solution-toggle').nth(1).click(); await pause(page);
+  const reducedSamples=await scrollSweep(page);
+  check('reduced motion document scrolling preserves tapped selection',reducedSamples.every(s=>s.active===1));
   await introFallbackCheck(page,'reduced motion');
   const reduced = await story.boundingBox();
   check('reduced motion avoids a long scroll runway',reduced.height<=1200,reduced.height);

@@ -139,6 +139,7 @@
   .c-hero .lead{ margin:22px auto 0; font-size:clamp(17px,2vw,24px); line-height:1.4; color:var(--muted); max-width:52ch; }
   .c-hero .role{ margin:18px auto 0; font-size:14px; color:var(--muted); max-width:60ch; }
   .c-hero .kv{ max-width:1100px; margin:clamp(32px,5vw,56px) auto 0; }
+  .carousel-layer{ position:absolute; inset:0; }
   .carousel-controls{ display:flex; justify-content:center; align-items:center; gap:12px; margin-top:14px; color:var(--muted); font-size:12px; }
   .carousel-controls button{ min-width:40px; min-height:40px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--text); cursor:pointer; }
   .carousel-controls button svg{ width:18px; height:18px; display:block; margin:auto; fill:currentColor; }
@@ -289,7 +290,7 @@
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
-<link rel="stylesheet" href="domino-background.css?v=2074-2">
+<link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
 </head>
 <body>
@@ -616,21 +617,60 @@ function stopCarousel(){
   if (!carouselState) return;
   clearTimeout(carouselState.timer);
   carouselState.observer.disconnect();
+  carouselState.animation?.cancel();
   carouselState = null;
 }
 function syncCarousel(){
   const s = carouselState; if (!s) return;
   clearTimeout(s.timer);
   const r = s.frame.getBoundingClientRect();
-  if (s.paused || !s.root.isConnected || document.hidden || r.bottom <= 0 || r.top >= innerHeight) return;
+  if (s.paused || s.changing || !s.root.isConnected || document.hidden || r.bottom <= 0 || r.top >= innerHeight) return;
   s.timer = setTimeout(() => advanceCarousel(1), CAROUSEL_INTERVAL);
 }
 function advanceCarousel(delta){
   const s = carouselState; if (!s) return;
-  s.index = (s.index + delta + s.slides.length) % s.slides.length;
-  s.frame.innerHTML = slideContents(slideSrc(s.slides[s.index]), `${s.title}, slide ${s.index+1}`);
-  s.root.querySelector('.carousel-count').textContent = `${s.index+1} / ${s.slides.length}`;
-  syncCarousel();
+  s.desired = (s.desired + delta + s.slides.length) % s.slides.length;
+  clearTimeout(s.timer);
+  if (!s.changing) transitionCarousel(s);
+}
+async function transitionCarousel(s){
+  s.changing = true;
+  while (carouselState === s && s.index !== s.desired) {
+    const index = s.desired;
+    const incoming = document.createElement('span');
+    incoming.className = 'carousel-layer';
+    incoming.setAttribute('aria-hidden', 'true');
+    incoming.innerHTML = slideContents(slideSrc(s.slides[index]), `${s.title}, slide ${index+1}`);
+    try {
+      // Keep the current slide painted until every incoming image is decoded.
+      await Promise.all([...incoming.querySelectorAll('img')].map(img => {
+        img.loading = 'eager';
+        return img.decode();
+      }));
+    } catch {
+      if (s.desired === index) s.desired = s.index;
+      continue;
+    }
+    if (carouselState !== s) return;
+    if (s.desired !== index) continue;
+    s.frame.append(incoming);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // The opaque outgoing layer stays underneath throughout the fade.
+      s.animation = incoming.animate([{opacity:0}, {opacity:1}], {
+        duration:420, easing:'ease-in-out', fill:'both'
+      });
+      try { await s.animation.finished; } catch { return; }
+    }
+    if (carouselState !== s) return;
+    s.frame.replaceChildren(incoming);
+    incoming.removeAttribute('aria-hidden');
+    s.animation?.cancel();
+    s.animation = null;
+    s.index = index;
+    s.root.querySelector('.carousel-count').textContent = `${index+1} / ${s.slides.length}`;
+  }
+  s.changing = false;
+  if (carouselState === s) syncCarousel();
 }
 function bindCarousel(){
   stopCarousel();
@@ -638,7 +678,11 @@ function bindCarousel(){
   const c = CASES.find(c => c.slug === root.dataset.carousel);
   const block = c.blocks[Number(root.dataset.blockIndex)];
   const frame = root.querySelector('.kv'), pause = root.querySelector('[data-carousel-pause]');
-  carouselState = {root, frame, title:block.h, slides:block.slides, index:0, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
+  const initial = document.createElement('span');
+  initial.className = 'carousel-layer';
+  initial.append(...frame.childNodes);
+  frame.append(initial);
+  carouselState = {root, frame, title:block.h, slides:block.slides, index:0, desired:0, changing:false, animation:null, paused:matchMedia('(prefers-reduced-motion: reduce)').matches, timer:null, observer:new IntersectionObserver(syncCarousel)};
   const updatePause = () => {
     pause.innerHTML = playbackIcon(carouselState.paused);
     pause.setAttribute('aria-label', carouselState.paused ? 'Play slideshow' : 'Pause slideshow');

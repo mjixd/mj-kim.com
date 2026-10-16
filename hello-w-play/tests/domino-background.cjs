@@ -71,6 +71,25 @@ async function themeAppearance(page,theme,name,screenshot) {
   await blendedBackdrop(page,name);
   if(screenshot)await page.screenshot({path:path.join(out,`${screenshot}-${browserName}.png`)});
 }
+async function shadowClearance(page,width) {
+  const img=page.locator(`${selectors.section} figure img`);
+  await img.evaluate(async image=>{image.scrollIntoView({block:'center',behavior:'instant'});await image.decode();});
+  await page.waitForTimeout(100);
+  const result=await img.evaluate(image=>{
+    const rect=image.getBoundingClientRect(),figure=image.closest('figure').getBoundingClientRect();
+    const clipped=[];
+    for(let ancestor=image.parentElement;ancestor;ancestor=ancestor.parentElement) {
+      const style=getComputedStyle(ancestor),box=ancestor.getBoundingClientRect();
+      const clipX=/hidden|clip|scroll|auto/.test(style.overflowX),clipY=/hidden|clip|scroll|auto/.test(style.overflowY);
+      if((clipX && (rect.left<box.left-.5 || rect.right>box.right+.5)) || (clipY && (rect.top<box.top-.5 || rect.bottom>box.bottom+.5)))clipped.push({element:ancestor.className||ancestor.tagName,box:box.toJSON(),overflow:[style.overflowX,style.overflowY]});
+    }
+    return {image:rect.toJSON(),figure:figure.toJSON(),clearance:{top:rect.top-figure.top,right:figure.right-rect.right,bottom:figure.bottom-rect.bottom,left:rect.left-figure.left},clipped,
+      viewport:{width:innerWidth,height:innerHeight},overflow:document.documentElement.scrollWidth>innerWidth+1};
+  });
+  check(`${width}px: full exported shadow is inside clipping ancestors and viewport`,result.clipped.length===0 && result.image.left>=0 && result.image.right<=width+.5 && result.image.top>=0 && result.image.bottom<=result.viewport.height+.5 && !result.overflow,result);
+  check(`${width}px: figure gives the exported shadow clearance on all four sides`,Object.values(result.clearance).every(value=>value>=1),result.clearance);
+  await page.screenshot({path:path.join(out,`background-shadow-${width}-${browserName}.png`)});
+}
 async function layout(page,width) {
   const result=await page.evaluate(s=>{
     const section=document.querySelector(s.section), video=document.querySelector(s.video), copy=document.querySelector(s.copy);
@@ -111,6 +130,16 @@ async function layout(page,width) {
     return page;
   };
   try {
+    if(process.env.TEST_FOCUS==='shadow') {
+      for(const width of [1440,390,320]) {
+        const page=await newPage({viewport:{width,height:width===1440?960:844},reducedMotion:'reduce'});
+        await layout(page,width);
+        await shadowClearance(page,width);
+        await page.close();
+      }
+      check('No uncaught browser errors',errors.length===0,errors);
+      return;
+    }
     const page=await newPage();
     const exists=await page.locator(selectors.section).count()===1;
     check('Background exposes the redesigned section',exists);

@@ -11,9 +11,12 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
 const selectors = { section: '[data-domino-zoom]', phone: '[data-domino-phone]', center: '[data-domino-center]', peripheral: '[data-domino-peripheral]', control: '[data-domino-playback]' };
 const settle = page => page.waitForTimeout(150);
 async function phase(page, progress) {
-  await page.locator(selectors.section).evaluate((section, progress) => {
+  await page.locator(selectors.section).evaluate(async (section, progress) => {
     const top = section.getBoundingClientRect().top + scrollY;
     scrollTo({ top: top + Math.max(0, section.offsetHeight - innerHeight) * progress, behavior: 'instant' });
+    // Synchronize with real paint opportunities; large decoded compositions can
+    // take longer than a fixed sleep to deliver scroll events in WebKit.
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }, progress);
   await settle(page);
 }
@@ -78,10 +81,11 @@ async function visual(page) {
       videosSafe: [...element.querySelectorAll('video')].every(video => video.muted && video.loop && video.playsInline),
       localSources: [...element.querySelectorAll('video,img')].every(element => new URL(element.currentSrc || element.src, location.href).origin === location.origin)
     }), selectors);
-    check('composition contains eight phones, two static originals and six local muted looping inline videos', composition.phones === 8 && composition.staticPhones === 2 && composition.videos === 6 && composition.centerStatic && composition.videosSafe && composition.localSources, composition);
+    check('composition contains sixteen phones, ten static originals and six local muted looping inline videos', composition.phones === 16 && composition.staticPhones === 10 && composition.videos === 6 && composition.centerStatic && composition.videosSafe && composition.localSources, composition);
     await phase(page, 0);
     const start = await visual(page);
-    check('initial stage prominently centers static phone and hides surrounding phones', start.center.height > 960 * 0.5 && Math.abs(start.center.x + start.center.width / 2 - 720) < 100 && start.opacity.length === 7 && start.opacity.every(value => value < 0.08), start);
+    // Final close-up contract: desktop phone exceeds 1.8 viewport heights; clipping is intentional.
+    check('initial stage starts in full central close-up and hides surrounding phones', start.center.height >= 960 * 1.8 && Math.abs(start.center.x + start.center.width / 2 - 720) < 100 && start.opacity.length === 15 && start.opacity.every(value => value < 0.08), start);
     await stopped(page, 'initially hidden videos do not advance');
     await page.screenshot({ path: path.join(out, `domino-start-${browserName}.png`) });
     const trace = [];
@@ -109,6 +113,11 @@ async function visual(page) {
     await phase(page, 0.85);
     const revealed = await visual(page);
     check('forward scroll shrinks center and reveals surrounding composition', revealed.center.height < start.center.height * 0.8 && revealed.opacity.every(value => value > 0.9) && !revealed.overflow, { start, revealed });
+    // Coordinates are the updated Figma frame contract, independent of rendering code.
+    const framePositions = [[4464,2952],[7415,1078],[7409,3898],[5939,5323],[2994,1890],[2994,4712],[1524,3382],[5934,2500],[4459,132],[4483,5774],[8879,2220],[8879,5042],[44,2350],[1529,562],[44,5175],[1524,6204]];
+    const renderedPhones = await page.locator(selectors.phone).evaluateAll(phones => phones.map(phone => phone.getBoundingClientRect().toJSON()));
+    const frameScale = revealed.center.width / 1300;
+    check('fully revealed sixteen-phone arrangement fits the viewport and preserves updated Figma relative positions', renderedPhones.every(rect => rect.x >= 0 && rect.y >= 0 && rect.right <= 1441 && rect.bottom <= 961) && framePositions.every(([x,y]) => renderedPhones.some(rect => Math.abs(rect.x - revealed.center.x - (x-4464)*frameScale) < 2 && Math.abs(rect.y - revealed.center.y - (y-2952)*frameScale) < 2 && Math.abs(rect.width - 1300*frameScale) < 2 && Math.abs(rect.height - 2642*frameScale) < 2)), renderedPhones);
     await moving(page, 'revealed six videos actually progress');
     await page.screenshot({ path: path.join(out, `domino-revealed-${browserName}.png`) });
     await phase(page, 0);
@@ -157,8 +166,12 @@ async function visual(page) {
     for (const width of [390, 320]) {
       const mobile = await newPage({ viewport: { width, height: 844 } });
       await mobile.goto(base + '#/work/domino-mvp');
+      await phase(mobile, 0);
+      const mobileStart = await visual(mobile);
+      check(`${width}px: initial central close-up exceeds viewport width while section clips overflow`, mobileStart.center.width >= width * 1.1 && !mobileStart.overflow, mobileStart);
       await phase(mobile, 0.85);
-      check(`${width}px: composition produces no horizontal page overflow`, !(await visual(mobile)).overflow);
+      const mobilePhones = await mobile.locator(selectors.phone).evaluateAll(phones => phones.map(phone => phone.getBoundingClientRect().toJSON()));
+      check(`${width}px: all sixteen phones fit without horizontal page overflow`, mobilePhones.length === 16 && mobilePhones.every(rect => rect.x >= 0 && rect.y >= 0 && rect.right <= width + 1 && rect.bottom <= 845) && !(await visual(mobile)).overflow, mobilePhones);
       await mobile.locator('.deck-band .btn').scrollIntoViewIfNeeded();
       check(`${width}px: existing copy CTA remains reachable`, await mobile.locator('.deck-band .btn').isVisible());
       await mobile.locator('.pager').scrollIntoViewIfNeeded();
@@ -220,7 +233,8 @@ async function visual(page) {
   } finally {
     await browser.close();
     const root = path.resolve(__dirname, '../..');
-    const hashes = Object.fromEntries(['index.html', 'domino-zoom.js', 'domino-zoom.css', 'hello-w-play/tests/domino-zoom.cjs'].map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')]));
+    const assetFiles = fs.readdirSync(path.join(root, 'assets/domino/zoom')).filter(file => /\.(png|mp4|svg)$/.test(file)).map(file => 'assets/domino/zoom/' + file);
+    const hashes = Object.fromEntries(['index.html', 'domino-zoom.js', 'domino-zoom.css', 'hello-w-play/tests/domino-zoom.cjs', ...assetFiles].map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')]));
     const result = { browser: browserName, hashes, checks, failures: checks.filter(item => !item.pass) };
     fs.writeFileSync(path.join(out, `domino-zoom-${browserName}-results.json`), JSON.stringify(result, null, 2));
     console.log(`${checks.length} checks, ${result.failures.length} failures`, result.failures);

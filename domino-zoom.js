@@ -1,14 +1,22 @@
 /* Original Figma frame 2073 coordinates; each video replaces only its screen. */
 window.DominoZoom = (() => {
   const phones = [
-    ['overview',4464,2166,0,0,'Portfolio overview'],
-    ['assistant',7457,2669,0,0,'Portfolio assistant'],
-    ['dividends',5963,3689,215,2372,'Dividend analysis'],
-    ['markets',3030,1104,211,2372,'Market overview'],
-    ['net-worth',3030,3892,216,2367,'Net worth analysis'],
-    ['price-alert',1596,2561,216,2348,'Price alerts'],
-    ['returns',5958,896,213,2352,'Investment returns'],
-    ['calendar',4483,4988,210,2374,'Dividend calendar']
+    ['overview',4464,2952,0,0,'Portfolio overview'],
+    ['overview-secondary',7415,1078,0,0,'Buy order'],
+    ['edit-accounts',8879,2220,0,0,'Edit investment accounts'],
+    ['uncategorized',8879,5042,0,0,'Uncategorized assets'],
+    ['watchlist',44,2350,0,0,'Investment watchlist'],
+    ['currency',1529,562,0,0,'Currency settings'],
+    ['account-drawer',44,5175,0,0,'Account navigation'],
+    ['asset-selector',1524,6204,0,0,'Select visible assets'],
+    ['assistant',7409,3898,0,0,'Portfolio assistant'],
+    ['dividends',5939,5323,215,2372,'Dividend analysis'],
+    ['markets',2994,1890,211,2372,'Market overview'],
+    ['net-worth',2994,4712,216,2367,'Net worth analysis'],
+    ['price-alert',1524,3382,216,2348,'Price alerts'],
+    ['returns',5934,2500,213,2352,'Investment returns'],
+    ['edit-assets',4459,132,0,0,'Edit portfolio assets'],
+    ['calendar',4483,5774,210,2374,'Dividend calendar']
   ];
   const base = 'assets/domino/zoom/';
   const clamp = n => Math.max(0,Math.min(1,n));
@@ -18,7 +26,8 @@ window.DominoZoom = (() => {
     return `<section class="domino-zoom" data-domino-zoom aria-label="Explore Domino's portfolio tools">
       <div class="domino-zoom__sticky"><div class="domino-zoom__board">
       ${phones.map(([name,x,y,top,height,label]) => `<div class="domino-zoom__phone" data-domino-phone="${name}" ${name==='overview'?'data-domino-center':'data-domino-peripheral'} style="left:${x}px;top:${y}px">
-        <img src="${base+name}.png" alt="${label}" width="1300" height="2642" loading="lazy" decoding="async">
+        <img class="domino-zoom__buttons" src="${base}buttons.png" alt="" width="1300" height="645" loading="lazy">
+        <img class="domino-zoom__body" src="${base+name}.png?v=2073-final" alt="${label}" width="1280" height="2642" loading="lazy" decoding="async">
         ${height?`<video data-src="${base+name}.mp4" muted playsinline loop preload="none" aria-label="${label} demonstration" style="top:${top/2642*100}%;height:${height/2642*100}%"></video>`:''}
       </div>`).join('')}</div>
       <button class="domino-zoom__control" type="button" data-domino-playback aria-label="Pause animations"></button>
@@ -66,11 +75,15 @@ window.DominoZoom = (() => {
       visible=rect.top<h && rect.bottom>0;
       progress=motion.matches?1:clamp(-rect.top/Math.max(1,rect.height-h));
       const t=smooth(progress/.82),alpha=motion.matches?1:smooth((progress-.18)/.38);
-      const start=Math.min((w-64)/1300,(h-160)/2642);
-      const end=Math.min((w-48)/7161,(h-160)/6734);
+      const start=Math.max(w*1.12/1300,h*1.8/2642);
+      // Include the Figma shadows in the final composition bounds.
+      const end=Math.min((w-48)/10635,(h-160)/9214);
       const scale=start+(end-start)*t;
-      const cx=5114+(5176.5-5114)*t,cy=3487+(4263-3487)*t;
-      board.style.transform=`translate(${w/2-cx*scale}px,${h/2+24-cy*scale}px) scale(${scale})`;
+      // Keep the balance readable within the intentional mobile close-up crop.
+      const startX=4464+(w<768?440:650);
+      const cx=startX+(5191.5-startX)*t,cy=3302+(4569-3302)*t;
+      const targetY=96+(h/2+24-96)*t;
+      board.style.transform=`translate(${w/2-cx*scale}px,${targetY-cy*scale}px) scale(${scale})`;
       peripheral.forEach(phone=>phone.style.opacity=alpha);
       media();
     }

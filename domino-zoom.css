@@ -1,9 +1,11 @@
 /* Frame 2073: one scroll timeline owns the composition and media visibility. */
-.domino-zoom{position:relative;height:240svh;background:var(--bg,#fff)}
+.domino-zoom{position:relative;height:300svh;background:var(--bg,#fff)}
 .domino-zoom__sticky{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate}
-.domino-zoom__board{position:absolute;left:0;top:0;width:10464px;height:8305px;transform-origin:0 0;will-change:transform}
-.domino-zoom__phone{position:absolute;width:1300px;height:2642px;border-radius:18% / 9%;overflow:hidden}
-.domino-zoom__phone img{display:block;width:100%;height:100%;pointer-events:none}
+.domino-zoom__board{position:absolute;left:0;top:0;width:10464px;height:9091px;transform-origin:0 0;will-change:transform}
+.domino-zoom__phone{position:absolute;width:1300px;height:2642px}
+.domino-zoom__phone img{position:absolute;display:block;max-width:none;pointer-events:none}
+.domino-zoom__body{left:10px;top:0;width:1280px;height:2642px;border-radius:210px;box-shadow:30px 30px 100px rgba(0,0,0,.25),80px 80px 250px rgba(0,0,0,.25)}
+.domino-zoom__buttons{left:0;top:538px;width:1300px;height:645px;clip-path:path('M0 0H10V97H0Z M0 189H10V391H0Z M0 443H10V645H0Z M1290 260H1300V574H1290Z')}
 .domino-zoom__phone video{position:absolute;left:5%;width:90%;object-fit:fill;border-radius:122px;opacity:0;pointer-events:none}
 .domino-zoom__phone video.is-playing{opacity:1}
 .domino-zoom__phone[data-domino-peripheral]{opacity:0;will-change:opacity}

@@ -11,6 +11,29 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
 const selectors = { section: '[data-domino-zoom]', phone: '[data-domino-phone]', center: '[data-domino-center]', peripheral: '[data-domino-peripheral]', control: '[data-domino-playback]' };
 const settle = page => page.waitForTimeout(150);
 const coversViewport = (rects, width, height) => Math.min(...rects.map(rect => rect.x)) <= 1 && Math.min(...rects.map(rect => rect.y)) <= 1 && Math.max(...rects.map(rect => rect.right)) >= width - 1 && Math.max(...rects.map(rect => rect.bottom)) >= height - 1;
+async function backgroundFlow(page) {
+  return page.evaluate(() => {
+    const header = document.querySelector('.c-hero');
+    const zoom = document.querySelector('[data-domino-zoom]');
+    const slides = [...document.querySelectorAll('#app img')].filter(image => decodeURIComponent(new URL(image.src).pathname).endsWith('/EN · 19.png'));
+    const heading = [...document.querySelectorAll('#app h2,#app h3')].find(node => node.textContent.trim() === 'Background');
+    const background = heading?.closest('section');
+    const paragraph = background && [...background.querySelectorAll('p')].find(node => node.textContent.trim().length > 40 && /Domino|invest|portfolio|asset|MVP|MyData/i.test(node.textContent));
+    const before = (a,b) => !!a && !!b && !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    return {
+      title: header?.querySelector('h1')?.textContent,
+      lead: header?.querySelector('.lead')?.textContent,
+      role: header?.querySelector('.role')?.textContent,
+      uniqueSlide: slides.length === 1,
+      correctOrder: background === zoom?.nextElementSibling && before(header, zoom) && before(zoom, heading) && before(heading, paragraph) && before(paragraph, slides[0]) && !header?.contains(slides[0]) && !!background?.contains(slides[0]),
+      contextualParagraph: paragraph?.textContent,
+      chartPreserved: background?.querySelectorAll('video[src="assets/videos/domino-chart.mp4"]').length === 1,
+      overlayPreserved: background?.querySelectorAll('img[src="assets/domino-app-icon.png"]').length === 1,
+      requestPreserved: !!slides[0]?.closest('a[href^="mailto:mjkiminfo@gmail.com?subject=Case%20study%20request"]')
+    };
+  });
+}
+const validBackground = state => state.uniqueSlide && state.correctOrder && !!state.contextualParagraph && state.chartPreserved && state.overlayPreserved && state.requestPreserved;
 async function phase(page, progress) {
   await page.locator(selectors.section).evaluate(async (section, progress) => {
     const top = section.getBoundingClientRect().top + scrollY;
@@ -73,6 +96,9 @@ async function visual(page) {
     await page.locator('.pager').waitFor();
     check('Domino detail exposes its scroll-driven phone composition', await page.locator(selectors.section).count() === 1);
     if (!checks.at(-1).pass) return;
+    const background = await backgroundFlow(page);
+    check('Domino retains its original title, introduction and role above the zoom', background.title === '0→1 product and business strategy' && background.lead === 'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0→1 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team’s operating cadence.' && background.role === 'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 – 2024', background);
+    check('Background title and context follow zoom before the unique EN19 slide, preserving chart, icon and request link', validBackground(background), background);
     const section = page.locator(selectors.section);
     const composition = await section.evaluate((element, s) => ({
       phones: element.querySelectorAll(s.phone).length,
@@ -168,6 +194,8 @@ async function visual(page) {
     for (const width of [390, 320]) {
       const mobile = await newPage({ viewport: { width, height: 844 } });
       await mobile.goto(base + '#/work/domino-mvp');
+      const mobileBackground = await backgroundFlow(mobile);
+      check(`${width}px: Background and its unique media follow zoom in the same reading order`, validBackground(mobileBackground), mobileBackground);
       await phase(mobile, 0);
       const mobileStart = await visual(mobile);
       const mobileHeaderBottom = await mobile.locator('header').evaluate(header => header.getBoundingClientRect().bottom);
@@ -182,6 +210,12 @@ async function visual(page) {
       await stopped(mobile, `${width}px: scrolling to navigation stops videos`);
       await mobile.close();
     }
+
+    const otherCase = await newPage();
+    await otherCase.goto(base + '#/work/meta');
+    await otherCase.locator('.pager').waitFor();
+    check('non-Domino Meta case retains its original top hero image', await otherCase.locator('.c-hero img[src="assets/meta/hero-four-screens.png"]').count() === 1 && await otherCase.locator('[data-domino-zoom]').count() === 0);
+    await otherCase.close();
 
     const reduced = await newPage({ reducedMotion: 'reduce' });
     await reduced.goto(base + '#/work/domino-mvp');

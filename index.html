@@ -331,6 +331,7 @@ const CASES = [
   { slug:'domino-mvp', meta:'Domino · 2022–2024', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
     kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
     kvHero:'assets/decks/EN · 19.png',
+    background:'I joined Domino as a founding product designer, helping shape an investment platform from its initial MVP through MyData integration. Working with the CEO, PM, and CTO, I led design end to end, helped set the product direction, and defined hypotheses and success metrics for a unified, account-centric experience.',
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
@@ -792,10 +793,17 @@ function renderCase(slug){
       <h1>${caseHeading(c.title)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.background ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
+    ${c.background ? `<section class="band">
+      <div class="slide wrap">
+        <h2>Background</h2>
+        <p>${esc(c.background)}</p>
+        ${kvHTML({src:c.kvHero, alt:'Domino product background and investment chart', request:c.slug})}
+      </div>
+    </section>` : ''}
     ${c.blocks.map((b, k) => `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">

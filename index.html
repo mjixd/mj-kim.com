@@ -289,6 +289,7 @@
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
+<link rel="stylesheet" href="domino-background.css?v=2074-1">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
 </head>
 <body>
@@ -315,6 +316,7 @@
 <div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script src="domino-zoom.js?v=mobile-memory-1"></script>
+<script src="domino-background.js?v=2074-1"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=2016-2"></script>
 <script>
@@ -824,13 +826,7 @@ function renderCase(slug){
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
-    ${c.background ? `<section class="band">
-      <div class="slide wrap">
-        <h2>Background</h2>
-        <p>${esc(c.background)}</p>
-        ${kvHTML({src:c.kvHero, alt:'Domino product background and investment chart', request:c.slug})}
-      </div>
-    </section>` : ''}
+    ${c.background ? DominoBackground.render(esc(c.background)) : ''}
     ${c.blocks.map((b, k) => b.voiceFeature ? SiriStory.renderChip() + SiriStory.renderVoice() : `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
@@ -872,6 +868,7 @@ function renderCase(slug){
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   bindSolutionAccordion();
   DominoZoom.mount();
+  DominoBackground.mount();
   SiriStory.mount();
   observeKV();
 }
@@ -939,6 +936,7 @@ function route(){
   stopSlideVideos();
   stopSolutionStory();
   DominoZoom.cleanup();
+  DominoBackground.cleanup();
   SiriStory.cleanup();
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');

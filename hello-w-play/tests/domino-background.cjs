@@ -10,7 +10,7 @@ const root = path.resolve(__dirname, '../..');
 const selectors = { section: '[data-domino-background]', video: '[data-domino-background-video]', copy: '[data-domino-background-copy]' };
 const checks = [];
 const check = (name, pass, actual) => checks.push({name, pass: Boolean(pass), actual});
-const hashes = Object.fromEntries(['index.html', 'domino-zoom.js', 'domino-zoom.css', 'domino-background.js', 'domino-background.css', 'assets/domino/background/landscape-2074.png', 'assets/domino/background/chart-mobile.mp4', 'assets/videos/domino-chart.mp4', 'hello-w-play/tests/domino-background.cjs'].filter(file => fs.existsSync(path.join(root,file))).map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
+const hashes = Object.fromEntries(['index.html', 'domino-zoom.js', 'domino-zoom.css', 'domino-background.js', 'domino-background.css', 'assets/domino/background/landscape-2074-light.png', 'assets/domino/background/landscape-2074-dark.png', 'assets/domino/background/chart-mobile.mp4', 'assets/videos/domino-chart.mp4', 'hello-w-play/tests/domino-background.cjs'].filter(file => fs.existsSync(path.join(root,file))).map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
 async function state(page, retained = false) {
   return page.evaluate(({selector,retained}) => {
     const v = retained ? window.retainedBackgroundVideo : document.querySelector(selector);
@@ -39,6 +39,38 @@ async function reveal(page) {
   await page.locator(selectors.video).evaluate(v => v.scrollIntoView({block:'center',behavior:'instant'}));
   await page.waitForTimeout(250);
 }
+async function noControls(page,name) {
+  const result=await page.locator(selectors.section).evaluate(section=>({
+    buttons:section.querySelectorAll('button,[role="button"]').length,
+    native:[...section.querySelectorAll('video')].some(v=>v.controls),
+  }));
+  check(name,result.buttons===0 && !result.native,result);
+}
+async function posterVisible(page,name) {
+  const result=await page.locator(selectors.section).evaluate(section=>{
+    const img=section.querySelector('figure img'),video=section.querySelector('video');
+    let opacity=1; for(let e=video;e && e!==section;e=e.parentElement)opacity*=Number(getComputedStyle(e).opacity);
+    return {loaded:!!img && img.complete && img.naturalWidth>0,source:img?.getAttribute('src'),videoOpacity:opacity};
+  });
+  check(name,result.loaded && /^assets\/domino\/background\/landscape-2074-(light|dark)\.png$/.test(result.source) && result.videoOpacity<.01,result);
+}
+async function blendedBackdrop(page,name='Frame exterior blends into the detail page background') {
+  const result=await page.locator(selectors.section).evaluate(async section=>{
+    const img=section.querySelector('figure img'); await img.decode();
+    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+    const bg=getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).slice(0,3).map(Number);
+    const points=[[0,0],[img.naturalWidth-1,0],[0,img.naturalHeight-1],[img.naturalWidth-1,img.naturalHeight-1]];
+    const corners=points.map(([x,y])=>[...ctx.getImageData(x,y,1,1).data]);
+    return {bg,corners,maxDelta:Math.max(...corners.flatMap(p=>bg.map((c,i)=>Math.abs(p[i]*p[3]/255+c*(1-p[3]/255)-c))))};
+  });
+  check(name,result.maxDelta<=3,result);
+}
+async function themeAppearance(page,theme,name,screenshot) {
+  await page.waitForFunction(({selector,theme})=>document.querySelector(`${selector} figure img`)?.getAttribute('src')===`assets/domino/background/landscape-2074-${theme}.png`,{selector:selectors.section,theme});
+  await blendedBackdrop(page,name);
+  if(screenshot)await page.screenshot({path:path.join(out,`${screenshot}-${browserName}.png`)});
+}
 async function layout(page,width) {
   const result=await page.evaluate(s=>{
     const section=document.querySelector(s.section), video=document.querySelector(s.video), copy=document.querySelector(s.copy);
@@ -51,7 +83,7 @@ async function layout(page,width) {
       obsolete:[...section.querySelectorAll('img')].some(i=>decodeURIComponent(new URL(i.src).pathname).endsWith('/EN · 19.png')),
       videoCount:section.querySelectorAll(s.video).length, ordered:!!copy && !!(video.compareDocumentPosition(copy)&Node.DOCUMENT_POSITION_FOLLOWING),
       headings:columns.map(c=>c.querySelector('h2,h3,h4')?.textContent.trim()), paragraphs:columns.map(c=>c.textContent.trim()), columns:columns.map(rect),
-      copy:rect(copy), wrap:rect(wrap), reference:rect(reference), overflow:document.documentElement.scrollWidth>innerWidth+1,
+      copy:rect(copy), device:rect(section.querySelector('figure img')), wrap:rect(wrap), reference:rect(reference), overflow:document.documentElement.scrollWidth>innerWidth+1,
       safeMedia:video.muted && video.playsInline && video.loop, poster:video.poster,
       title:document.querySelector('.c-hero h1')?.textContent, role:document.querySelector('.c-hero .role')?.textContent};
   },selectors);
@@ -62,13 +94,16 @@ async function layout(page,width) {
   check(`${width}px: copy forms ${width>820?'two columns':'a readable stack'}`,result.columns.length===2 && (width>820 ? Math.abs(result.columns[0].top-result.columns[1].top)<2 && result.columns[1].left>result.columns[0].right : result.columns[1].top>=result.columns[0].bottom),result.columns);
   check(`${width}px: page margins remain aligned and no horizontal overflow`,!!result.wrap && Math.abs(result.wrap.left-result.reference.left)<1 && Math.abs(result.wrap.right-result.reference.right)<1 && !result.overflow && result.copy.left>=result.wrap.left-1 && result.copy.right<=result.wrap.right+1,result);
   check(`${width}px: existing career title and role are unchanged`,result.title==='0→1 product and business strategy' && result.role==='Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 – 2024',result);
+  if(width===1440)check('Desktop landscape mockup is larger than the 1100px base50064d9 rendering',result.device.width>1101,result.device);
+  check(`${width}px: landscape image keeps its original aspect ratio`,Math.abs(result.device.width/result.device.height-3142/1800)<.01,result.device);
+  await noControls(page,`${width}px: Background has no playback controls`);
 }
 (async()=>{
   fs.mkdirSync(out,{recursive:true});
   const browser=await playwright[browserName].launch({headless:true,...(browserName==='chromium' && process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
   const errors=[];
   const newPage=async (options,initScript)=>{
-    const page=await browser.newPage({viewport:{width:1440,height:960},reducedMotion:'no-preference',...options});
+    const page=await browser.newPage({viewport:{width:1440,height:960},reducedMotion:'no-preference',colorScheme:'light',...options});
     page.on('pageerror',error=>errors.push(error.message));
     if(initScript)await page.addInitScript(initScript);
     await page.goto(base+'#/work/domino-mvp');
@@ -85,16 +120,19 @@ async function layout(page,width) {
     await reveal(page);
     await moving(page,'In-view video decodes and actually advances');
     await page.screenshot({path:path.join(out,`background-desktop-${browserName}.png`)});
-    const button=page.locator(selectors.section).getByRole('button');
-    check('Playback has one visible accessible pause control',await button.count()===1 && await button.isVisible() && /pause/i.test(await button.getAttribute('aria-label')||await button.innerText()));
-    await button.click();
-    await stopped(page,'Manual pause stops playback');
-    await page.locator('.pager').scrollIntoViewIfNeeded();
-    await stopped(page,'Offscreen manually-paused video releases decoder state',{unloaded:true});
-    await reveal(page);
-    await stopped(page,'Manual pause persists after leaving and reentering');
-    await button.focus(); await page.keyboard.press('Enter');
-    await moving(page,'Keyboard play resumes video');
+    await blendedBackdrop(page);
+    // The page initializes an explicit theme; remove it to exercise system mode.
+    await page.evaluate(()=>delete document.documentElement.dataset.theme);
+    await page.emulateMedia({colorScheme:'dark'});
+    await themeAppearance(page,'dark','System dark mode frame matches the detail backdrop','background-desktop-dark');
+    await page.evaluate(()=>document.documentElement.dataset.theme='light');
+    await themeAppearance(page,'light','Explicit light theme overrides system dark mode');
+    await page.emulateMedia({colorScheme:'light'});
+    await page.evaluate(()=>document.documentElement.dataset.theme='dark');
+    await themeAppearance(page,'dark','Explicit dark theme overrides system light mode');
+    await page.evaluate(()=>delete document.documentElement.dataset.theme);
+    await themeAppearance(page,'light','Removing explicit theme restores system light appearance');
+    await moving(page,'Theme changes preserve automatic playback');
     await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
     await stopped(page,'Hidden document unloads decoder state',{unloaded:true});
     await page.evaluate(()=>{delete document.hidden;delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
@@ -115,6 +153,12 @@ async function layout(page,width) {
       await layout(mobile,width);
       await reveal(mobile); await moving(mobile,`${width}px: Background video really plays`);
       await mobile.screenshot({path:path.join(out,`background-${width}-${browserName}.png`)});
+      if(width===390) {
+        await mobile.evaluate(()=>delete document.documentElement.dataset.theme);
+        await mobile.emulateMedia({colorScheme:'dark'});
+        await themeAppearance(mobile,'dark','Mobile dark frame matches the detail backdrop','background-390-dark');
+        await moving(mobile,'Mobile dark mode preserves automatic playback');
+      }
       await mobile.locator('.pager').scrollIntoViewIfNeeded();
       await stopped(mobile,`${width}px: offscreen media unloads`,{unloaded:true});
       await mobile.close();
@@ -122,10 +166,13 @@ async function layout(page,width) {
     const reduced=await newPage({reducedMotion:'reduce'});
     await reveal(reduced);
     await stopped(reduced,'Reduced motion prevents autoplay');
-    const reducedButton=reduced.locator(selectors.section).getByRole('button');
-    check('Reduced motion provides a visible play action',await reducedButton.isVisible() && /play/i.test(await reducedButton.getAttribute('aria-label')||await reducedButton.innerText()));
-    await reducedButton.click(); await moving(reduced,'Reduced motion permits explicit playback');
-    await reducedButton.click(); await stopped(reduced,'Reduced motion manual pause works');
+    await noControls(reduced,'Reduced motion adds no playback controls');
+    await posterVisible(reduced,'Reduced motion shows the static original poster');
+    await reduced.emulateMedia({reducedMotion:'no-preference'});
+    await moving(reduced,'Disabling reduced motion resumes automatic playback');
+    await reduced.emulateMedia({reducedMotion:'reduce'});
+    await stopped(reduced,'Enabling reduced motion stops playback');
+    await posterVisible(reduced,'Enabling reduced motion restores the original poster');
     await reduced.close();
     const denied=await newPage({},()=>{
       const play=HTMLMediaElement.prototype.play;
@@ -135,10 +182,8 @@ async function layout(page,width) {
       };
     });
     await reveal(denied); await stopped(denied,'Autoplay denial leaves media safely paused');
-    const retry=denied.locator(selectors.section).getByRole('button');
-    check('Autoplay denial offers an accessible retry action',await retry.isVisible() && /play/i.test(await retry.getAttribute('aria-label')||await retry.innerText()));
-    await denied.evaluate(()=>window.allowBackgroundPlayback=true);
-    await retry.click(); await moving(denied,'User play recovers from autoplay denial');
+    await noControls(denied,'Autoplay denial adds no playback controls');
+    await posterVisible(denied,'Autoplay denial preserves the static original poster');
     await denied.close();
     // Real playback is retained; only first-request settlement is held across
     // unload/reentry to expose a completion belonging to a retired media load.

@@ -292,6 +292,7 @@
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
+<link rel="stylesheet" href="samsung-story.css?v=1">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -320,6 +321,7 @@
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=2016-2"></script>
+<script src="samsung-story.js?v=1"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -886,6 +888,7 @@ function renderCase(slug){
           `}
         </div>
       </section>`).join('')}
+    ${c.slug === 'samsung' ? SamsungStory.render() : ''}
     <section class="band dark">
       <div class="impact wrap">
         <div class="eyebrow">${esc(c.outcomeLabel || 'Impact')}</div>
@@ -915,6 +918,7 @@ function renderCase(slug){
   DominoZoom.mount();
   DominoBackground.mount();
   SiriStory.mount();
+  SamsungStory.mount();
   observeKV();
 }
 
@@ -983,6 +987,7 @@ function route(){
   DominoZoom.cleanup();
   DominoBackground.cleanup();
   SiriStory.cleanup();
+  SamsungStory.cleanup();
   if (h.startsWith('work/')) {
     const parts = h.slice(5).split('/');
     renderCase(parts[0]);

@@ -292,7 +292,7 @@
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
-<link rel="stylesheet" href="samsung-story.css?v=1">
+<link rel="stylesheet" href="samsung-story.css?v=fold-workspace-2">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -321,7 +321,7 @@
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=2016-2"></script>
-<script src="samsung-story.js?v=1"></script>
+<script src="samsung-story.js?v=fold-workspace-2"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -863,13 +863,14 @@ function renderCase(slug){
   document.title = `${c.title} | Minjung Kim`;
   const hero = c.blocks[c.blocks.length - 1];
   app.innerHTML = `
+    ${c.slug === 'samsung' ? SamsungStory.render() : ''}
     ${c.slug === 'line' ? SiriStory.renderHero() : ''}
     <section class="c-hero wrap">
       <div class="meta">${esc(c.meta)}</div>
       ${c.slug === 'line' ? '' : `<h1>${caseHeading(c.title)}</h1>`}
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${c.background || c.slug === 'line' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.background || c.slug === 'line' || c.slug === 'samsung' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
@@ -888,7 +889,7 @@ function renderCase(slug){
           `}
         </div>
       </section>`).join('')}
-    ${c.slug === 'samsung' ? SamsungStory.render() : ''}
+    ${c.slug === 'samsung' ? SamsungStory.renderWorkspace() : ''}
     <section class="band dark">
       <div class="impact wrap">
         <div class="eyebrow">${esc(c.outcomeLabel || 'Impact')}</div>

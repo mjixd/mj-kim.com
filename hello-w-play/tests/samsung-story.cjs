@@ -8,9 +8,10 @@ const engine = process.env.TEST_BROWSER || 'chromium';
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:8789/';
 const out = process.env.TEST_OUTPUT || path.join(require('node:os').tmpdir(), 'samsung-story-' + engine);
 const selector = '[data-samsung-story]';
+const workspaceSelector = '[data-samsung-workspace]';
 const checks = [], errors = [];
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const sources = Object.fromEntries(['index.html', 'samsung-story.js', 'samsung-story.css', 'hello-w-play/tests/samsung-story.cjs'].map(file => {
+const sources = Object.fromEntries(['index.html', 'samsung-story.js', 'samsung-story.css', 'assets/samsung/fold-two.png', 'assets/samsung/fold-three.png', 'assets/samsung/fold-start.png', 'hello-w-play/tests/samsung-story.cjs'].map(file => {
   const location = path.resolve(__dirname, '../..', file);
   return [file, fs.existsSync(location) ? hash(fs.readFileSync(location)) : null];
 }));
@@ -22,20 +23,20 @@ async function enter(page) {
   await page.evaluate(() => document.fonts.ready);
   await settle(page);
 }
-async function phase(page, progress) {
-  await page.locator(selector).evaluate((root, progress) => scrollTo({
+async function phase(page, progress, rootSelector = selector) {
+  await page.locator(rootSelector).evaluate((root, progress) => scrollTo({
     top: scrollY + root.getBoundingClientRect().top + Math.max(0, root.offsetHeight - innerHeight) * progress,
     behavior: 'instant',
   }), progress);
   await settle(page);
 }
-async function state(page) {
-  return page.locator(selector).evaluate(root => {
+async function state(page, rootSelector = selector) {
+  return page.locator(rootSelector).evaluate(root => {
     const opacity = node => { let value = 1; for (let el = node; el; el = el.parentElement) { const css = getComputedStyle(el); if (css.display === 'none' || css.visibility === 'hidden') return 0; value *= Number(css.opacity); } return value; };
-    const images = [...root.querySelectorAll('img')].map(image => ({ src: image.getAttribute('src'), width: image.naturalWidth, alpha: opacity(image) }));
+    const images = [...root.querySelectorAll('img')].map(image => ({ src: image.getAttribute('src'), alt: image.alt, width: image.naturalWidth, alpha: opacity(image) }));
     return {
       y: scrollY, height: root.offsetHeight, viewport: innerHeight,
-      sticky: getComputedStyle(root.querySelector('.samsung-story__stage')).position,
+      sticky: getComputedStyle(root.querySelector('.samsung-story__stage, [data-samsung-stage]') || root.firstElementChild).position,
       images,
       videos: [...root.querySelectorAll('video')].map(video => ({ src: video.getAttribute('src'), currentSrc: video.currentSrc, time: video.currentTime, duration: video.duration, ready: video.readyState, network: video.networkState, error: video.error?.code || null, paused: video.paused, alpha: opacity(video) })),
       composition: [...root.querySelectorAll('img,video,h2,h3,p')].map(node => ({ tag: node.tagName, alpha: opacity(node), transform: getComputedStyle(node).transform })),
@@ -46,15 +47,15 @@ async function state(page) {
 function sameComposition(a, b) {
   return JSON.stringify(a.composition) === JSON.stringify(b.composition);
 }
-async function copyLayout(page, label) {
-  const copy = await page.locator(selector).evaluate(root => [...root.querySelectorAll('h2,h3,p,a')].filter(node => node.textContent.trim()).map(node => {
+async function copyLayout(page, label, rootSelector = selector) {
+  const copy = await page.locator(rootSelector).evaluate(root => [...root.querySelectorAll('h2,h3,p,a')].filter(node => node.textContent.trim()).map(node => {
     const r = node.getBoundingClientRect(), css = getComputedStyle(node);
     return { text: node.textContent.trim(), left: r.left, right: r.right, width: r.width, size: parseFloat(css.fontSize), color: css.color, display: css.display, visibility: css.visibility };
   }));
   const width = page.viewportSize().width;
   check(label + ': copy stays within the viewport', copy.length >= 2 && copy.every(item => item.left >= -1 && item.right <= width + 1 && item.width > 0 && item.size >= 11 && item.display !== 'none' && item.visibility !== 'hidden'), copy);
-  check(label + ': page has no horizontal overflow', !(await state(page)).overflow);
-  const images = await page.locator(selector + ' img').evaluateAll(images => images.map(image => {
+  check(label + ': page has no horizontal overflow', !(await state(page, rootSelector)).overflow);
+  const images = await page.locator(rootSelector + ' img').evaluateAll(images => images.map(image => {
     const frame = image.parentElement.getBoundingClientRect(), rect = image.getBoundingClientRect();
     return { frame: { width: frame.width, height: frame.height }, image: { width: rect.width, height: rect.height } };
   }));
@@ -71,15 +72,60 @@ async function staticChecks(browser, options, label) {
   const after = await state(page);
   check(label + ': static layout has no sticky runway', before.sticky !== 'sticky' && before.height < before.viewport * 1.7, before);
   check(label + ': no video source or media request', before.videos.every(video => !video.src && !video.currentSrc) && media.length === 0, { videos: before.videos, media });
-  check(label + ': actual AI Office image is visible', before.images.some(image => /EN.*15/.test(decodeURIComponent(image.src || '')) && image.width > 0 && image.alpha > .9), before.images);
+  check(label + ': Fold8 two-window master is visible', before.images.some(image => /two[- ]window/i.test(image.alt) && image.width > 0 && image.alpha > .9), before.images);
   check(label + ': scrolling does not animate the composition', sameComposition(before, after), { before: before.composition, after: after.composition });
   await copyLayout(page, label);
+  await page.screenshot({ path: path.join(out, label + '-hero.png') });
+  const workspaces = await page.locator(workspaceSelector).count();
+  check(label + ': later workspace fallback exists', workspaces === 1, workspaces);
+  if (workspaces === 1) {
+    await phase(page, 0, workspaceSelector);
+    const workspace = await state(page, workspaceSelector);
+    check(label + ': static workspace has no sticky runway', workspace.sticky !== 'sticky', workspace);
+    check(label + ': static workspace exposes decoded two- and three-window images', ['two', 'three'].every(count => workspace.images.some(image => new RegExp(count + '[- ]window', 'i').test(image.alt) && image.width > 0 && image.alpha > .9)), workspace.images);
+    const frames = await page.locator(workspaceSelector + ' img').evaluateAll(images => images.map(image => { const r = image.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; }));
+    check(label + ': static workspace images stack without overlap', frames.length === 2 && frames[1].top >= frames[0].bottom, frames);
+    await phase(page, 1, workspaceSelector);
+    check(label + ': static workspace remains unchanged on scroll', sameComposition(workspace, await state(page, workspaceSelector)));
+    await copyLayout(page, label + '-workspace', workspaceSelector);
+  }
   await page.screenshot({ path: path.join(out, label + '.png') });
   await page.close();
 }
+
+async function workspaceChecks(page) {
+  const count = await page.locator(workspaceSelector).count();
+  check('content contains one later two-to-three-window transition', count === 1, count);
+  if (count !== 1) return;
+  const order = await page.locator(workspaceSelector).evaluate(root => {
+    const hero = document.querySelector('[data-samsung-story]');
+    const heading = document.querySelector('main h1');
+    return Boolean(hero.compareDocumentPosition(root) & Node.DOCUMENT_POSITION_FOLLOWING) && Boolean(heading.compareDocumentPosition(root) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  check('window transition occurs after the unfolding and case introduction', order);
+  const samples = [];
+  for (const progress of [0, .25, .5, .75, 1]) {
+    await phase(page, progress, workspaceSelector);
+    samples.push(await state(page, workspaceSelector));
+    if (progress === .5) await page.screenshot({ path: path.join(out, 'workspace-middle.png') });
+  }
+  const two = sample => sample.images.find(image => /two[- ]window/i.test(image.alt));
+  const three = sample => sample.images.find(image => /three[- ]window/i.test(image.alt));
+  check('later transition starts with decoded two-window master', two(samples[0])?.width > 0 && two(samples[0])?.alpha > .9 && three(samples[0])?.alpha < .1, samples[0]);
+  check('later transition ends with decoded original three-window composition', three(samples[4])?.width > 0 && three(samples[4])?.alpha > .9 && two(samples[4])?.alpha < .1, samples[4]);
+  check('window transition has a visible intermediate blend', samples.slice(1, 4).some(sample => two(sample)?.alpha > .05 && two(sample)?.alpha < .95 && three(sample)?.alpha > .05 && three(sample)?.alpha < .95), samples);
+  check('window transition has no horizontal overflow', samples.every(sample => !sample.overflow));
+  await page.screenshot({path: path.join(out, 'workspace-three.png')});
+  await phase(page, .5, workspaceSelector);
+  check('reverse scroll restores the intermediate window composition', sameComposition(samples[2], await state(page, workspaceSelector)));
+  await phase(page, 0, workspaceSelector);
+  check('reverse scroll restores two-window master', sameComposition(samples[0], await state(page, workspaceSelector)));
+}
+
 (async () => {
   fs.mkdirSync(out, { recursive: true });
-  const browser = await playwright[engine].launch({ headless: true, ...(engine === 'chromium' && process.env.CHROMIUM_EXECUTABLE ? { executablePath: process.env.CHROMIUM_EXECUTABLE } : {}) });
+  const executablePath = process.env[engine.toUpperCase() + '_EXECUTABLE'];
+  const browser = await playwright[engine].launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
     page.on('pageerror', error => errors.push(error.message));
@@ -91,12 +137,13 @@ async function staticChecks(browser, options, label) {
     if (count === 1) {
       const main = await page.locator('main').innerText();
       check('existing Samsung role, governance, and delivery facts remain', ['B2B AI Agent & AI Office', 'Business and product challenge', 'Define the automation boundary', 'From one-off fixes to shared updates', 'Complex data, clear decisions, on site', 'CES 2025'].every(text => main.replace(/\s+/g, ' ').includes(text)), main);
-      const order = await page.locator(selector).evaluate(root => [...document.querySelectorAll('main h2,main h3')].filter(node => node.textContent.includes('Complex data, clear decisions, on site')).some(node => Boolean(node.compareDocumentPosition(root) & Node.DOCUMENT_POSITION_FOLLOWING)));
-      check('story follows the existing delivery block', order);
+      const order = await page.locator(selector).evaluate(root => ({ first: root.closest('main').firstElementChild === root, top: root.getBoundingClientRect().top, viewport: innerHeight, heroVisuals: document.querySelectorAll('.c-hero .kv,.c-hero .carousel').length }));
+      check('unfolding sequence is the first detail section and visible on entry', order.first && order.top < order.viewport, order);
+      check('intro has no redundant slide before the scroll story', order.heroVisuals === 0, order);
       const links = await page.locator(selector + ' a').evaluateAll(links => links.map(link => ({ text: link.textContent, href: link.href })));
       check('reference is credited to the official Samsung source', links.some(link => new URL(link.href).hostname.endsWith('samsung.com')), links);
       const initial = await state(page);
-      check('distant story does not load video on route entry', initial.videos.every(video => !video.src && !video.currentSrc), initial.videos);
+      check('top story has exactly one hardware element', initial.videos.length === 1, initial.videos);
       await page.locator(selector + ' video').evaluate(video => {
         window.__samsungSeekEvents = 0;
         video.addEventListener('seeked', () => window.__samsungSeekEvents++);
@@ -114,7 +161,7 @@ async function staticChecks(browser, options, label) {
       await page.screenshot({ path: path.join(out, 'desktop-middle.png') });
       await phase(page, 1); const end = await state(page);
       check('forward scroll scrubs video without autoplay', middle.videos[0]?.time > start.videos[0]?.time + .15 && middle.videos.every(video => video.paused), { start: start.videos, middle: middle.videos });
-      check('ending exposes the actual AI Office visual', end.images.some(image => /EN.*15/.test(decodeURIComponent(image.src || '')) && image.width > 0 && image.alpha > .9), end.images);
+      check('ending exposes the Fold8 two-window master', end.images.some(image => /two[- ]window/i.test(image.alt) && image.width > 0 && image.alpha > .9), end.images);
       check('scroll changes visible composition', !sameComposition(start, end), { start: start.composition, end: end.composition });
       await phase(page, .3); const reversed = await state(page);
       check('reverse scroll restores composition and media time', sameComposition(middle, reversed) && Math.abs(middle.videos[0].time - reversed.videos[0].time) < .12, { middle, reversed });
@@ -145,20 +192,23 @@ async function staticChecks(browser, options, label) {
         delete document.hidden; delete document.visibilityState;
         document.dispatchEvent(new Event('visibilitychange'));
       }); await settle(page);
-      await page.evaluate(() => scrollTo(0, 0)); await settle(page);
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await settle(page);
       check('scrolling far away releases video resources', (await state(page)).videos.every(video => !video.src && video.ready === 0 && video.network === 0));
       for (let visit = 0; visit < 2; visit++) {
         await phase(page, .4);
-        await page.locator(selector).evaluate(root => { window.__oldSamsungStory = root; window.__oldSamsungVideos = [...root.querySelectorAll('video')]; location.hash = '#/about'; });
+        await page.locator(selector).evaluate(root => { window.__oldSamsungStory = root; window.__oldSamsungWorkspace = document.querySelector('[data-samsung-workspace]'); window.__oldSamsungVideos = [...root.querySelectorAll('video')]; location.hash = '#/about'; });
         await page.locator(selector).waitFor({ state: 'detached' }); await settle(page);
         const retired = await page.evaluate(() => window.__oldSamsungVideos.map(video => ({ connected: video.isConnected, src: video.getAttribute('src'), currentSrc: video.currentSrc, paused: video.paused, ready: video.readyState, network: video.networkState })));
         check('route exit ' + visit + ' releases detached video', retired.every(video => !video.connected && !video.src && video.ready === 0 && video.network === 0 && video.paused), retired);
-        const before = await page.evaluate(() => window.__oldSamsungStory.outerHTML);
+        const before = await page.evaluate(() => [window.__oldSamsungStory.outerHTML, window.__oldSamsungWorkspace?.outerHTML]);
         await page.evaluate(() => { scrollTo(0, 400); window.__oldSamsungVideos.forEach(video => video.dispatchEvent(new Event('seeked'))); }); await settle(page);
-        check('route exit ' + visit + ' ignores late media completion', before === await page.evaluate(() => window.__oldSamsungStory.outerHTML));
+        check('route exit ' + visit + ' ignores late media completion', JSON.stringify(before) === JSON.stringify(await page.evaluate(() => [window.__oldSamsungStory.outerHTML, window.__oldSamsungWorkspace?.outerHTML])));
         await enter(page);
         check('route reentry ' + visit + ' has exactly one story', await page.locator(selector).count() === 1);
+        check('route reentry ' + visit + ' has exactly one workspace', await page.locator(workspaceSelector).count() === 1);
+        check('route reentry ' + visit + ' returns to the opening', await page.evaluate(() => scrollY < 2));
       }
+      await workspaceChecks(page);
       await page.close();
       for (const width of [320, 390, 820]) await staticChecks(browser, { viewport: { width, height: 844 }, reducedMotion: 'no-preference' }, 'mobile-' + width);
       await staticChecks(browser, { viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' }, 'reduced-motion');

@@ -58,3 +58,14 @@ The pre-change baseline failed four of 24 checks: 320px navigation used 16px ins
 The single-line alternating header supersedes the earlier simultaneous role/name layout. The old layout failed ten of 25 focused checks before implementation (`/tmp/hello-w-header-alternation-red/header-role-results.json`). The agreed timing is a 2000ms hold and 380ms transition; reduced motion switches immediately.
 
 Alternating-header geometry tests hold each valid hero role noun in a reduced-motion fixture before its next header entry. This checks every label without assuming the independent hero and header timers visit all roles in one cycle. Native scroll events settle before advancing the browser clock.
+
+Samsung AI workspace motion:
+
+```sh
+SAMSUNG_UNIT_ONLY=1 node hello-w-play/tests/samsung-workspace-cards.cjs
+make test-samsung-story test-samsung-workspace
+```
+
+Serve with HTTP Range support and set `PORTFOLIO_URL` to that server. Both browser suites include deterministic state checks; the workspace unit-only mode needs no browser. Rendered cases cover desktop scrubbing, reverse/reentry, 320/390/820px layouts, reduced motion, media release, and all three sequential panes. Screenshot contact sheets are separate visual evidence, not physical-device validation.
+
+The hero uses the approved Figma `2503:17356` master (974×747), exported at 4×. Its original pixels are preserved except transparent exterior corners. `unfold-ai-workspace.mp4` composites the corresponding workspace `2503:17365` into the original hardware footage at 2792×1720, then straightens to the same master before the browser hands off to the PNG. The original `unfold.mp4` remains unchanged. The lower third pane uses the same AI content and Figma icons, reflowed for three columns.

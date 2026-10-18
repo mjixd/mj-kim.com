@@ -1,0 +1,31 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="51.1111" height="47.7037" viewBox="0 0 51.1111 47.7037" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon_electricity">
+<path id="Rectangle 75" d="M22.5741 36.6296V39.3401C22.5741 40.1955 23.3368 40.8889 24.2778 40.8889H25.9815C26.9224 40.8889 27.6852 40.1955 27.6852 39.3401V36.6296H22.5741Z" fill="url(#paint0_linear_0_11)"/>
+<path id="Union" d="M30.1103 30.0999C29.2699 31.0128 28.5431 32.117 28.5431 33.3578V34.5L21.7161 34.5V33.3578C21.7161 32.117 20.9893 31.0128 20.1489 30.0999C18.8838 28.7256 18.1019 26.7748 18.1019 24.8565C18.1019 21.0084 21.2483 17.8889 25.1296 17.8889C29.011 17.8889 32.1574 21.0084 32.1574 24.8565C32.1574 26.7748 31.3755 28.7256 30.1103 30.0999Z" fill="url(#paint1_linear_0_11)"/>
+<path id="Rectangle 73" d="M21.7222 34.5H28.537V35.7778C28.537 36.2482 28.1556 36.6296 27.6852 36.6296H22.5741C22.1036 36.6296 21.7222 36.2482 21.7222 35.7778V34.5Z" fill="url(#paint2_linear_0_11)"/>
+<path id="Rectangle 76" d="M22.5741 39.1852H27.6852V39.6111H22.5741V39.1852Z" fill="#636363"/>
+<path id="Rectangle 77" d="M22.5741 37.6944H27.6852V38.1204H22.5741V37.6944Z" fill="#636363"/>
+<g id="Ellipse 260" opacity="0.4" filter="url(#filter0_f_0_11)">
+<ellipse cx="25.5556" cy="23.8519" rx="13.6296" ry="11.9259" fill="#F8CF4F"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_11" x="-2.98023e-07" y="0" width="51.1111" height="47.7037" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="5.96296" result="effect1_foregroundBlur_0_11"/>
+</filter>
+<linearGradient id="paint0_linear_0_11" x1="25.1296" y1="36.6296" x2="25.1296" y2="40.8889" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6B6B6B"/>
+<stop offset="1" stop-color="#807C7C"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_11" x1="25.1296" y1="17.8889" x2="25.1296" y2="34.4594" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFAF37"/>
+<stop offset="1" stop-color="#FEF861"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_11" x1="25.1296" y1="34.5" x2="25.1296" y2="36.6296" gradientUnits="userSpaceOnUse">
+<stop stop-color="#B4B4B4"/>
+<stop offset="1" stop-color="#A1A1A1"/>
+</linearGradient>
+</defs>
+</svg>

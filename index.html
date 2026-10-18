@@ -292,7 +292,8 @@
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
-<link rel="stylesheet" href="samsung-story.css?v=fold-workspace-4">
+<link rel="stylesheet" href="samsung-story.css?v=ai-master-1">
+<link rel="stylesheet" href="samsung-workspace.css?v=agent-cards-1">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -321,7 +322,8 @@
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=2016-2"></script>
-<script src="samsung-story.js?v=fold-workspace-4"></script>
+<script src="samsung-workspace.js?v=agent-cards-1"></script>
+<script src="samsung-story.js?v=ai-master-1"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -864,7 +866,7 @@ function renderCase(slug){
   const hero = c.blocks[c.blocks.length - 1];
   app.innerHTML = `
     ${c.slug === 'line' ? SiriStory.renderHero() : ''}
-    <section class="c-hero wrap">
+    <section class="c-hero wrap ${c.slug === 'samsung' ? 'c-hero--samsung' : ''}">
       <div class="meta">${esc(c.meta)}</div>
       ${c.slug === 'line' ? '' : `<h1>${caseHeading(c.title)}</h1>`}
       <p class="lead">${esc(c.lead)}</p>

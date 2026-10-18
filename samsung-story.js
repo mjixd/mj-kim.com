@@ -1,19 +1,16 @@
 /* Native scroll position owns every phase, including reverse and interruption. */
 (() => {
   let disposers = [];
-  const source = 'assets/samsung/unfold-workspace.mp4';
-  const two = 'assets/samsung/fold-two.png';
-  const three = 'assets/samsung/fold-three.png';
+  const source = 'assets/samsung/unfold-ai-workspace.mp4';
   const clamp = value => Math.min(1, Math.max(0, value));
   const ease = value => { const p = clamp(value); return p * p * (3 - 2 * p); };
-  const image = (src, count, className, loading) => `<img class="${className}" src="${src}" width="974" height="747" loading="${loading}" alt="SmartThings Pro ${count}-window workspace on an unfolded Galaxy Z Fold8">`;
   function render() {
     return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
       <div class="samsung-story__stage">
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
-          <img class="samsung-story__interface" src="assets/samsung/unfold-workspace-end.png" width="646" height="452" loading="eager" alt="SmartThings Pro two-window workspace on an unfolded Galaxy Z Fold8">
+          <img class="samsung-story__interface" src="assets/samsung/ai-agent-open-4x.png" width="3896" height="2988" loading="eager" alt="SmartThings Pro device controls and AI Agent on an unfolded Galaxy Z Fold8">
         </div>
       </div>
     </section>
@@ -26,24 +23,10 @@
     </section>`;
   }
   function renderWorkspace() {
-    return `<section class="samsung-story samsung-story--workspace" data-samsung-workspace aria-labelledby="samsung-workspace-title">
-      <div class="samsung-story__stage">
-        <div class="samsung-story__copy">
-          <span class="samsung-story__eyebrow">An adaptable workspace</span>
-          <h2 id="samsung-workspace-title">Two tasks. Room for one more.</h2>
-          <p>Manage devices and visitor access side by side. Bring a third view into the same workspace, keeping the controls familiar as priorities change.</p>
-        </div>
-        <div class="samsung-story__visual">
-          ${image(two, 'two', 'samsung-story__two', 'lazy')}
-          ${image(three, 'three', 'samsung-story__three', 'lazy')}
-        </div>
-        <p class="samsung-story__credit">Adaptive layout exploration using SmartThings Pro mobile screens and the SmartThings interface.</p>
-      </div>
-    </section>`;
+    return SamsungWorkspace.render();
   }
   function mountScene(root) {
     const video = root.querySelector('video');
-    const workspace = root.hasAttribute('data-samsung-workspace');
     const visual = root.querySelector('.samsung-story__visual');
     let startScale = 1, startY = 0;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -58,21 +41,15 @@
       raf = 0;
       if (!active) return;
       const progress = enabled ? clamp(-root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - innerHeight)) : 1;
-      if (workspace) {
-        const blend = enabled ? ease((progress - .34) / .32) : 0;
-        root.style.setProperty('--two-opacity', enabled ? 1 - blend : 1);
-        root.style.setProperty('--three-opacity', enabled ? blend : 1);
-        return;
-      }
       const moving = enabled && !failed;
-      const reveal = moving ? ease((progress - .58) / .16) : 1;
-      const zoom = moving ? ease((progress - .74) / .20) : 1;
+      const reveal = moving ? ease((progress - .76) / .08) : 1;
+      const zoom = moving ? ease((progress - .84) / .14) : 1;
       root.style.setProperty('--poster-opacity', moving && !ready ? 1 - reveal : 0);
       root.style.setProperty('--hardware-opacity', moving && ready && reveal < 1 ? 1 : 0);
       root.style.setProperty('--interface-opacity', reveal);
       root.style.setProperty('--interface-scale', startScale + (1 - startScale) * zoom);
       root.style.setProperty('--interface-y', (startY * (1 - zoom)) + '%');
-      target = Number.isFinite(video.duration) ? Math.max(0, Math.min(video.duration - .05, clamp(progress / .58) * video.duration)) : 0;
+      target = Number.isFinite(video.duration) ? Math.max(0, Math.min(video.duration - .05, clamp(progress / .76) * video.duration)) : 0;
       seek();
     }
     function queue() { if (!raf) raf = requestAnimationFrame(draw); }
@@ -87,12 +64,12 @@
       enabled = innerWidth > 820 && innerHeight >= 700 && !motion.matches;
       root.classList.toggle('samsung-story--motion', enabled);
       if (video) {
-        // Register the cropped end frame to the video's contained pixels before enlarging it.
+        // Match the straight-on terminal video frame before handing off to the 4x master.
         const { width, height } = visual.getBoundingClientRect();
         const videoScale = Math.min(width / 1396, height / 860);
-        const endScale = Math.min(width / 646, height / 452);
+        const endScale = Math.min(width / 974, height / 747);
         startScale = videoScale / endScale;
-        startY = ((18 + 452 / 2) - 860 / 2) * videoScale / height * 100;
+        startY = (height - 860 * videoScale + (56 + 747 / 2) * videoScale - height / 2) / height * 100;
       }
       if (video) {
         if (enabled && near && !document.hidden && !failed) {
@@ -128,7 +105,8 @@
   function cleanup() { disposers.forEach(dispose => dispose()); disposers = []; }
   function mount() {
     cleanup();
-    disposers = [...document.querySelectorAll('[data-samsung-story],[data-samsung-workspace]')].map(mountScene);
+    disposers = [...document.querySelectorAll('[data-samsung-story]')].map(mountScene);
+    document.querySelectorAll('[data-samsung-workspace]').forEach(root => disposers.push(SamsungWorkspace.mount(root)));
   }
   window.SamsungStory = { render, renderWorkspace, mount, cleanup };
 })();

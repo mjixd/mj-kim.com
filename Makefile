@@ -1,4 +1,4 @@
-.PHONY: test-motion-transition test-domino-carousel test-samsung-story
+.PHONY: test-motion-transition test-domino-carousel test-samsung-story test-samsung-workspace
 
 # Serve the repository with HTTP byte-range support for video scrubbing first;
 # PORTFOLIO_URL defaults to localhost:8789.
@@ -11,7 +11,11 @@ test-samsung-story:
 	TEST_BROWSER=chromium node hello-w-play/tests/samsung-story.cjs
 	TEST_BROWSER=webkit node hello-w-play/tests/samsung-story.cjs
 
-test-motion-transition: test-domino-carousel test-samsung-story
+test-samsung-workspace:
+	TEST_BROWSER=chromium node hello-w-play/tests/samsung-workspace-cards.cjs
+	TEST_BROWSER=webkit node hello-w-play/tests/samsung-workspace-cards.cjs
+
+test-motion-transition: test-domino-carousel test-samsung-story test-samsung-workspace
 	TEST_BROWSER=chromium node hello-w-play/tests/domino-zoom.cjs
 	TEST_BROWSER=webkit node hello-w-play/tests/domino-zoom.cjs
 	TEST_BROWSER=chromium node hello-w-play/tests/domino-mobile-resources.cjs

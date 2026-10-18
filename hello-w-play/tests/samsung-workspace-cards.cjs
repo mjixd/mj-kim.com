@@ -10,6 +10,9 @@ const out = process.env.TEST_OUTPUT || path.join(require('node:os').tmpdir(), 's
 const rootSelector = '[data-samsung-workspace]';
 const names = ['control', 'visitor', 'ai'];
 const labels = ['Control Devices', 'Visitor Invitation', 'AI Agent'];
+// Current Figma default Fold layout, measured against device 2497:58714 (974 × 747).
+// AI uses rendered bounds, including its glow, rather than the smaller group box.
+const previewPlacement={control:{x:-154,y:220,width:390,height:227},visitor:{x:236,y:-54,width:424.614868,height:197},ai:{x:655,y:428,width:456.011719,height:239.132813}};
 const checks = [], errors = [];
 const check = (name, pass, actual) => checks.push({name, pass: Boolean(pass), actual});
 const pause = page => page.waitForTimeout(300);
@@ -36,7 +39,7 @@ async function snapshot(page) {
       sticky:getComputedStyle(root.querySelector('[data-samsung-stage]')||root.firstElementChild).position,
       overflow:document.documentElement.scrollWidth > innerWidth+1,
       previews:[...root.querySelectorAll('[data-samsung-preview]')].map(el=>({id:el.dataset.samsungPreview,alpha:alpha(el),transform:getComputedStyle(el).transform,rect:rect(el),images:[...el.querySelectorAll('img'),...(el.matches('img')?[el]:[])].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,rect:rect(img)}))})),
-      defaultImages:[...root.querySelectorAll('.samsung-workspace__device img')].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,alpha:alpha(img),rect:rect(img)})),
+      defaultImages:[...root.querySelectorAll('.samsung-workspace__device img')].map(img=>({wallpaper:img.classList.contains('sw-default-wallpaper'),src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,alpha:alpha(img),rect:rect(img)})),
       cards:[...root.querySelectorAll('[data-samsung-screen]')].map(el=>({id:el.dataset.samsungScreen,scale:scale(el),text:el.textContent.trim(),label:el.getAttribute('aria-label'),alpha:alpha(el),transform:getComputedStyle(el).transform,rect:rect(el),hidden:el.getAttribute('aria-hidden'),images:[...el.querySelectorAll('img'),...(el.matches('img')?[el]:[])].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,fit:getComputedStyle(img).objectFit,rect:rect(img)}))})),
       buttons:[...root.querySelectorAll('button')].map(el=>({label:el.textContent.trim()||el.getAttribute('aria-label'),pressed:el.getAttribute('aria-pressed'),selected:el.getAttribute('aria-selected'),rect:rect(el)})),
       copy:[...root.querySelectorAll('h2,p,button')].filter(el=>alpha(el)>.9).map(el=>({text:el.textContent.trim(),...rect(el)})),
@@ -62,28 +65,33 @@ function unitChecks() {
     let top=0,nextId=0,now=0,observe;const jobs=new Map(),listeners=new Map();
     const eventTarget={addEventListener:(name,fn)=>listeners.set(name,fn),removeEventListener:(name,fn)=>{if(listeners.get(name)===fn)listeners.delete(name);}};
     const node=()=>({style:{},attrs:{},setAttribute(k,v){this.attrs[k]=v;}});
-    const canvas=node(),visual={clientWidth:1200,clientHeight:590},defaultDevice=node(),chrome=[node(),node(),node()];
+    const canvas=node(),visual={clientWidth:1200,clientHeight:590},defaultDevice=node(),wallpaper=node(),chrome=[node(),node(),node()];
     const cards=names.map(node),previews=names.map(node);
     const buttons=names.map((_,i)=>({dataset:{workspaceStep:String(i)},attrs:{},setAttribute(k,v){this.attrs[k]=v;}}));
-    const root={...eventTarget,contains:el=>buttons.includes(el),classList:{toggle(){}},offsetHeight:3060,getBoundingClientRect:()=>({top}),querySelector:s=>s.endsWith('__canvas')?canvas:s==='.sw-default-device'?defaultDevice:visual,querySelectorAll:s=>s==='[data-samsung-screen]'?cards:s==='[data-samsung-preview]'?previews:s==='.sw-status, .sw-camera, .sw-gesture'?chrome:buttons};
+    const root={...eventTarget,contains:el=>buttons.includes(el),classList:{toggle(){}},offsetHeight:3060,getBoundingClientRect:()=>({top}),querySelector:s=>s.endsWith('__canvas')?canvas:s==='.sw-default-device'?defaultDevice:s==='.sw-default-wallpaper'?wallpaper:visual,querySelectorAll:s=>s==='[data-samsung-screen]'?cards:s==='[data-samsung-preview]'?previews:s==='.sw-status, .sw-camera, .sw-gesture'?chrome:s.includes('.sw-default-')?[defaultDevice,wallpaper]:buttons};
     const window={...eventTarget};
     const context={window,document:{hidden:false,...eventTarget},innerWidth:width,innerHeight:900,matchMedia:()=>({matches:reduced,...eventTarget}),IntersectionObserver:class{constructor(fn){observe=fn;}observe(){}disconnect(){}},requestAnimationFrame:fn=>{jobs.set(++nextId,fn);return nextId;},cancelAnimationFrame:id=>jobs.delete(id)};
     vm.runInNewContext(source,context);
     const dispose=window.SamsungWorkspace.mount(root);
     const flush=(delta=16)=>{now+=delta;const pending=[...jobs.values()];jobs.clear();pending.forEach(fn=>fn(now));};
-    const read=()=>JSON.stringify({cards:cards.map(c=>c.style),previews:previews.map(c=>c.style),defaultDevice:defaultDevice.style,chrome:chrome.map(c=>c.style),buttons:buttons.map(b=>b.attrs)});
-    return {cards,previews,buttons,dispose,read,enter:visible=>observe([{isIntersecting:visible}]),choose:i=>listeners.get('click')({target:{closest:()=>buttons[i]}}),render:window.SamsungWorkspace.render,at(p){top=-2160*p;listeners.get('scroll')?.();flush();return read();},listeners,jobs,flush};
+    const read=()=>JSON.stringify({cards:cards.map(c=>c.style),previews:previews.map(c=>c.style),defaultDevice:defaultDevice.style,wallpaper:wallpaper.style,chrome:chrome.map(c=>c.style),buttons:buttons.map(b=>b.attrs)});
+    return {cards,previews,buttons,defaultDevice,wallpaper,dispose,read,enter:visible=>observe([{isIntersecting:visible}]),choose:i=>listeners.get('click')({target:{closest:()=>buttons[i]}}),render:window.SamsungWorkspace.render,at(p){top=-2160*p;listeners.get('scroll')?.();flush();return read();},listeners,jobs,flush};
   }
   const f=fixture();
   check('unit: public render returns stable ordered screen markup',f.render()===f.render()&&names.every((name,i)=>f.render().indexOf('data-samsung-screen="'+name+'"')>(i?f.render().indexOf('data-samsung-screen="'+names[i-1]+'"'):-1)));
   f.at(0);check('unit: initial compact previews replace hidden full application panes',f.previews.every(p=>Number(p.style.opacity)>.9)&&f.cards.every(c=>Number(c.style.opacity)<.01));
+  check('unit: initial previews retain original scale and Figma device-relative positions',f.previews.every((preview,i)=>{const values=/translate3d\(([-.\d]+)px,([- .\d]+)px,0\) scale\(([-.\d]+)\)/.exec(preview.style.transform);const target=previewPlacement[names[i]];return values&&Math.abs(Number(values[1])-238-target.x)<=1&&Math.abs(Number(values[2])-116-target.y)<=1&&Math.abs(Number(values[3])-1)<.001;}),f.previews.map(p=>p.style.transform));
+  const defaultMarkup=/<div class="sw-default-device">([\s\S]*?)<\/div>/.exec(f.render())?.[1]||'';
+  check('unit: wallpaper and original hardware share one visible fade owner',defaultMarkup.includes('sw-default-frame')&&defaultMarkup.includes('sw-default-wallpaper')&&Number(f.defaultDevice.style.opacity)===1);
   const starts=f.previews.map(p=>p.style.transform);
   for(const [i,p] of [[0,.14],[1,.45],[2,.78]]){f.at(p);check('unit: compact '+names[i]+' travels before its full pane appears',f.previews[i].style.transform!==starts[i]&&Number(f.previews[i].style.opacity)>.9&&Number(f.cards[i].style.opacity)<.1);}
+  f.at(.14);check('unit: wallpaper fades with hardware during the first arrival',Number(f.defaultDevice.style.opacity)>0&&Number(f.defaultDevice.style.opacity)<1);
   const first=f.at(.28),full=parseFloat(f.cards[0].style.width);
   f.at(.60);const half=parseFloat(f.cards[0].style.width);
   check('unit: second arrival creates equal two panes',half<full*.51&&half>full*.48&&f.cards[0].style.width===f.cards[1].style.width&&f.buttons[1].attrs['aria-pressed']==='true');
   const second=f.read();f.at(1);const third=parseFloat(f.cards[0].style.width);
   check('unit: final arrival creates equal three panes',third<full*.34&&third>full*.31&&f.cards.every(c=>Math.abs(parseFloat(c.style.width)-third)<.01)&&f.buttons[2].attrs['aria-pressed']==='true');
+  check('unit: final state retires the default wallpaper and hardware artwork',Number(f.defaultDevice.style.opacity)===0);
   check('unit: final state retires every compact preview',f.previews.every(p=>Number(p.style.opacity)<.01));
   const final=f.read();check('unit: reverse input restores earlier states exactly',f.at(.60)===second&&f.at(.28)===first);
   check('unit: out-of-range native positions clamp at sequence boundaries',f.at(2)===final&&f.at(-1)===f.at(0));
@@ -124,8 +132,15 @@ function unitChecks() {
       check('desktop retains native sticky scroll progression',samples[0].sticky==='sticky'&&samples[0].height>samples[0].viewport,samples[0]);
       check('any screen images decode',decoded(samples[4]),samples[4].cards);
       check('initial scene contains only the three compact Figma previews',JSON.stringify(floating.previews.map(p=>p.id))===JSON.stringify(names)&&floating.previews.every(p=>p.alpha>.9)&&floating.cards.every(c=>c.alpha<.01),floating);
-      check('initial device displays the original default Figma asset',floating.defaultImages.length===1&&floating.defaultImages[0].src==='assets/samsung/workspace/fold-default.png'&&floating.defaultImages[0].loaded&&floating.defaultImages[0].alpha>.9,floating.defaultImages);
-      check('initial previews use the three approved compact exports',floating.previews.length===3&&floating.previews.every((p,i)=>p.images.length===1&&p.images[0].src==='assets/samsung/workspace/preview-'+names[i]+'.png'),floating.previews);
+      for(const id of names){const preview=floating.previews.find(p=>p.id===id),target=previewPlacement[id],scale=floating.shell.width/974;
+        const actual=preview&&{x:(preview.rect.x-floating.shell.x)/scale,y:(preview.rect.y-floating.shell.y)/scale,width:preview.rect.width/scale,height:preview.rect.height/scale};
+        check('initial '+id+' matches Figma original-size position',actual&&Object.keys(target).every(key=>Math.abs(actual[key]-target[key])<=1),{expected:target,actual});}
+      check('initial device displays the original default Figma asset',floating.defaultImages.some(i=>i.src.split('?')[0]==='assets/samsung/workspace/fold-default.png'&&i.loaded&&i.alpha>.9),floating.defaultImages);
+      const wallpaper=floating.defaultImages.find(i=>i.wallpaper),deviceScale=floating.shell.width/974;
+      const wallpaperRect=wallpaper&&{x:(wallpaper.rect.x-floating.shell.x)/deviceScale,y:(wallpaper.rect.y-floating.shell.y)/deviceScale,width:wallpaper.rect.width/deviceScale,height:wallpaper.rect.height/deviceScale};
+      check('updated Figma wallpaper covers the original screen exactly',wallpaper?.loaded&&wallpaper.src==='assets/samsung/workspace/default-wallpaper.png'&&wallpaper.alpha>.9&&Object.entries({x:21,y:21,width:932,height:705}).every(([key,value])=>Math.abs(wallpaperRect[key]-value)<=1),{wallpaper,wallpaperRect});
+      check('updated wallpaper follows the base device fade through the first arrival',[floating,approaches[0],samples[0],samples[4]].every(s=>{const overlay=s.defaultImages.find(i=>i.wallpaper),base=s.defaultImages.find(i=>!i.wallpaper);return overlay&&base&&Math.abs(overlay.alpha-base.alpha)<.01;})&&samples[4].defaultImages.every(i=>i.alpha<.01));
+      check('initial previews use the three approved compact exports',floating.previews.length===3&&floating.previews.every((p,i)=>p.images.length===1&&p.images[0].src.split('?')[0]==='assets/samsung/workspace/preview-'+names[i]+'.png'),floating.previews);
       check('compact previews move before full panes reveal',names.every((id,i)=>{const start=floating.previews.find(p=>p.id===id),middle=approaches[i].previews.find(p=>p.id===id);return start&&middle&&middle.transform!==start.transform&&middle.alpha>.9&&card(approaches[i],id).alpha<.1;}),approaches);
       check('compact previews decode without stretching',floating.previews.length===3&&floating.previews.every(p=>p.images.length&&p.images.every(i=>i.loaded&&Math.abs(i.rect.width/i.rect.height-i.naturalWidth/i.naturalHeight)<.02)),floating.previews);
       check('Control Devices arrives first',active(samples[0],'control'),samples[0]);
@@ -181,7 +196,7 @@ function unitChecks() {
     await sheet.screenshot({path:path.join(out,'contact-sheet.png'),fullPage:true});await sheet.close();
   } finally {await browser.close();}
   const failures=checks.filter(c=>!c.pass);
-  const sources=Object.fromEntries(['samsung-workspace.js','samsung-workspace.css','assets/samsung/workspace/fold-default.png','assets/samsung/workspace/preview-control.png','assets/samsung/workspace/preview-visitor.png','assets/samsung/workspace/preview-ai.png','hello-w-play/tests/samsung-workspace-cards.cjs'].map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'../..',file))).digest('hex')]));
+  const sources=Object.fromEntries(['samsung-workspace.js','samsung-workspace.css','assets/samsung/workspace/fold-default.png','assets/samsung/workspace/default-wallpaper.png','assets/samsung/workspace/preview-control.png','assets/samsung/workspace/preview-visitor.png','assets/samsung/workspace/preview-ai.png','hello-w-play/tests/samsung-workspace-cards.cjs'].map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'../..',file))).digest('hex')]));
   fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({engine,sources,checks,failures},null,2));
   console.log(checks.length+' checks, '+failures.length+' failures',failures.map(c=>c.name));if(failures.length)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exit(1);});

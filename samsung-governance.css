@@ -1,11 +1,11 @@
 .samsung-governance{width:100%;background:#000;color:#f2f4fa}
 .samsung-governance__stage{max-width:1600px;margin:auto;padding:100px var(--gutter) 100px}
-.samsung-governance__heading{margin:0 0 40px}
+.samsung-governance__heading{margin:0 0 40px;text-align:center}
 .samsung-governance__heading>span{display:block;color:#91bfff;font-size:12px;margin-bottom:16px}
 .samsung-governance__heading h2{font-size:clamp(30px,3.4vw,52px);line-height:1.1;letter-spacing:-.035em;margin:0}
 .samsung-governance__heading p{font-size:18px;color:#bac5d6;margin:20px 0 0}
-.samsung-governance__prototype{border-radius:12px;overflow:hidden;background:#101821}
-.samsung-governance__prototype iframe{display:block;width:100%;height:850px;border:0;background:#101821}
+.samsung-governance__prototype{border-radius:12px;overflow:hidden;background:#171717}
+.samsung-governance__prototype iframe{display:block;width:100%;height:850px;border:0;background:#171717}
 .samsung-governance__demo-note{display:flex;justify-content:space-between;gap:20px;font-size:12px;line-height:1.6;color:#9098a4;margin:20px 0 64px}
 .samsung-governance__demo-note a{color:#bac5d6;text-decoration:underline;text-underline-offset:4px}
 .samsung-governance__panels{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,72px)}

@@ -53,21 +53,21 @@
   .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
   /* ---------- nav ---------- */
-  .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; }
-  .nav::before{ content:""; position:absolute; inset:0 0 -48px; z-index:0; pointer-events:none; background:var(--bg); -webkit-backdrop-filter:saturate(1.2) blur(10px); backdrop-filter:saturate(1.2) blur(10px); -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); }
+  .nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; color:var(--nav-text,var(--text)); transition:color .18s ease; }
+  .nav::before{ content:""; position:absolute; inset:0 0 -48px; z-index:0; pointer-events:none; background:var(--nav-bg,var(--bg)); transition:background-color .18s ease; -webkit-backdrop-filter:saturate(1.2) blur(10px); backdrop-filter:saturate(1.2) blur(10px); -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 48px),transparent 100%); }
   .nav .wrap{ position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; height:64px; }
   .brand{display:block;position:relative;flex:0 1 180px;min-width:0;height:1.5em;line-height:1.5;font-weight:600;font-size:15px;letter-spacing:-.01em}
   .brand-word{position:absolute;left:0;top:0;white-space:nowrap}
   .brand-next{opacity:0}
   .brand.is-morphing{filter:url(#header-threshold)}
   .links{ flex-shrink:0;display:flex; align-items:center; gap:28px; font-size:15px; }
-  .links a{ font-weight:500; color:var(--muted); opacity:.5; cursor:pointer; transition:opacity .15s; } .links a.active, .links a:hover{ color:var(--text); opacity:1; }
+  .links a{ font-weight:500; color:var(--nav-muted,var(--muted)); opacity:.5; cursor:pointer; transition:opacity .15s,color .18s ease; } .links a.active, .links a:hover{ color:var(--nav-text,var(--text)); opacity:1; }
   .links .theme{ background:transparent; border:0; width:40px; height:40px; border-radius:999px; cursor:pointer; display:grid; place-items:center; padding:0; overflow:hidden; transition:border-color .2s, background .2s; }
   .links .theme:active .eclipse{ transform:scale(.9); }
   .eclipse{ position:relative; width:28px; height:28px; transition:transform .25s; }
   .eclipse .core{ position:absolute; inset:0; filter:url(#goo); transition:transform .8s cubic-bezier(.2,.8,.2,1); }
   .eclipse .sun{ position:absolute; inset:6px; border-radius:50%; background:linear-gradient(135deg, var(--lime-soft), var(--lime)); }
-  .eclipse .moon{ position:absolute; inset:6px; border-radius:50%; background:var(--bg); transform:translate(26px,-11px); transition:transform .8s cubic-bezier(.3,.9,.2,1), background .2s; }
+  .eclipse .moon{ position:absolute; inset:6px; border-radius:50%; background:var(--nav-bg,var(--bg)); transform:translate(26px,-11px); transition:transform .8s cubic-bezier(.3,.9,.2,1), background .2s; }
   :root[data-theme="dark"] .eclipse .moon{ transform:translate(5px,-4px); }
   :root[data-theme="dark"] .eclipse .core{ transform:rotate(20deg); }
   :root[data-theme="dark"] .links .theme{ background:transparent; }
@@ -293,8 +293,8 @@
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=20261019-final">
 <link rel="stylesheet" href="samsung-story.css?v=hero-heading-1">
-<link rel="stylesheet" href="samsung-governance.css?v=prototype-1">
-<link rel="stylesheet" href="samsung-workspace.css?v=figma-positions-1">
+<link rel="stylesheet" href="samsung-governance.css?v=neutral-controls-1">
+<link rel="stylesheet" href="samsung-workspace.css?v=digital-twin-1">
 </head>
 <body>
 <header class="nav" id="nav">
@@ -323,9 +323,9 @@
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=20261019-final"></script>
-<script src="samsung-workspace.js?v=shared-entry-1"></script>
-<script src="samsung-governance.js?v=prototype-1"></script>
-<script src="samsung-story.js?v=hero-heading-1"></script>
+<script src="samsung-workspace.js?v=digital-twin-1"></script>
+<script src="samsung-governance.js?v=neutral-controls-1"></script>
+<script src="samsung-story.js?v=digital-twin-1"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -1201,5 +1201,6 @@ document.addEventListener('click', async e => {
 // boot after all declarations
 route();
 </script>
+<script src="header-surface.js?v=1"></script>
 </body>
 </html>

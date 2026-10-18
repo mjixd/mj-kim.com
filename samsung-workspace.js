@@ -43,7 +43,7 @@
       <div class="samsung-workspace__stage" data-samsung-stage>
         <div class="samsung-story__copy"><span class="samsung-story__eyebrow">Multitask with three apps at once</span><h2 id="samsung-workspace-title">Every task. One workspace.</h2><p>Work across three split-screen panes on a single display. Use up to three apps at once, or resize pop-up windows for greater flexibility. Browse the web, check messages, and follow directions side by side—keeping your workflow moving without switching screens.</p></div>
         <div class="samsung-workspace__visual"><div class="samsung-workspace__canvas">
-          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><div class="sw-default-device"><img class="sw-default-frame" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""><img class="sw-default-wallpaper" src="assets/samsung/workspace/default-wallpaper.png" width="932" height="705" alt=""><i class="sw-default-camera"></i></div></div>
+          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><div class="sw-default-device"><img class="sw-default-frame" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""><img class="sw-default-wallpaper" src="assets/samsung/workspace/digital-twin-wallpaper.png" width="932" height="705" alt=""><i class="sw-default-camera"></i></div></div>
           <div class="sw-screen sw-screen--control" data-samsung-screen="control" role="img" aria-label="Control Devices: lighting and temperature controls">${control()}</div>
           <div class="sw-screen sw-screen--visitor" data-samsung-screen="visitor" role="img" aria-label="Visitor Invitation: calendar and visitor access">${visitor()}</div>
           <div class="sw-screen sw-screen--ai" data-samsung-screen="ai" role="img" aria-label="AI Agent: prepare Meeting Room 1, review lighting and AC changes">${agent()}</div>
@@ -53,7 +53,7 @@
           <div class="sw-status" aria-hidden="true"><img src="assets/samsung/workspace/status.svg" width="932" height="42" alt=""></div><div class="sw-camera" aria-hidden="true"></div><div class="sw-gesture" aria-hidden="true"></div>
         </div></div>
         <div class="samsung-workspace__controls" role="group" aria-label="Explore the workspace">${labels.map((label,i)=>`<button type="button" data-workspace-step="${i}" aria-pressed="${i===2}"><span aria-hidden="true">0${i+1}</span>${label}</button>`).join('')}</div>
-        <p class="samsung-story__credit">SmartThings Pro mobile workflows with an AI-assisted workspace concept.</p>
+
       </div></section>`;
   }
   function mount(root) {

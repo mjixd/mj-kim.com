@@ -1,7 +1,7 @@
 /* Native scroll position owns every phase, including reverse and interruption. */
 (() => {
   let disposers = [];
-  const source = 'assets/samsung/unfold-ai-workspace.mp4';
+  const source = 'assets/samsung/unfold-ai-workspace.mp4?v=digital-twin-1';
   const clamp = value => Math.min(1, Math.max(0, value));
   const ease = value => { const p = clamp(value); return p * p * (3 - 2 * p); };
   function render() {
@@ -11,7 +11,7 @@
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
-          <img class="samsung-story__interface" src="assets/samsung/ai-agent-open-4x.png" width="3896" height="2988" loading="eager" alt="SmartThings Pro device controls and AI Agent on an unfolded Galaxy Z Fold8">
+          <img class="samsung-story__interface" src="assets/samsung/ai-agent-open-4x.png?v=digital-twin-1" width="3896" height="2988" loading="eager" alt="SmartThings Pro device controls and AI Agent on an unfolded Galaxy Z Fold8">
         </div>
       </div>
     </section>

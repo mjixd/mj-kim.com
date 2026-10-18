@@ -1,4 +1,4 @@
-.samsung-story{background:#fff;color:#17181a;--poster-opacity:0;--hardware-opacity:0;--interface-opacity:1;--interface-scale:1;--interface-y:0%;--two-opacity:1;--three-opacity:1}
+.samsung-story{background:#fdfdfd;color:#17181a;--poster-opacity:0;--hardware-opacity:0;--interface-opacity:1;--interface-scale:1;--interface-y:0%;--two-opacity:1;--three-opacity:1}
 .samsung-story__stage{padding:100px max(24px,5vw) 36px}
 .samsung-story__copy{max-width:960px;margin:0 auto 32px;text-align:center}
 .samsung-story__eyebrow{display:block;color:#1266f5;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-bottom:18px}
@@ -34,4 +34,9 @@
  .samsung-story__visual{height:auto;aspect-ratio:974/747;max-height:52vh}
  .samsung-story--workspace .samsung-story__visual{aspect-ratio:auto;max-height:none}
  .samsung-story__credit{margin-top:24px}
+}
+/* Mask the exported canvas corners at the contained device bounds, not the image element's letterbox. */
+.samsung-story__two,.samsung-story__three{
+ -webkit-mask:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 747"%3E%3Crect width="974" height="747" rx="22" fill="white"/%3E%3C/svg%3E') center/contain no-repeat;
+ mask:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 747"%3E%3Crect width="974" height="747" rx="22" fill="white"/%3E%3C/svg%3E') center/contain no-repeat;
 }

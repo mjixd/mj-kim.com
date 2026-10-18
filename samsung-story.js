@@ -1,7 +1,7 @@
 /* Native scroll position owns every phase, including reverse and interruption. */
 (() => {
   let disposers = [];
-  const source = 'assets/samsung/unfold.mp4';
+  const source = 'assets/samsung/unfold-workspace.mp4';
   const two = 'assets/samsung/fold-two.png';
   const three = 'assets/samsung/fold-three.png';
   const clamp = value => Math.min(1, Math.max(0, value));
@@ -13,7 +13,7 @@
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
-          ${image(two, 'two', 'samsung-story__interface', 'eager')}
+          <img class="samsung-story__interface" src="assets/samsung/unfold-workspace-end.png" width="646" height="452" loading="eager" alt="SmartThings Pro two-window workspace on an unfolded Galaxy Z Fold8">
         </div>
       </div>
     </section>
@@ -21,6 +21,7 @@
       <div class="slide wrap">
         <h2 id="samsung-story-title">From monitoring to on-site control.</h2>
         <p>Connected devices and visitor workflows, together in one workspace.</p>
+        <p><a href="https://play.google.com/store/apps/details?id=com.samsung.space.pnpt.stpm&amp;hl=en" target="_blank" rel="noopener noreferrer">SmartThings Pro Mobile</a> connects workplace access, room and seat reservations, calendar syncing, visitor invitations, support requests, and lighting and temperature control. Available to users authorized by their company’s administrator, the experience adapts to each space’s enabled services and operating policies.</p>
       </div>
     </section>`;
   }
@@ -43,6 +44,8 @@
   function mountScene(root) {
     const video = root.querySelector('video');
     const workspace = root.hasAttribute('data-samsung-workspace');
+    const visual = root.querySelector('.samsung-story__visual');
+    let startScale = 1, startY = 0;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let active = true, near = false, enabled = false, failed = false, ready = false, raf = 0, target = 0, requested = -1;
     function seek() {
@@ -63,12 +66,12 @@
       }
       const moving = enabled && !failed;
       const reveal = moving ? ease((progress - .58) / .16) : 1;
-      const zoom = moving ? ease((progress - .70) / .24) : 1;
+      const zoom = moving ? ease((progress - .74) / .20) : 1;
       root.style.setProperty('--poster-opacity', moving && !ready ? 1 - reveal : 0);
-      root.style.setProperty('--hardware-opacity', moving && ready ? 1 - reveal : 0);
+      root.style.setProperty('--hardware-opacity', moving && ready && reveal < 1 ? 1 : 0);
       root.style.setProperty('--interface-opacity', reveal);
-      root.style.setProperty('--interface-scale', .58 + .42 * zoom);
-      root.style.setProperty('--interface-y', (-20 * (1 - zoom)) + '%');
+      root.style.setProperty('--interface-scale', startScale + (1 - startScale) * zoom);
+      root.style.setProperty('--interface-y', (startY * (1 - zoom)) + '%');
       target = Number.isFinite(video.duration) ? Math.max(0, Math.min(video.duration - .05, clamp(progress / .58) * video.duration)) : 0;
       seek();
     }
@@ -83,6 +86,14 @@
       if (!active) return;
       enabled = innerWidth > 820 && innerHeight >= 700 && !motion.matches;
       root.classList.toggle('samsung-story--motion', enabled);
+      if (video) {
+        // Register the cropped end frame to the video's contained pixels before enlarging it.
+        const { width, height } = visual.getBoundingClientRect();
+        const videoScale = Math.min(width / 1396, height / 860);
+        const endScale = Math.min(width / 646, height / 452);
+        startScale = videoScale / endScale;
+        startY = ((18 + 452 / 2) - 860 / 2) * videoScale / height * 100;
+      }
       if (video) {
         if (enabled && near && !document.hidden && !failed) {
           if (!video.hasAttribute('src')) { video.src = source; video.load(); }

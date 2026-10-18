@@ -11,7 +11,7 @@ const selector = '[data-samsung-story]';
 const workspaceSelector = '[data-samsung-workspace]';
 const checks = [], errors = [];
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const sources = Object.fromEntries(['index.html', 'samsung-story.js', 'samsung-story.css', 'assets/samsung/fold-two.png', 'assets/samsung/fold-three.png', 'assets/samsung/fold-start.png', 'hello-w-play/tests/samsung-story.cjs'].map(file => {
+const sources = Object.fromEntries(['index.html', 'samsung-story.js', 'samsung-story.css', 'assets/samsung/fold-two.png', 'assets/samsung/fold-three.png', 'assets/samsung/fold-start.png', 'assets/samsung/unfold.mp4', 'assets/samsung/unfold-workspace.mp4', 'assets/samsung/unfold-workspace-end.png', 'hello-w-play/tests/samsung-story.cjs'].map(file => {
   const location = path.resolve(__dirname, '../..', file);
   return [file, fs.existsSync(location) ? hash(fs.readFileSync(location)) : null];
 }));
@@ -173,6 +173,17 @@ async function workspaceChecks(page) {
       check('forward scroll scrubs video without autoplay', middle.videos[0]?.time > start.videos[0]?.time + .15 && middle.videos.every(video => video.paused), { start: start.videos, middle: middle.videos });
       check('ending exposes the Fold8 two-window master', end.images.some(image => /two[- ]window/i.test(image.alt) && image.width > 0 && image.alpha > .9), end.images);
       check('scroll changes visible composition', !sameComposition(start, end), { start: start.composition, end: end.composition });
+      // The same black display must not flash gray when the still replaces video.
+      // Inverse opacity fades alone expose the white stage at their midpoint.
+      const handoff = [];
+      for (const progress of [.58, .62, .66, .70, .74]) {
+        await phase(page, progress);
+        const sample = await state(page);
+        const videoAlpha = sample.videos[0]?.alpha || 0;
+        const imageAlpha = sample.images.find(image => /two[- ]window/i.test(image.alt))?.alpha || 0;
+        handoff.push({ progress, coverage: 1 - (1 - videoAlpha) * (1 - imageAlpha) });
+      }
+      check('video-to-still handoff does not expose the stage through the display', handoff.every(sample => sample.coverage > .99), handoff);
       await phase(page, .3); const reversed = await state(page);
       check('reverse scroll restores composition and media time', sameComposition(middle, reversed) && Math.abs(middle.videos[0].time - reversed.videos[0].time) < .12, { middle, reversed });
       // An interrupted seek must reconcile to the latest native scroll position.

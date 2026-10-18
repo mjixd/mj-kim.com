@@ -67,7 +67,7 @@ function deterministicMotionChecks() {
   check('deterministic cleanup retires event handlers and media', !attrs.has('src') && handlers.size === 0 && videoHandlers.size === 0, { handlers: [...handlers.keys()], videoHandlers: [...videoHandlers.keys()] }, 'unit');
 }
 async function settle(page) { await page.waitForTimeout(220); }
-async function whiteIntro(page, label) {
+async function matchingIntro(page, label) {
   const background = await page.locator('.c-hero').evaluate(node => {
     for (let element = node; element; element = element.parentElement) {
       const color = getComputedStyle(element).backgroundColor;
@@ -75,7 +75,7 @@ async function whiteIntro(page, label) {
     }
     return 'transparent';
   });
-  check(label + ': Samsung text hero background is pure white', background === 'rgb(255, 255, 255)', background);
+  check(label + ': Samsung text hero matches the decoded video background', background === 'rgb(251, 253, 251)', background);
 }
 async function aiEndpoint(page, label) {
   const endpoint = await page.locator(selector + ' .samsung-story__interface').evaluate(image => {
@@ -166,7 +166,7 @@ async function staticChecks(browser, options, label) {
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => { if (request.resourceType() === 'media' || /\.(?:mp4|webm)(?:\?|$)/i.test(request.url())) media.push(request.url()); });
   await enter(page);
-  await whiteIntro(page, label);
+  await matchingIntro(page, label);
   await phase(page, .5);
   const before = await state(page);
   await phase(page, 1);
@@ -215,7 +215,7 @@ async function staticChecks(browser, options, label) {
       check('removed hero labels are no longer visible', !/Samsung · B2B mobile experience/i.test(main) && !main.includes('Hardware imagery: Samsung Galaxy Z Fold8 · SmartThings interface adaptation: Minjung Kim'));
       check('intro has no redundant slide before the scroll story', order.heroVisuals === 0, order);
       await page.screenshot({ path: path.join(out, 'desktop-intro.png') });
-      await whiteIntro(page, 'desktop');
+      await matchingIntro(page, 'desktop');
       const initial = await state(page);
       check('top story has exactly one hardware element', initial.videos.length === 1, initial.videos);
       await page.locator(selector + ' video').evaluate(video => {
@@ -297,7 +297,7 @@ async function staticChecks(browser, options, label) {
       for (const theme of ['light', 'dark']) {
         await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
         await phase(page, 1);
-        await whiteIntro(page, theme);
+        await matchingIntro(page, theme);
         await copyLayout(page, theme);
         await page.screenshot({ path: path.join(out, 'desktop-' + theme + '.png') });
       }

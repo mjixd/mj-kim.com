@@ -16,12 +16,28 @@ async function ready(frame) {
 async function value(frame, property) {
   return frame.frameLocator('#liveFrame').locator('.metric-card').first().evaluate((el,p)=>getComputedStyle(el)[p],property);
 }
+async function clickControl(frame, selector) {
+  // Center embedded controls in the host viewport before a real pointer click.
+  // Native iframe auto-scrolling can place them beneath the fixed portfolio nav.
+  await frame.locator('#toast').waitFor({state:'hidden'});
+  const point=await frame.locator(selector).evaluate(el=>{
+    const host=window.frameElement;
+    if(!host)return null;
+    parent.scrollBy({top:host.getBoundingClientRect().top+el.getBoundingClientRect().top+el.getBoundingClientRect().height/2-parent.innerHeight/2,behavior:'instant'});
+    const bounds=el.getBoundingClientRect(),outer=host.getBoundingClientRect();
+    const x=outer.left+bounds.left+bounds.width/2,y=outer.top+bounds.top+bounds.height/2;
+    if(parent.document.elementFromPoint(x,y)!==host||!el.contains(document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2)))throw Error('Control is obscured: '+el.id);
+    return {x,y};
+  });
+  if(point)await frame.page().mouse.click(point.x,point.y);
+  else await frame.locator(selector).click();
+}
 async function exercise(frame,label) {
   await ready(frame);
   const baseline=Number(await frame.locator('#score').textContent());
   const initialRadius=await value(frame,'borderRadius'),initialPadding=await value(frame,'paddingTop');
   check(label+': baseline has real rendered dashboard and bounded score',baseline>0&&baseline<=100&&parseFloat(initialRadius)>0,{baseline,initialRadius,initialPadding});
-  await frame.locator('[data-tab="css"]').click();
+  await clickControl(frame,'[data-tab="css"]');
   const source=await frame.locator('#editor').inputValue();
   await frame.locator('#token-2').selectOption('radius/large');
   await frame.waitForFunction(()=>!document.querySelector('#tokenEvidence').hidden&&document.querySelector('#tokenEvidence').textContent.includes('radius/large'));
@@ -31,17 +47,17 @@ async function exercise(frame,label) {
   const changedSource=await frame.locator('#editor').inputValue();
   check(label+': source records selected token',changedSource!==source&&changedSource.includes('border-radius: var(--radius-large)'),changedSource.slice(-300));
   check(label+': mismatch lowers score and produces evidence',changed<baseline&&(await frame.locator('#results').innerText()).includes('FAILED'),{baseline,changed});
-  await frame.locator('#analyze').click();await ready(frame);
+  await clickControl(frame,'#analyze');await ready(frame);
   check(label+': repeated QA is deterministic',Number(await frame.locator('#score').textContent())===changed);
   await frame.locator('#token-3').selectOption('spacing/xs');
   await frame.waitForFunction(()=>document.querySelector('#tokenEvidence').textContent.includes('spacing/xs'));await ready(frame);
   check(label+': second independent token changes preview and worsens conformance',await value(frame,'paddingTop')==='8px'&&Number(await frame.locator('#score').textContent())<changed,{padding:await value(frame,'paddingTop'),score:await frame.locator('#score').textContent()});
-  await frame.locator('#restore').click();
-  await frame.waitForFunction(()=>document.querySelector('#tokenEvidence').textContent.includes('기준 복구'));await ready(frame);
-  await frame.locator('#analyze').click();await ready(frame);
+  await clickControl(frame,'#restore');
+  await frame.waitForFunction(()=>document.querySelector('#tokenEvidence').textContent.includes('Baseline restored'));await ready(frame);
+  await clickControl(frame,'#analyze');await ready(frame);
   check(label+': restore and re-QA return original rendered values and score',Number(await frame.locator('#score').textContent())===baseline&&await value(frame,'borderRadius')===initialRadius&&await value(frame,'paddingTop')===initialPadding,{score:await frame.locator('#score').textContent(),radius:await value(frame,'borderRadius'),padding:await value(frame,'paddingTop')});
   const results=await frame.locator('#results').innerText(),coverage=await frame.locator('.coverage').innerText();
-  check(label+': unresolved human judgments remain REVIEW after restore',results.includes('REVIEW')&&results.includes('수동 검토')&&/전체 WCAG|전체 인증/.test(coverage),{results:results.slice(0,300),coverage});
+  check(label+': unresolved human judgments remain REVIEW after restore',results.includes('REVIEW')&&results.includes('human review')&&coverage.includes('full WCAG compliance'),{results:results.slice(0,300),coverage});
 }
 (async () => {
   fs.mkdirSync(out, {recursive:true});

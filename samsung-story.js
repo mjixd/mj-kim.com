@@ -8,19 +8,19 @@
   const ease = value => { const p = clamp(value); return p * p * (3 - 2 * p); };
   const image = (src, count, className, loading) => `<img class="${className}" src="${src}" width="974" height="747" loading="${loading}" alt="SmartThings Pro ${count}-window workspace on an unfolded Galaxy Z Fold8">`;
   function render() {
-    return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-labelledby="samsung-story-title">
+    return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
       <div class="samsung-story__stage">
-        <div class="samsung-story__copy">
-          <span class="samsung-story__eyebrow">Samsung · B2B mobile experience</span>
-          <h2 id="samsung-story-title">From monitoring to on-site control.</h2>
-          <p>Connected devices and visitor workflows, together in one workspace.</p>
-        </div>
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
           ${image(two, 'two', 'samsung-story__interface', 'eager')}
         </div>
-        <p class="samsung-story__credit">Hardware imagery: <a href="https://www.samsung.com/sec/smartphones/galaxy-z-fold8/" target="_blank" rel="noopener noreferrer">Samsung Galaxy Z Fold8</a> · SmartThings interface adaptation: Minjung Kim</p>
+      </div>
+    </section>
+    <section class="band" aria-labelledby="samsung-story-title">
+      <div class="slide wrap">
+        <h2 id="samsung-story-title">From monitoring to on-site control.</h2>
+        <p>Connected devices and visitor workflows, together in one workspace.</p>
       </div>
     </section>`;
   }

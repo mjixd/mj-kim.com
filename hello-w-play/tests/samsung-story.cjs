@@ -53,7 +53,7 @@ async function copyLayout(page, label, rootSelector = selector) {
     return { text: node.textContent.trim(), left: r.left, right: r.right, width: r.width, size: parseFloat(css.fontSize), color: css.color, display: css.display, visibility: css.visibility };
   }));
   const width = page.viewportSize().width;
-  check(label + ': copy stays within the viewport', copy.length >= 2 && copy.every(item => item.left >= -1 && item.right <= width + 1 && item.width > 0 && item.size >= 11 && item.display !== 'none' && item.visibility !== 'hidden'), copy);
+  check(label + ': copy stays within the viewport', (rootSelector === selector || copy.length >= 2) && copy.every(item => item.left >= -1 && item.right <= width + 1 && item.width > 0 && item.size >= 11 && item.display !== 'none' && item.visibility !== 'hidden'), copy);
   check(label + ': page has no horizontal overflow', !(await state(page, rootSelector)).overflow);
   const images = await page.locator(rootSelector + ' img').evaluateAll(images => images.map(image => {
     const frame = image.parentElement.getBoundingClientRect(), rect = image.getBoundingClientRect();
@@ -136,12 +136,22 @@ async function workspaceChecks(page) {
     // treating missing-element exceptions as evidence for dependent scenarios.
     if (count === 1) {
       const main = await page.locator('main').innerText();
-      check('existing Samsung role, governance, and delivery facts remain', ['B2B AI Agent & AI Office', 'Business and product challenge', 'Define the automation boundary', 'From one-off fixes to shared updates', 'Complex data, clear decisions, on site', 'CES 2025'].every(text => main.replace(/\s+/g, ' ').includes(text)), main);
-      const order = await page.locator(selector).evaluate(root => ({ first: root.closest('main').firstElementChild === root, top: root.getBoundingClientRect().top, viewport: innerHeight, heroVisuals: document.querySelectorAll('.c-hero .kv,.c-hero .carousel').length }));
-      check('unfolding sequence is the first detail section and visible on entry', order.first && order.top < order.viewport, order);
+      check('existing Samsung role, governance, and delivery facts remain', ['B2B AI Agent & Mobile AI Office', 'Business and product challenge', 'Define the automation boundary', 'From one-off fixes to shared updates', 'Complex data, clear decisions, on site', 'CES 2025'].every(text => main.replace(/\s+/g, ' ').includes(text)), main);
+      const order = await page.locator(selector).evaluate(root => {
+        const intro = document.querySelector('.c-hero');
+        const heading = [...document.querySelectorAll('main h2')].find(node => node.textContent.trim() === 'From monitoring to on-site control.');
+        const sentence = [...document.querySelectorAll('main p')].find(node => node.textContent.trim() === 'Connected devices and visitor workflows, together in one workspace.');
+        const follows = (a, b) => Boolean(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)) && !a.contains(b);
+        return { introFirst: root.closest('main').firstElementChild === intro, introBeforeStory: follows(intro, root), headingAfterStory: follows(root, heading), sentenceAfterStory: follows(root, sentence), heroVisuals: document.querySelectorAll('.c-hero .kv,.c-hero .carousel').length };
+      });
+      check('original case introduction precedes unfolding', order.introFirst && order.introBeforeStory, order);
+      const intro = (await page.locator('.c-hero').innerText()).replace(/\s+/g, ' ');
+      check('case title is exactly the requested mobile AI title', (await page.locator('main h1').innerText()).trim() === 'B2B AI Agent & Mobile AI Office');
+      check('original case meta, lead, and role remain', ['SAMSUNG · 2024', 'Samsung’s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, and conceived a governance system that turns design tokens and implementation rules into machine-readable checks against live code.', 'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 – present'].every(text => intro.includes(text)), intro);
+      check('workspace heading and description follow unfolding', order.headingAfterStory && order.sentenceAfterStory, order);
+      check('removed hero labels are no longer visible', !/Samsung · B2B mobile experience/i.test(main) && !main.includes('Hardware imagery: Samsung Galaxy Z Fold8 · SmartThings interface adaptation: Minjung Kim'));
       check('intro has no redundant slide before the scroll story', order.heroVisuals === 0, order);
-      const links = await page.locator(selector + ' a').evaluateAll(links => links.map(link => ({ text: link.textContent, href: link.href })));
-      check('reference is credited to the official Samsung source', links.some(link => new URL(link.href).hostname.endsWith('samsung.com')), links);
+      await page.screenshot({ path: path.join(out, 'desktop-intro.png') });
       const initial = await state(page);
       check('top story has exactly one hardware element', initial.videos.length === 1, initial.videos);
       await page.locator(selector + ' video').evaluate(video => {

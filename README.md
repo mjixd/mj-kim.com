@@ -96,7 +96,7 @@ The participation account comes from Minjung Kim. Public historical context is g
 
 ## Samsung mobile transition
 
-The Samsung detail page opens with a reversible unfolding story before its introduction, without a duplicate hero slide. `samsung-story.js` maps native scroll position to one paused hardware video, then reveals and enlarges the two-window SmartThings Pro master. After the delivery section, a second scroll story blends the aligned two-window and three-window masters. A single progress value owns each scene's transition; reversing scroll restores its earlier state.
+The Samsung detail page opens with its original introduction under “B2B AI Agent & Mobile AI Office,” followed by a visual-only reversible unfolding story without a duplicate hero slide. “From monitoring to on-site control” and its description follow the unfolding area in ordinary document flow. `samsung-story.js` maps native scroll position to one paused hardware video, then reveals and enlarges the two-window SmartThings Pro master. After the delivery section, a second scroll story blends the aligned two-window and three-window masters. A single progress value owns each scene's transition; reversing scroll restores its earlier state.
 
 Mobile widths through 820px, viewports shorter than 700px, and reduced-motion preferences show the two-window hero without loading video, followed by both workspace layouts in ordinary document flow. Leaving the nearby section, hiding the document, or changing route releases the media source. A failed video retains the two-window interface. Scene cleanup removes all listeners on route exit.
 

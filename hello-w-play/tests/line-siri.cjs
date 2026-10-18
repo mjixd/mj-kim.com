@@ -30,7 +30,9 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     const headings = await page.locator('main h2').allTextContents();
     check(`${width}: LINE detail excludes AI Speaker descriptions and roles`, !/speaker|CLOVA|2017|smart.home|Bluetooth|NAVER/i.test(copy), copy);
     check(`${width}: public WeChat reference is attributed`, /WeChat/i.test(copy) && /WWDC/i.test(copy) && /public|reference/i.test(copy), copy);
-    check(`${width}: provisional visuals disclosed`, /reconstruct|provisional/i.test(copy), copy);
+    // The animated waveform remains a reconstruction; only LINE UI provenance changed.
+    const accessibleCopy = await page.locator('main').evaluate(root => root.innerText + ' ' + [...root.querySelectorAll('[aria-label],img')].map(node => (node.getAttribute('aria-label') || '') + ' ' + (node.getAttribute('alt') || '')).filter(label => !/waveform/i.test(label)).join(' '));
+    check(`${width}: final material has no temporary reconstruction claims`, !/reconstruct|provisional|pending original|archive is being added|designs will replace/i.test(accessibleCopy), accessibleCopy);
     check(`${width}: unrelated Group Call outcome excluded`, !/group\s*call|130\s*%/i.test(copy), copy);
     check(`${width}: Speaker sections and five-month metric are absent`, !headings.some(h => /Scenarios first|Voice-interactive connection|Select Friends/i.test(h)) && !/(?:5|five)[\s-]*months?/i.test(copy), headings);
     const requestLinks = await page.locator('a').evaluateAll(links => links.filter(a => /request.*(?:full|case study)|full.*study/i.test((a.textContent || '') + ' ' + (a.getAttribute('aria-label') || ''))).map(a => ({ label: a.textContent || a.getAttribute('aria-label'), href: a.getAttribute('href') })));
@@ -39,6 +41,9 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     const caseMarkup = await page.locator('main').innerHTML();
     check(`${width}: Speaker images and deck previews are absent`, !/WEB(?:\s|%20|_|-)*(?:7[7-9]|8[0-4])\b/i.test(caseMarkup), images);
     check(`${width}: all case images decode`, images.length > 0 && images.every(image => image.width > 0 && image.height > 0), images);
+    const finalSlides = ['01','02','03','04'].map(number => 'assets/decks/LINE Siri ' + number + '.png');
+    check(`${width}: all four final slide exports render at their source dimensions`, finalSlides.every(file => images.some(image => decodeURIComponent(image.src).split('?')[0] === file && image.width === 1920 && image.height === 1080)), images.filter(image => /LINE(?:%20| )Siri/.test(image.src)));
+    check(`${width}: final hero screens preserve native resolution`, ['request','review','sent'].every(state => images.some(image => image.src === 'assets/line/siri-final-' + state + '.png' && image.width === 750 && image.height === 1334)), images.filter(image => /siri-final-/.test(image.src)));
     const geometry = await page.evaluate(() => ({ width: innerWidth, documentWidth: document.documentElement.scrollWidth, mainWidth: document.querySelector('main').scrollWidth }));
     check(`${width}: no horizontal overflow`, geometry.documentWidth <= width + 1 && geometry.mainWidth <= width + 1, geometry);
     await page.screenshot({ path: path.join(out, `line-siri-${width}.png`), fullPage: true });

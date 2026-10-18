@@ -92,6 +92,9 @@ async function layoutChecks(page, width) {
   if (heroCount === 1 && voiceCount === 1) {
     check('montage has request, review, and sent devices', await hero.locator('.siri-device').count() >= 3, await hero.locator('.siri-device').count());
     await assetChecks(page, hero, hardwareHash, 'Hero');
+    const heroAssets = await assetUrls(hero);
+    const expectedScreens = ['request','review','sent'].map(state => 'assets/line/siri-final-' + state + '.png');
+    check('hero uses all three supplied final LINE screens locally', expectedScreens.every(file => heroAssets.some(url => new URL(url).origin === new URL(base).origin && new URL(url).pathname.endsWith('/' + file))), heroAssets);
     await assetChecks(page, voice, roomHash, 'Voice background');
     const screens = await hero.locator('.siri-device').evaluateAll(devices => devices.map(device => ({
       text: device.textContent,
@@ -100,7 +103,7 @@ async function layoutChecks(page, width) {
     const screenEvidence = screens.map(screen => screen.text + ' ' + screen.labels).join(' ');
     check('montage presents request, review, and sent messaging states', /request|send a LINE|send.*message/i.test(screenEvidence) && /review|confirm|cancel/i.test(screenEvidence) && /sent/i.test(screenEvidence), screens);
     const heroCopy = await hero.innerText(), voiceCopy = await voice.innerText(), mainCopy = await page.locator('main').innerText();
-    check('hero discloses reconstructed visuals', /reconstruct|provisional/i.test(heroCopy), heroCopy);
+    check('hero has no temporary reconstruction claims', !/reconstruct|provisional|pending original/i.test(heroCopy), heroCopy);
     check('voice copy describes LINE messaging without inherited HomeKit claims', /LINE/.test(voiceCopy) && /message|messaging|send|recipient/i.test(voiceCopy) && !/HomeKit|on\/off switch|turn (?:on|off).*light|unlock.*door/i.test(voiceCopy), voiceCopy);
     check('Siri career facts remain without AI Speaker work', /2016/.test(mainCopy) && /private.*lab/i.test(mainCopy) && !/AI Speaker|CLOVA|2017|(?:5|five)[\s-]*months?/i.test(mainCopy), mainCopy);
     const requests = await page.locator('a[href^="mailto:"]').evaluateAll(links => links.map(link => link.textContent + ' ' + link.getAttribute('aria-label')));

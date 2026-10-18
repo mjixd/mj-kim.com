@@ -86,13 +86,15 @@ The hello,w detail page embeds the playable demonstration at `hello-w-play/?embe
 After home-page scrolling, the sticky header alternates Minjung Kim with the hero’s current role noun on one line. Each label holds for two seconds and changes with a 380ms blur/fade morph. Role entry samples the hero’s committed second word. Reduced motion switches immediately; returning to the top, leaving home, or hiding the tab resets to the name and cancels the header animation. The header remains clear of Work/About on mobile. Hero morph callbacks check their owning page before continuing after navigation.
 The header uses the same side gutters as the main content, respecting device safe areas. The main manifesto sentence uses the full content width so it stays on one line on wide screens and wraps naturally on mobile.
 
-## LINE: Siri first, AI Speaker second
+## LINE: Siri for LINE
 
-The existing `#/work/line` route now leads with Siri for LINE. LINE AI Speaker remains a separate 2017 project below it, with its original four public sections and eight archived slides preserved. Group Call and its usage metric are excluded.
+The existing `#/work/line` route presents Siri for LINE. AI Speaker, Group Call and its usage metric are excluded.
 
-Four editable `LINE Siri 01–04` slides in [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2397-410) reuse the LINE template’s 1920×1080 geometry, Domino Sans typography, dark visual field, lower caption columns, and footer. Nodes: `2397:410`, `2397:482`, `2397:534`, `2397:650`. The 21:9 cover is `2398:404`. Website assets are 2× PNG exports; UI text and shapes remain editable in Figma.
+Four `LINE Siri 01–04` slides in [Interview Deck · AI Strategy](https://www.figma.com/design/XsDIEcceMNRpfouwbhCh6I/2026?node-id=2397-410) reuse the 1920×1080 template, Domino Sans typography, dark visual field, lower caption columns, and footer. Nodes: `2397:410`, `2397:482`, `2397:534`, `2397:650`. Website PNG exports are 1920×1080. Slide typography remains editable; the original UI screens are preserved as image assets.
 
-The participation account comes from Minjung Kim. Public historical context is grounded in [Apple’s June 13, 2016 iOS 10 announcement](https://www.apple.com/newsroom/2016/06/apple-previews-ios-10-biggest-ios-release-ever/) and the supplied [WWDC keynote reference](https://www.youtube.com/watch?v=n5jXg_NNiCA) and screenshots. The temporary LINE screens are explicitly labeled 2016-style reconstructions informed by the public WeChat demonstration, not original archived LINE designs or a claim of LINE keynote selection. Replace them when the original proposals are supplied.
+The final design source is the `siri apps` section `2523:58941`. Hero request, review and sent images map to `2523:58959`, `2523:58960`, and `2523:58961` respectively, exported at their native 750×1334 resolution into `assets/line/siri-final-*.png`. Slides also use `2523:58966` and `2523:58968` for short and long message variations. The source section is unchanged. Existing scroll geometry and Siri waveform animation are retained.
+
+The participation account comes from Minjung Kim. Public historical context is grounded in [Apple’s June 13, 2016 iOS 10 announcement](https://www.apple.com/newsroom/2016/06/apple-previews-ios-10-biggest-ios-release-ever/) and the supplied [WWDC keynote reference](https://www.youtube.com/watch?v=n5jXg_NNiCA). The public WeChat demonstration is distinct from Minjung’s original LINE design work.
 
 ## Samsung mobile transition
 

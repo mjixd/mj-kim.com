@@ -1,5 +1,5 @@
 // Independent behavioral contract for the later Samsung workspace sequence.
-// Run alongside samsung-story.cjs, which owns the unchanged unfolding hero.
+// Run alongside samsung-story.cjs, which owns the separate unfolding hero.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -35,13 +35,15 @@ async function snapshot(page) {
       height:root.offsetHeight, viewport:innerHeight, width:innerWidth, scrollY,
       sticky:getComputedStyle(root.querySelector('[data-samsung-stage]')||root.firstElementChild).position,
       overflow:document.documentElement.scrollWidth > innerWidth+1,
+      previews:[...root.querySelectorAll('[data-samsung-preview]')].map(el=>({id:el.dataset.samsungPreview,alpha:alpha(el),transform:getComputedStyle(el).transform,rect:rect(el),images:[...el.querySelectorAll('img'),...(el.matches('img')?[el]:[])].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,rect:rect(img)}))})),
+      defaultImages:[...root.querySelectorAll('.samsung-workspace__device img')].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,alpha:alpha(img),rect:rect(img)})),
       cards:[...root.querySelectorAll('[data-samsung-screen]')].map(el=>({id:el.dataset.samsungScreen,scale:scale(el),text:el.textContent.trim(),label:el.getAttribute('aria-label'),alpha:alpha(el),transform:getComputedStyle(el).transform,rect:rect(el),hidden:el.getAttribute('aria-hidden'),images:[...el.querySelectorAll('img'),...(el.matches('img')?[el]:[])].map(img=>({src:img.getAttribute('src'),alt:img.alt,loaded:img.complete&&img.naturalWidth>0,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,fit:getComputedStyle(img).objectFit,rect:rect(img)}))})),
       buttons:[...root.querySelectorAll('button')].map(el=>({label:el.textContent.trim()||el.getAttribute('aria-label'),pressed:el.getAttribute('aria-pressed'),selected:el.getAttribute('aria-selected'),rect:rect(el)})),
       copy:[...root.querySelectorAll('h2,p,button')].filter(el=>alpha(el)>.9).map(el=>({text:el.textContent.trim(),...rect(el)})),
     };
   });
 }
-const signature = s => JSON.stringify(s.cards.map(({id,alpha,transform,hidden})=>({id,alpha,transform,hidden})));
+const signature = s => JSON.stringify({cards:s.cards.map(({id,alpha,transform,hidden})=>({id,alpha,transform,hidden})),previews:s.previews.map(({id,alpha,transform})=>({id,alpha,transform})),defaultImages:s.defaultImages.map(({src,alpha})=>({src,alpha}))});
 const card = (s,id) => s.cards.find(c=>c.id===id);
 function decoded(s) { return s.allImagesDecoded&&s.cards.every(c=>c.images.every(i=>i.loaded)); }
 function undistorted(s) { return Math.abs(s.canvasScale.x-s.canvasScale.y)<.001&&s.cards.every(c=>Math.abs(c.scale.x-c.scale.y)<.001&&c.images.every(i=>i.src.endsWith('.svg')||['contain','cover','scale-down'].includes(i.fit)||Math.abs(i.rect.width/i.rect.height-i.naturalWidth/i.naturalHeight)<.02)); }
@@ -59,25 +61,30 @@ function unitChecks() {
   function fixture(reduced=false,width=1440) {
     let top=0,nextId=0,now=0,observe;const jobs=new Map(),listeners=new Map();
     const eventTarget={addEventListener:(name,fn)=>listeners.set(name,fn),removeEventListener:(name,fn)=>{if(listeners.get(name)===fn)listeners.delete(name);}};
-    const canvas={style:{}},visual={clientWidth:1200,clientHeight:590};
-    const cards=names.map(()=>({style:{}}));
+    const node=()=>({style:{},attrs:{},setAttribute(k,v){this.attrs[k]=v;}});
+    const canvas=node(),visual={clientWidth:1200,clientHeight:590},defaultDevice=node(),chrome=[node(),node(),node()];
+    const cards=names.map(node),previews=names.map(node);
     const buttons=names.map((_,i)=>({dataset:{workspaceStep:String(i)},attrs:{},setAttribute(k,v){this.attrs[k]=v;}}));
-    const root={...eventTarget,contains:el=>buttons.includes(el),classList:{toggle(){}},offsetHeight:3060,getBoundingClientRect:()=>({top}),querySelector:s=>s.endsWith('__canvas')?canvas:visual,querySelectorAll:s=>s==='[data-samsung-screen]'?cards:buttons};
+    const root={...eventTarget,contains:el=>buttons.includes(el),classList:{toggle(){}},offsetHeight:3060,getBoundingClientRect:()=>({top}),querySelector:s=>s.endsWith('__canvas')?canvas:s==='.sw-default-device'?defaultDevice:visual,querySelectorAll:s=>s==='[data-samsung-screen]'?cards:s==='[data-samsung-preview]'?previews:s==='.sw-status, .sw-camera, .sw-gesture'?chrome:buttons};
     const window={...eventTarget};
     const context={window,document:{hidden:false,...eventTarget},innerWidth:width,innerHeight:900,matchMedia:()=>({matches:reduced,...eventTarget}),IntersectionObserver:class{constructor(fn){observe=fn;}observe(){}disconnect(){}},requestAnimationFrame:fn=>{jobs.set(++nextId,fn);return nextId;},cancelAnimationFrame:id=>jobs.delete(id)};
     vm.runInNewContext(source,context);
     const dispose=window.SamsungWorkspace.mount(root);
     const flush=(delta=16)=>{now+=delta;const pending=[...jobs.values()];jobs.clear();pending.forEach(fn=>fn(now));};
-    const read=()=>JSON.stringify({cards:cards.map(c=>c.style),buttons:buttons.map(b=>b.attrs)});
-    return {cards,buttons,dispose,read,enter:visible=>observe([{isIntersecting:visible}]),choose:i=>listeners.get('click')({target:{closest:()=>buttons[i]}}),render:window.SamsungWorkspace.render,at(p){top=-2160*p;listeners.get('scroll')?.();flush();return read();},listeners,jobs,flush};
+    const read=()=>JSON.stringify({cards:cards.map(c=>c.style),previews:previews.map(c=>c.style),defaultDevice:defaultDevice.style,chrome:chrome.map(c=>c.style),buttons:buttons.map(b=>b.attrs)});
+    return {cards,previews,buttons,dispose,read,enter:visible=>observe([{isIntersecting:visible}]),choose:i=>listeners.get('click')({target:{closest:()=>buttons[i]}}),render:window.SamsungWorkspace.render,at(p){top=-2160*p;listeners.get('scroll')?.();flush();return read();},listeners,jobs,flush};
   }
   const f=fixture();
   check('unit: public render returns stable ordered screen markup',f.render()===f.render()&&names.every((name,i)=>f.render().indexOf('data-samsung-screen="'+name+'"')>(i?f.render().indexOf('data-samsung-screen="'+names[i-1]+'"'):-1)));
+  f.at(0);check('unit: initial compact previews replace hidden full application panes',f.previews.every(p=>Number(p.style.opacity)>.9)&&f.cards.every(c=>Number(c.style.opacity)<.01));
+  const starts=f.previews.map(p=>p.style.transform);
+  for(const [i,p] of [[0,.14],[1,.45],[2,.78]]){f.at(p);check('unit: compact '+names[i]+' travels before its full pane appears',f.previews[i].style.transform!==starts[i]&&Number(f.previews[i].style.opacity)>.9&&Number(f.cards[i].style.opacity)<.1);}
   const first=f.at(.28),full=parseFloat(f.cards[0].style.width);
   f.at(.60);const half=parseFloat(f.cards[0].style.width);
   check('unit: second arrival creates equal two panes',half<full*.51&&half>full*.48&&f.cards[0].style.width===f.cards[1].style.width&&f.buttons[1].attrs['aria-pressed']==='true');
   const second=f.read();f.at(1);const third=parseFloat(f.cards[0].style.width);
   check('unit: final arrival creates equal three panes',third<full*.34&&third>full*.31&&f.cards.every(c=>Math.abs(parseFloat(c.style.width)-third)<.01)&&f.buttons[2].attrs['aria-pressed']==='true');
+  check('unit: final state retires every compact preview',f.previews.every(p=>Number(p.style.opacity)<.01));
   const final=f.read();check('unit: reverse input restores earlier states exactly',f.at(.60)===second&&f.at(.28)===first);
   check('unit: out-of-range native positions clamp at sequence boundaries',f.at(2)===final&&f.at(-1)===f.at(0));
   f.at(.60);const before=f.read();f.dispose();f.at(1);check('unit: cleanup removes queued work and scroll ownership',f.read()===before&&f.jobs.size===0&&!f.listeners.has('scroll'));
@@ -111,11 +118,16 @@ function unitChecks() {
     check('three screens expose meaningful accessible identities',labels.every(label=>initial.cards.some(c=>((c.label||'')+' '+c.text).toLowerCase().includes(label.toLowerCase()))),initial.cards);
     if(initial.cards.length===3) {
       await phase(page,0);const floating=await snapshot(page);await capture(page,'desktop-floating');
+      const approaches=[];for(const p of [.14,.45,.78]){await phase(page,p);approaches.push(await snapshot(page));await capture(page,'desktop-approach-'+p);}
       const samples=[];
       for(const p of [.28,.44,.60,.78,1]){await phase(page,p);samples.push(await snapshot(page));await capture(page,'desktop-'+p);}
       check('desktop retains native sticky scroll progression',samples[0].sticky==='sticky'&&samples[0].height>samples[0].viewport,samples[0]);
       check('any screen images decode',decoded(samples[4]),samples[4].cards);
-      check('Control Devices approaches from its separate floating card',card(floating,'control').transform!==card(samples[0],'control').transform);
+      check('initial scene contains only the three compact Figma previews',JSON.stringify(floating.previews.map(p=>p.id))===JSON.stringify(names)&&floating.previews.every(p=>p.alpha>.9)&&floating.cards.every(c=>c.alpha<.01),floating);
+      check('initial device displays the original default Figma asset',floating.defaultImages.length===1&&floating.defaultImages[0].src==='assets/samsung/workspace/fold-default.png'&&floating.defaultImages[0].loaded&&floating.defaultImages[0].alpha>.9,floating.defaultImages);
+      check('initial previews use the three approved compact exports',floating.previews.length===3&&floating.previews.every((p,i)=>p.images.length===1&&p.images[0].src==='assets/samsung/workspace/preview-'+names[i]+'.png'),floating.previews);
+      check('compact previews move before full panes reveal',names.every((id,i)=>{const start=floating.previews.find(p=>p.id===id),middle=approaches[i].previews.find(p=>p.id===id);return start&&middle&&middle.transform!==start.transform&&middle.alpha>.9&&card(approaches[i],id).alpha<.1;}),approaches);
+      check('compact previews decode without stretching',floating.previews.length===3&&floating.previews.every(p=>p.images.length&&p.images.every(i=>i.loaded&&Math.abs(i.rect.width/i.rect.height-i.naturalWidth/i.naturalHeight)<.02)),floating.previews);
       check('Control Devices arrives first',active(samples[0],'control'),samples[0]);
       check('Visitor Invitation arrives second',active(samples[2],'visitor'),samples[2]);
       check('AI Agent arrives last',active(samples[4],'ai'),samples[4]);
@@ -123,7 +135,7 @@ function unitChecks() {
       check('AI master preserves its original conversation, review and composer content',['5F · Meeting Room 1','What would you like to adjust?','Prepare Meeting Room 1 for a presentation.','I suggest dimming the lights and setting a comfortable cooling target. Review the changes below.','Ready to apply · 2 devices','90% → 30%','20.7°C → 22°C','Apply changes','Ask about this room or its devices','Pro 1.0'].every(text=>aiText.includes(text)),aiText);
       check('final third screen is AI Agent rather than SmartThings Home',/AI Agent/i.test(card(samples[4],'ai').text)&&!/(Scan a QR|Find devices|Add a device)/i.test(card(samples[4],'ai').text),card(samples[4],'ai'));
       check('final three screen surfaces are visible and fit the viewport',samples[4].cards.every(c=>c.alpha>.9&&c.rect.width>0&&c.rect.height>0&&c.rect.x>=-1&&c.rect.right<=1441),samples[4].cards);
-      check('screens approach spatially instead of only crossfading',names.slice(1).every(id=>new Set(samples.map(s=>card(s,id).transform)).size>1),samples.map(s=>s.cards));
+      check('each compact preview travels and retires when its full pane arrives',names.every((id,i)=>{const before=floating.previews.find(p=>p.id===id),after=samples[[0,2,4][i]].previews.find(p=>p.id===id);return before&&after&&before.transform!==after.transform&&after.alpha<.01&&card(samples[[0,2,4][i]],id).alpha>.9;}),{floating:floating.previews,arrivals:samples.map(s=>s.previews)});
       check('one shared device status bar and navigation remain',samples.every(s=>s.chrome===1&&s.gesture===1),samples.map(s=>({chrome:s.chrome,gesture:s.gesture})));
       for(const [sampleIndex,paneCount] of [[0,1],[2,2],[4,3]]){
         const sample=samples[sampleIndex],arrived=sample.cards.slice(0,paneCount);
@@ -132,6 +144,7 @@ function unitChecks() {
       check('desktop image geometry stays undistorted',samples.every(undistorted));
       check('desktop transition never adds horizontal overflow',samples.every(s=>!s.overflow));
       for(const index of [3,2,1,0]){const p=[.28,.44,.60,.78,1][index];await phase(page,p);check('reverse native scroll restores phase '+p,signature(await snapshot(page))===signature(samples[index]));}
+      await phase(page,0);check('reverse to opening restores compact previews and original default artwork',signature(await snapshot(page))===signature(floating));
       // Scroll events may interrupt each other; the final location owns the result.
       for(const p of [.9,.1,.7,.60])await page.locator(rootSelector).evaluate((root,p)=>scrollTo(0,scrollY+root.getBoundingClientRect().top+(root.offsetHeight-innerHeight)*p),p);
       await pause(page);check('rapid reversal converges to Visitor Invitation',signature(await snapshot(page))===signature(samples[2]));
@@ -168,7 +181,7 @@ function unitChecks() {
     await sheet.screenshot({path:path.join(out,'contact-sheet.png'),fullPage:true});await sheet.close();
   } finally {await browser.close();}
   const failures=checks.filter(c=>!c.pass);
-  const sources=Object.fromEntries(['samsung-workspace.js','samsung-workspace.css','hello-w-play/tests/samsung-workspace-cards.cjs'].map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'../..',file))).digest('hex')]));
+  const sources=Object.fromEntries(['samsung-workspace.js','samsung-workspace.css','assets/samsung/workspace/fold-default.png','assets/samsung/workspace/preview-control.png','assets/samsung/workspace/preview-visitor.png','assets/samsung/workspace/preview-ai.png','hello-w-play/tests/samsung-workspace-cards.cjs'].map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'../..',file))).digest('hex')]));
   fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({engine,sources,checks,failures},null,2));
   console.log(checks.length+' checks, '+failures.length+' failures',failures.map(c=>c.name));if(failures.length)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exit(1);});

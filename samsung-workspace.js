@@ -43,10 +43,13 @@
       <div class="samsung-workspace__stage" data-samsung-stage>
         <div class="samsung-story__copy"><span class="samsung-story__eyebrow">An adaptable workspace</span><h2 id="samsung-workspace-title">Every task. One workspace.</h2><p>Control the room. Welcome your visitors. Bring in an AI Agent to help prepare the space.</p></div>
         <div class="samsung-workspace__visual"><div class="samsung-workspace__canvas">
-          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div></div>
+          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><img class="sw-default-device" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""></div>
           <div class="sw-screen sw-screen--control" data-samsung-screen="control" role="img" aria-label="Control Devices: lighting and temperature controls">${control()}</div>
           <div class="sw-screen sw-screen--visitor" data-samsung-screen="visitor" role="img" aria-label="Visitor Invitation: calendar and visitor access">${visitor()}</div>
           <div class="sw-screen sw-screen--ai" data-samsung-screen="ai" role="img" aria-label="AI Agent: prepare Meeting Room 1, review lighting and AC changes">${agent()}</div>
+          <img class="sw-preview" data-samsung-preview="control" src="assets/samsung/workspace/preview-control.png" width="429" height="227" alt="Lighting controls preview" draggable="false">
+          <img class="sw-preview" data-samsung-preview="visitor" src="assets/samsung/workspace/preview-visitor.png" width="424.667" height="197" alt="Calendar preview" draggable="false">
+          <img class="sw-preview" data-samsung-preview="ai" src="assets/samsung/workspace/preview-ai.png" width="498.333" height="239.333" alt="AI Agent input and button preview" draggable="false">
           <div class="sw-status" aria-hidden="true"><img src="assets/samsung/workspace/status.svg" width="932" height="42" alt=""></div><div class="sw-camera" aria-hidden="true"></div><div class="sw-gesture" aria-hidden="true"></div>
         </div></div>
         <div class="samsung-workspace__controls" role="group" aria-label="Explore the workspace">${labels.map((label,i)=>`<button type="button" data-workspace-step="${i}" aria-pressed="${i===2}"><span aria-hidden="true">0${i+1}</span>${label}</button>`).join('')}</div>
@@ -57,6 +60,9 @@
     const canvas = root.querySelector('.samsung-workspace__canvas');
     const visual = root.querySelector('.samsung-workspace__visual');
     const cards = [...root.querySelectorAll('[data-samsung-screen]')];
+    const previews = [...root.querySelectorAll('[data-samsung-preview]')];
+    const defaultDevice = root.querySelector('.sw-default-device');
+    const chrome = [...root.querySelectorAll('.sw-status, .sw-camera, .sw-gesture')];
     const buttons = [...root.querySelectorAll('[data-workspace-step]')];
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let active = true, desktop = false, seen = false, visible = false, raf = 0;
@@ -70,6 +76,8 @@
       const scale = Math.min(visual.clientWidth/lerp(1450,1030,fit),visual.clientHeight/lerp(900,790,fit));
       canvas.style.transform=`translate(-50%,-50%) scale(${scale}) translateY(${-39*fit}px)`;
       const arrivals = [ease((p-.04)/.20), ease((p-.35)/.20), ease((p-.68)/.20)];
+      defaultDevice.style.opacity=1-arrivals[0];
+      chrome.forEach(element=>{element.style.opacity=arrivals[0];});
       const width = lerp(lerp(928,461,arrivals[1]),303.33,arrivals[2]);
       const settled = [
         {x:261,y:139,w:width,s:1},
@@ -77,8 +85,16 @@
         {x:261+2*(width+7),y:139,w:303.33,s:1},
       ];
       const floating = [{x:12,y:155,w:461,s:.55},{x:570,y:4,w:461,s:.55},{x:1190,y:170,w:461,s:.55}];
+      const compact = [{x:12,y:270,w:429,dy:170},{x:570,y:4,w:424.667,dy:110},{x:1115,y:250,w:498.333,dy:440}];
       cards.forEach((card,i)=>{
         const t=arrivals[i], a=floating[i], b=settled[i];
+        const reveal=ease((t-.55)/.45);
+        card.style.opacity=reveal;
+        card.setAttribute('aria-hidden',String(reveal===0));
+        const preview=previews[i], start=compact[i];
+        preview.style.transform=`translate3d(${lerp(start.x,b.x+16,t)}px,${lerp(start.y,b.y+start.dy,t)}px,0) scale(${lerp(.65,Math.min(1,(b.w-32)/start.w),t)})`;
+        preview.style.opacity=1-reveal;
+        preview.setAttribute('aria-hidden',String(reveal===1));
         card.style.width=lerp(a.w,b.w,t)+'px';
         card.style.transform=`translate3d(${lerp(a.x,b.x,t)}px,${lerp(a.y,b.y,t)}px,0) scale(${lerp(a.s,b.s,t)})`;
         card.style.boxShadow=`0 ${24*(1-t)}px ${64*(1-t)}px rgba(0,0,0,${.2*(1-t)})`;

@@ -292,7 +292,8 @@
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
 <link rel="stylesheet" href="siri-story.css?v=2016-2">
-<link rel="stylesheet" href="samsung-story.css?v=ai-master-2">
+<link rel="stylesheet" href="samsung-story.css?v=content-order-1">
+<link rel="stylesheet" href="samsung-governance.css?v=1">
 <link rel="stylesheet" href="samsung-workspace.css?v=compact-cards-1">
 </head>
 <body>
@@ -322,8 +323,9 @@
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="siri-story.js?v=2016-2"></script>
-<script src="samsung-workspace.js?v=compact-cards-1"></script>
-<script src="samsung-story.js?v=ai-master-1"></script>
+<script src="samsung-workspace.js?v=multitasking-copy-1"></script>
+<script src="samsung-governance.js?v=1"></script>
+<script src="samsung-story.js?v=content-order-1"></script>
 <script>
 /* ============================================================
    DATA: edit copy and swap key visuals here.
@@ -331,18 +333,20 @@
    `from` notes which deck slide the visual comes from.
    ============================================================ */
 const CASES = [
-  { slug:'samsung', meta:'Samsung · 2024', title:'B2B AI Agent & Mobile AI Office', line:'Design assets as the engineering team\u2019s execution standard. AI-readable tokens and a human-in-the-loop QA system.',
+  { slug:'samsung', meta:'Samsung · 2024', title:'B2B AI Agent & Mobile AI Office', line:'Connected workplace services, on-site controls, and an AI-assisted mobile workspace.',
     kvHome:'assets/covers/cover_ces.png', kvHomeAlt:'CES 2025 AI Office exhibit with an architectural model and digital twin display',
     kvHero:'assets/decks/EN · 03.png',
     accent:'#06bfff', stat:{n:'Org-wide', l:'reuse recognized at center leadership review'},
-    lead:'Samsung\u2019s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, and conceived a governance system that turns design tokens and implementation rules into machine-readable checks against live code.',
+    lead:'Samsung\u2019s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, bringing connected devices, workplace services, and on-site decisions into one workspace.',
     role:'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 \u2013 present',
     stats:[['3 states','PASS / REVIEW / FAIL: deterministic checks automated; ambiguous accessibility decisions routed to people'],['1 command','updates tokens org-wide; color, radius, spacing, type propagate to every linked screen'],['CES 2025','AI Office mobile prototype, from brief to exhibit in 3 months']],
     blocks:[
-      {tag:'1 Context', h:'Business and product challenge', p:'Design assets and production code were maintained on separate paths, so every color, radius, margin, and type change meant individual edits and repeated QA. Enterprise sites also needed a B2B product model that consumer-first SmartThings could not support.', from:'EN · 05', src:'assets/decks/EN · 05.png'},
-      {tag:'2 Operating model', h:'Define the automation boundary', p:'Deterministic token and spacing checks are automated and scored. Ambiguous accessibility decisions route to human review, with re-validation against alternate token standards. The point is not more automation; it is deciding what the system should not do alone.', from:'EN · 09', src:'assets/decks/EN · 09.png'},
-      {tag:'3 Adoption', h:'From one-off fixes to shared updates', p:'Figma variables became tokens synced to internal GitHub through Tokens Studio. Engineers update tokens with a single command and the change propagates everywhere. Driven directly with development teams, shifting QA from manual interpretation to a repeatable, measurable system.', from:'EN · 12', src:'assets/decks/EN · 12.png'},
-      {tag:'3 Delivery', h:'Complex data, clear decisions, on site', p:'Dense energy and space data compressed into a mobile decision surface. Partner, engineering, and business requirements converged through weekly CTO\u00b7VP reviews and shipped as the AI Office prototype at CES 2025.', from:'EN · 13', src:'assets/decks/EN · 13.png'}
+      {tag:'Delivery', h:'Complex data, clear decisions, on site', p:'Dense energy and space data compressed into a mobile decision surface. Partner, engineering, and business requirements converged through weekly CTO·VP reviews and shipped as the AI Office prototype at CES 2025.', from:'EN · 13', src:'assets/decks/EN · 13.png'},
+      {tag:'Separate project · Design systems', h:'Design token validation', p:'A shared workflow for design-asset governance and implementation QA. I conceived a validation tool that connects design tokens, implementation rules, and the rendered interface so teams can verify changes against a common standard.', textOnly:true},
+      {tag:'1 Context', h:'Business and product challenge', p:'Design assets and production code were maintained on separate paths. Every change to color, radius, spacing, or typography required individual updates and repeated manual QA. The challenge was to make shared standards executable, keep design and engineering aligned, and identify which decisions still needed human judgment.', from:'EN · 05', src:'assets/decks/EN · 05.png'},
+      {governance:true, h:'Define the automation boundary'},
+      {tag:'3 Adoption', h:'From one-off fixes to shared updates', p:'Figma variables became tokens synced to internal GitHub through Tokens Studio. Engineers update tokens with a single command and the change propagates everywhere. Driven directly with development teams, shifting QA from manual interpretation to a repeatable, measurable system.', from:'EN · 12', src:'assets/decks/EN · 12.png'}
+
     ]},
   { slug:'domino-mvp', meta:'Domino · 2022–2024', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
     kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
@@ -874,10 +878,10 @@ function renderCase(slug){
       ${c.background || c.slug === 'line' || c.slug === 'samsung' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
-    ${c.slug === 'samsung' ? SamsungStory.render() : ''}
+    ${c.slug === 'samsung' ? SamsungStory.render() + SamsungStory.renderWorkspace() : ''}
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
     ${c.background ? DominoBackground.render(esc(c.background)) : ''}
-    ${c.blocks.map((b, k) => b.voiceFeature ? SiriStory.renderChip() + SiriStory.renderVoice() : `
+    ${c.blocks.map((b, k) => b.governance ? SamsungGovernance.render() : b.voiceFeature ? SiriStory.renderChip() + SiriStory.renderVoice() : `
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `
@@ -891,7 +895,6 @@ function renderCase(slug){
           `}
         </div>
       </section>`).join('')}
-    ${c.slug === 'samsung' ? SamsungStory.renderWorkspace() : ''}
     <section class="band dark">
       <div class="impact wrap">
         <div class="eyebrow">${esc(c.outcomeLabel || 'Impact')}</div>

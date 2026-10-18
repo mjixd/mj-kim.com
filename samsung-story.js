@@ -5,7 +5,8 @@
   const clamp = value => Math.min(1, Math.max(0, value));
   const ease = value => { const p = clamp(value); return p * p * (3 - 2 * p); };
   function render() {
-    return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
+    return `<section class="samsung-story-intro"><div class="wrap"><h2>From monitoring to on-site control.</h2></div></section>
+    <section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
       <div class="samsung-story__stage">
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
@@ -14,9 +15,8 @@
         </div>
       </div>
     </section>
-    <section class="band" aria-labelledby="samsung-story-title">
+    <section class="band" aria-label="SmartThings Pro Mobile overview">
       <div class="slide wrap">
-        <h2 id="samsung-story-title">From monitoring to on-site control.</h2>
         <p>Connected devices and visitor workflows, together in one workspace.</p>
         <p><a href="https://play.google.com/store/apps/details?id=com.samsung.space.pnpt.stpm&amp;hl=en" target="_blank" rel="noopener noreferrer">SmartThings Pro Mobile</a> connects workplace access, room and seat reservations, calendar syncing, visitor invitations, support requests, and lighting and temperature control. Available to users authorized by their company’s administrator, the experience adapts to each space’s enabled services and operating policies.</p>
       </div>
@@ -107,6 +107,7 @@
     cleanup();
     disposers = [...document.querySelectorAll('[data-samsung-story]')].map(mountScene);
     document.querySelectorAll('[data-samsung-workspace]').forEach(root => disposers.push(SamsungWorkspace.mount(root)));
+    document.querySelectorAll('[data-samsung-governance]').forEach(root => disposers.push(SamsungGovernance.mount(root)));
   }
   window.SamsungStory = { render, renderWorkspace, mount, cleanup };
 })();

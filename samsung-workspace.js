@@ -41,7 +41,7 @@
   function render() {
     return `<section class="samsung-workspace" data-samsung-workspace aria-labelledby="samsung-workspace-title">
       <div class="samsung-workspace__stage" data-samsung-stage>
-        <div class="samsung-story__copy"><span class="samsung-story__eyebrow">An adaptable workspace</span><h2 id="samsung-workspace-title">Every task. One workspace.</h2><p>Control the room. Welcome your visitors. Bring in an AI Agent to help prepare the space.</p></div>
+        <div class="samsung-story__copy"><span class="samsung-story__eyebrow">Multitask with three apps at once</span><h2 id="samsung-workspace-title">Every task. One workspace.</h2><p>Work across three split-screen panes on a single display. Use up to three apps at once, or resize pop-up windows for greater flexibility. Browse the web, check messages, and follow directions side by side—keeping your workflow moving without switching screens.</p></div>
         <div class="samsung-workspace__visual"><div class="samsung-workspace__canvas">
           <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><img class="sw-default-device" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""></div>
           <div class="sw-screen sw-screen--control" data-samsung-screen="control" role="img" aria-label="Control Devices: lighting and temperature controls">${control()}</div>

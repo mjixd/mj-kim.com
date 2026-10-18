@@ -31,3 +31,6 @@
 .samsung-story--hero.samsung-story--motion .samsung-story__stage{padding:calc(20vh + 64px) 0 0}
 .samsung-story--hero.samsung-story--motion .samsung-story__visual{width:90%;max-width:1440px;max-height:none;margin:0 auto}
 .samsung-story--hero video,.samsung-story--hero .samsung-story__poster{object-position:center bottom}
+
+.samsung-story-intro{background:#fbfdfb;color:#17181a;padding:48px 0 0}
+.samsung-story-intro h2{font-size:clamp(32px,4vw,60px);line-height:1.1;letter-spacing:-.035em;margin:0}

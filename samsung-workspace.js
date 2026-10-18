@@ -72,9 +72,9 @@
     function paint(p) {
       progress = clamp(p);
       // Overview for incoming cards, then fit the docked device on small screens.
-      const fit = desktop ? 0 : ease((p-.68)/.24);
-      const scale = Math.min(visual.clientWidth/lerp(1450,1030,fit),visual.clientHeight/lerp(900,790,fit));
-      canvas.style.transform=`translate(-50%,-50%) scale(${scale}) translateY(${-39*fit}px)`;
+      const fit = desktop ? 0 : ease((p-.88)/.12);
+      const scale = Math.min(visual.clientWidth/lerp(1350,1030,fit),visual.clientHeight/790);
+      canvas.style.transform=`translate(-50%,-50%) scale(${scale}) translateY(-39px)`;
       const arrivals = [ease((p-.04)/.20), ease((p-.35)/.20), ease((p-.68)/.20)];
       defaultDevice.style.opacity=1-arrivals[0];
       chrome.forEach(element=>{element.style.opacity=arrivals[0];});
@@ -84,20 +84,22 @@
         {x:261+width+7,y:139,w:width,s:1},
         {x:261+2*(width+7),y:139,w:303.33,s:1},
       ];
-      const floating = [{x:12,y:155,w:461,s:.55},{x:570,y:4,w:461,s:.55},{x:1190,y:170,w:461,s:.55}];
-      // Figma default Fold (2497:58714): preserve each preview’s native size and device-relative offset.
-      const compact = [{x:84,y:336,w:390,dy:170},{x:474,y:62,w:424.614868,dy:110},{x:893,y:544,w:456.011719,dy:440}];
+      // Each preview expands into its pane on one shared center/width trajectory.
+      const compact = [{x:300,y:430,w:390,h:227},{x:725,y:350,w:424.614868,h:197},{x:1150,y:430,w:456.011719,h:239.132813}];
       cards.forEach((card,i)=>{
-        const t=arrivals[i], a=floating[i], b=settled[i];
+        const t=arrivals[i], start=compact[i], b=settled[i];
+        const x=lerp(start.x,b.x+b.w/2,t), y=lerp(start.y,b.y+692/2,t);
+        const renderedWidth=lerp(start.w,b.w,t), paneWidth=lerp(461,b.w,t);
+        const paneScale=renderedWidth/paneWidth, previewScale=renderedWidth/start.w;
         const reveal=ease((t-.55)/.45);
         card.style.opacity=reveal;
         card.setAttribute('aria-hidden',String(reveal===0));
-        const preview=previews[i], start=compact[i];
-        preview.style.transform=`translate3d(${lerp(start.x,b.x+16,t)}px,${lerp(start.y,b.y+start.dy,t)}px,0) scale(${lerp(1,Math.min(1,(b.w-32)/start.w),t)})`;
+        const preview=previews[i];
+        preview.style.transform=`translate3d(${x-renderedWidth/2}px,${y-start.h*previewScale/2}px,0) scale(${previewScale})`;
         preview.style.opacity=1-reveal;
         preview.setAttribute('aria-hidden',String(reveal===1));
-        card.style.width=lerp(a.w,b.w,t)+'px';
-        card.style.transform=`translate3d(${lerp(a.x,b.x,t)}px,${lerp(a.y,b.y,t)}px,0) scale(${lerp(a.s,b.s,t)})`;
+        card.style.width=paneWidth+'px';
+        card.style.transform=`translate3d(${x-renderedWidth/2}px,${y-692*paneScale/2}px,0) scale(${paneScale})`;
         card.style.boxShadow=`0 ${24*(1-t)}px ${64*(1-t)}px rgba(0,0,0,${.2*(1-t)})`;
       });
       const selected = p < .35 ? 0 : p < .68 ? 1 : 2;

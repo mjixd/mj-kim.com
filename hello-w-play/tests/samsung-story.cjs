@@ -87,7 +87,33 @@ async function aiEndpoint(page, label) {
   });
   check(label + ': final UI device preserves the straight-on Figma aspect ratio', Math.abs(endpoint.ratio - 974 / 747) < .002, endpoint);
   check(label + ': final UI has enough source pixels for a 2x display', endpoint.density >= 1.99, endpoint);
-  check(label + ': final UI has no CSS rotation or perspective', endpoint.transform === 'none' || /^matrix\(1, 0, 0, 1, 0, 0\)$/.test(endpoint.transform), endpoint);
+  const matrix = endpoint.transform.match(/^matrix\(([^)]+)\)$/)?.[1].split(',').map(Number);
+  check(label + ': final UI has no CSS rotation or perspective', endpoint.transform === 'none' || (matrix?.length === 6 && matrix[0] > 0 && matrix[1] === 0 && matrix[2] === 0 && matrix[3] === matrix[0]), endpoint);
+}
+async function stageLayout(page, label, endpoint = false) {
+  const layout = await page.locator(selector).evaluate(root => {
+    const rect = node => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }; };
+    const headings = [...document.querySelectorAll('main h2')].filter(node => node.textContent.trim() === 'From monitoring to on-site control.');
+    const stage = root.querySelector('.samsung-story__stage');
+    const image = root.querySelector('.samsung-story__interface');
+    const bounds = rect(image), fit = Math.min(bounds.width / image.naturalWidth, bounds.height / image.naturalHeight);
+    const device = { width: image.naturalWidth * fit, height: image.naturalHeight * fit };
+    device.x = bounds.x + (bounds.width - device.width) / 2;
+    device.y = bounds.y + (bounds.height - device.height) / 2;
+    const header = document.querySelector('body > header');
+    return { count: headings.length, inside: !!headings[0] && stage.contains(headings[0]), heading: headings[0] ? rect(headings[0]) : null,
+      stage: rect(stage), sticky: getComputedStyle(stage).position === 'sticky', headerBottom: header?.getBoundingClientRect().bottom || 0,
+      width: innerWidth, height: innerHeight, device };
+  });
+  check(label + ': one exact heading belongs to the unfolding stage', layout.count === 1 && layout.inside, layout);
+  const h = layout.heading;
+  check(label + ': heading is centered at the stage top', h && Math.abs(h.x + h.width / 2 - layout.width / 2) <= 2 && h.y >= layout.stage.y - 1 && h.y <= layout.stage.y + layout.height * .25 && (!layout.sticky || h.y >= layout.headerBottom), layout);
+  if (endpoint) {
+    const d = layout.device;
+    check(label + ': whole final device remains below heading with inset', h && d.y >= h.bottom && d.x >= 8 && d.x + d.width <= layout.width - 8 && (!layout.sticky || d.y + d.height <= layout.height - 8), layout);
+    if (layout.sticky) check(label + ': desktop final device is capped at 60vw', d.width <= layout.width * .6 + 2, layout);
+  }
+  return layout;
 }
 async function startingHardware(page) {
   const bounds = await page.locator(selector + ' video').evaluate(video => {
@@ -172,6 +198,7 @@ async function staticChecks(browser, options, label) {
   await phase(page, 1);
   const after = await state(page);
   await aiEndpoint(page, label);
+  await stageLayout(page, label, true);
   check(label + ': static layout has no sticky runway', before.sticky !== 'sticky' && before.height < before.viewport * 1.7, before);
   check(label + ': no video source or media request', before.videos.every(video => !video.src && !video.currentSrc) && media.length === 0, { videos: before.videos, media });
   check(label + ': Fold8 AI Agent master is visible', before.images.some(image => /AI Agent/i.test(image.alt) && image.width > 0 && image.alpha > .9), before.images);
@@ -205,13 +232,13 @@ async function staticChecks(browser, options, label) {
         const heading = [...document.querySelectorAll('main h2')].find(node => node.textContent.trim() === 'From monitoring to on-site control.');
         const sentence = [...document.querySelectorAll('main p')].find(node => node.textContent.trim() === 'Connected devices and visitor workflows, together in one workspace.');
         const follows = (a, b) => Boolean(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)) && !a.contains(b);
-        return { introFirst: root.closest('main').firstElementChild === intro, introBeforeStory: follows(intro, root), headingAfterIntro: follows(intro, heading), headingBeforeStory: follows(heading, root), sentenceAfterStory: follows(root, sentence), heroVisuals: document.querySelectorAll('.c-hero .kv,.c-hero .carousel').length };
+        return { introFirst: root.closest('main').firstElementChild === intro, introBeforeStory: follows(intro, root), headingAfterIntro: follows(intro, heading), headingInStage: !!heading && root.querySelector('.samsung-story__stage').contains(heading), headingBeforeVideo: follows(heading, root.querySelector('video')), sentenceAfterStory: follows(root, sentence), heroVisuals: document.querySelectorAll('.c-hero .kv,.c-hero .carousel').length };
       });
       check('original case introduction precedes unfolding', order.introFirst && order.introBeforeStory, order);
       const intro = (await page.locator('.c-hero').innerText()).replace(/\s+/g, ' ');
       check('case title is exactly the requested mobile AI title', (await page.locator('main h1').innerText()).trim() === 'B2B AI Agent & Mobile AI Office');
       check('case meta and role remain, with mobile lead and a separate validation chapter', ['SAMSUNG · 2024', 'Samsung’s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, bringing connected devices, workplace services, and on-site decisions into one workspace.', 'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 – present'].every(text => intro.includes(text)) && main.includes('Design token validation') && main.includes('I conceived a validation tool that connects design tokens, implementation rules, and the rendered interface'), intro);
-      check('workspace heading precedes unfolding and its description follows', order.headingAfterIntro && order.headingBeforeStory && order.sentenceAfterStory, order);
+      check('workspace heading introduces unfolding inside its stage and description follows', order.headingAfterIntro && order.headingInStage && order.headingBeforeVideo && order.sentenceAfterStory, order);
       check('removed hero labels are no longer visible', !/Samsung · B2B mobile experience/i.test(main) && !main.includes('Hardware imagery: Samsung Galaxy Z Fold8 · SmartThings interface adaptation: Minjung Kim'));
       check('intro has no redundant slide before the scroll story', order.heroVisuals === 0, order);
       await page.screenshot({ path: path.join(out, 'desktop-intro.png') });
@@ -225,6 +252,7 @@ async function staticChecks(browser, options, label) {
       await phase(page, 0);
       try { await page.waitForFunction(selector => [...document.querySelectorAll(selector + ' video')].some(video => video.readyState >= 2 && video.duration > 0), selector, { timeout: 12000 }); } catch {}
       const start = await state(page);
+      await stageLayout(page, 'desktop opening');
       check('desktop has a sticky stage and one usable decoder', start.sticky === 'sticky' && start.videos.length === 1 && start.videos[0].ready >= 2 && !start.videos[0].error, start);
       await page.screenshot({ path: path.join(out, 'desktop-start.png') });
       if (start.videos[0]?.ready >= 2) await startingHardware(page);
@@ -238,6 +266,14 @@ async function staticChecks(browser, options, label) {
       check('forward scroll scrubs video without autoplay', middle.videos[0]?.time > start.videos[0]?.time + .15 && middle.videos.every(video => video.paused), { start: start.videos, middle: middle.videos });
       check('ending exposes the Fold8 AI Agent master', end.images.some(image => /AI Agent/i.test(image.alt) && image.width > 0 && image.alpha > .9), end.images);
       await aiEndpoint(page, 'desktop');
+      const finalLayout = await stageLayout(page, 'desktop endpoint', true);
+      await phase(page, .98);
+      const settledLayout = await stageLayout(page, 'desktop zoom stop', true);
+      check('last scroll interval does not enlarge the device further', Math.abs(settledLayout.device.width - finalLayout.device.width) <= 1, { settledLayout, finalLayout });
+      await phase(page, .84);
+      const revealedLayout = await stageLayout(page, 'desktop reveal');
+      check('revealed device already fits the 60vw zoom cap', revealedLayout.device.width <= revealedLayout.width * .6 + 2, revealedLayout);
+      await phase(page, 1);
       if (process.env.FOCUSED_HERO_ONLY === '1') {
         fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ engine, sources, checks, failures: checks.filter(item => !item.pass) }, null, 2));
         console.log(JSON.stringify(checks.filter(item => !item.pass), null, 2));
@@ -285,6 +321,10 @@ async function staticChecks(browser, options, label) {
       await page.setViewportSize({ width: 1024, height: 768 });
       await phase(page, .45); const resizedMiddle = await state(page);
       await phase(page, 1); await aiEndpoint(page, 'resized-desktop');
+      await stageLayout(page, 'resized desktop endpoint', true);
+      await phase(page, .84);
+      const resizedReveal = await stageLayout(page, 'resized desktop reveal');
+      check('resized revealed device already fits the 60vw zoom cap', resizedReveal.device.width <= resizedReveal.width * .6 + 2, resizedReveal);
       await phase(page, .45); const resizedReverse = await state(page);
       check('resized desktop reverses to the same frame', sameComposition(resizedMiddle, resizedReverse) && Math.abs(resizedMiddle.videos[0].time - resizedReverse.videos[0].time) < .12, { resizedMiddle, resizedReverse });
       await page.setViewportSize({ width: 390, height: 844 }); await settle(page);

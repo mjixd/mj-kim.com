@@ -10,9 +10,10 @@ const out = process.env.TEST_OUTPUT || path.join(require('node:os').tmpdir(), 's
 const rootSelector = '[data-samsung-workspace]';
 const names = ['control', 'visitor', 'ai'];
 const labels = ['Control Devices', 'Visitor Invitation', 'AI Agent'];
-// Current Figma default Fold layout, measured against device 2497:58714 (974 × 747).
-// AI uses rendered bounds, including its glow, rather than the smaller group box.
-const previewPlacement={control:{x:-154,y:220,width:390,height:227},visitor:{x:236,y:-54,width:424.614868,height:197},ai:{x:655,y:428,width:456.011719,height:239.132813}};
+// Compact export bounds; AI includes the rendered glow.
+const previewSize={control:{width:390,height:227},visitor:{width:424.614868,height:197},ai:{width:456.011719,height:239.132813}};
+const sceneBaseline={1440:{initial:479.424438,final:479.424438},390:{initial:235.103455,final:313.159485},320:{initial:188.082764,final:264.776672}};
+const continuityProgress=[0,.08,.14,.17,.20,.23,.28,.39,.45,.48,.51,.54,.60,.72,.78,.81,.84,.87,1];
 const checks = [], errors = [];
 const check = (name, pass, actual) => checks.push({name, pass: Boolean(pass), actual});
 const pause = page => page.waitForTimeout(300);
@@ -33,6 +34,7 @@ async function snapshot(page) {
     const rect = el => {const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
     return {
       allImagesDecoded:[...root.querySelectorAll('img')].every(img=>img.complete&&img.naturalWidth>0),
+      visual:rect(root.querySelector('.samsung-workspace__visual')),
       canvasScale:scale(root.querySelector('.samsung-workspace__canvas')),
       shell:root.querySelector('.samsung-workspace__device')?rect(root.querySelector('.samsung-workspace__device')):null,chrome:root.querySelectorAll('.sw-status').length,gesture:root.querySelectorAll('.sw-gesture').length,
       height:root.offsetHeight, viewport:innerHeight, width:innerWidth, scrollY,
@@ -80,7 +82,11 @@ function unitChecks() {
   const f=fixture();
   check('unit: public render returns stable ordered screen markup',f.render()===f.render()&&names.every((name,i)=>f.render().indexOf('data-samsung-screen="'+name+'"')>(i?f.render().indexOf('data-samsung-screen="'+names[i-1]+'"'):-1)));
   f.at(0);check('unit: initial compact previews replace hidden full application panes',f.previews.every(p=>Number(p.style.opacity)>.9)&&f.cards.every(c=>Number(c.style.opacity)<.01));
-  check('unit: initial previews retain original scale and Figma device-relative positions',f.previews.every((preview,i)=>{const values=/translate3d\(([-.\d]+)px,([- .\d]+)px,0\) scale\(([-.\d]+)\)/.exec(preview.style.transform);const target=previewPlacement[names[i]];return values&&Math.abs(Number(values[1])-238-target.x)<=1&&Math.abs(Number(values[2])-116-target.y)<=1&&Math.abs(Number(values[3])-1)<.001;}),f.previews.map(p=>p.style.transform));
+  const geometry=(node,width,height)=>{const m=/translate3d\(([-.\d]+)px,([- .\d]+)px,0\) scale\(([-.\d]+)\)/.exec(node.style.transform);if(!m)return null;const scale=Number(m[3]);return {x:Number(m[1])+width*scale/2,y:Number(m[2])+height*scale/2,width:width*scale};};
+  const continuity=[];
+  for(const p of continuityProgress){f.at(p);for(let i=0;i<3;i++){const size=previewSize[names[i]],a=geometry(f.previews[i],size.width,size.height),b=geometry(f.cards[i],parseFloat(f.cards[i].style.width),692);continuity.push({p,id:names[i],preview:a,pane:b,pass:a&&b&&Math.abs(a.x-b.x)<=1&&Math.abs(a.y-b.y)<=1&&Math.abs(a.width-b.width)<=1});}}
+  check('unit: compact and full pane share one center and rendered width throughout every entry',continuity.every(c=>c.pass),continuity);
+  f.at(0);
   const defaultMarkup=/<div class="sw-default-device">([\s\S]*?)<\/div>/.exec(f.render())?.[1]||'';
   check('unit: wallpaper and original hardware share one visible fade owner',defaultMarkup.includes('sw-default-frame')&&defaultMarkup.includes('sw-default-wallpaper')&&Number(f.defaultDevice.style.opacity)===1);
   const starts=f.previews.map(p=>p.style.transform);
@@ -116,7 +122,7 @@ function unitChecks() {
   const browser=await playwright[engine].launch({headless:true,...(executablePath?{executablePath}:{})});
   try {
     const page=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
-    page.on('pageerror',e=>errors.push(e.message));
+    page.on('pageerror',e=>errors.push(e.stack||e.message));
     await enter(page);
     check('public SamsungStory API is preserved',await page.evaluate(()=>['render','renderWorkspace','mount','cleanup'].every(k=>typeof window.SamsungStory?.[k]==='function')));
     check('one workspace follows the original unfolding and case introduction',await page.locator(rootSelector).count()===1&&await page.locator(rootSelector).evaluate(root=>[document.querySelector('[data-samsung-story]'),document.querySelector('main h1')].every(prior=>Boolean(prior.compareDocumentPosition(root)&Node.DOCUMENT_POSITION_FOLLOWING))));
@@ -132,9 +138,12 @@ function unitChecks() {
       check('desktop retains native sticky scroll progression',samples[0].sticky==='sticky'&&samples[0].height>samples[0].viewport,samples[0]);
       check('any screen images decode',decoded(samples[4]),samples[4].cards);
       check('initial scene contains only the three compact Figma previews',JSON.stringify(floating.previews.map(p=>p.id))===JSON.stringify(names)&&floating.previews.every(p=>p.alpha>.9)&&floating.cards.every(c=>c.alpha<.01),floating);
-      for(const id of names){const preview=floating.previews.find(p=>p.id===id),target=previewPlacement[id],scale=floating.shell.width/974;
-        const actual=preview&&{x:(preview.rect.x-floating.shell.x)/scale,y:(preview.rect.y-floating.shell.y)/scale,width:preview.rect.width/scale,height:preview.rect.height/scale};
-        check('initial '+id+' matches Figma original-size position',actual&&Object.keys(target).every(key=>Math.abs(actual[key]-target[key])<=1),{expected:target,actual});}
+      const handoffs=[];for(const progress of continuityProgress){await phase(page,progress);const sample=await snapshot(page);handoffs.push({progress,sample});if([.17,.48,.81].includes(progress))await capture(page,'desktop-handoff-'+progress);}
+      for(const id of names){const pairs=handoffs.map(({progress,sample})=>{const a=sample.previews.find(p=>p.id===id),b=card(sample,id),scale=sample.shell.width/974;return {progress,dx:(a.rect.x+a.rect.width/2-b.rect.x-b.rect.width/2)/scale,dy:(a.rect.y+a.rect.height/2-b.rect.y-b.rect.height/2)/scale,dw:(a.rect.width-b.rect.width)/scale,overlap:a.alpha>.01&&b.alpha>.01};});
+        check(id+' compact/full handoff shares its visual center and rendered width',pairs.every(p=>Math.abs(p.dx)<=1&&Math.abs(p.dy)<=1&&Math.abs(p.dw)<=1)&&pairs.some(p=>p.overlap),pairs);}
+      check('visible compact previews stay inside the scene throughout entry',handoffs.every(({sample})=>sample.previews.filter(p=>p.alpha>.01).every(p=>p.rect.x>=sample.visual.x-1&&p.rect.right<=sample.visual.right+1&&p.rect.y>=sample.visual.y-1&&p.rect.bottom<=sample.visual.bottom+1)),handoffs.map(({progress,sample})=>({progress,visual:sample.visual,previews:sample.previews})));
+      check('visible full panes stay inside the scene throughout entry',handoffs.every(({sample})=>sample.cards.filter(p=>p.alpha>.01).every(p=>p.rect.x>=sample.visual.x-1&&p.rect.right<=sample.visual.right+1&&p.rect.y>=sample.visual.y-1&&p.rect.bottom<=sample.visual.bottom+1)),handoffs.map(({progress,sample})=>({progress,visual:sample.visual,cards:sample.cards})));
+      check('desktop scene is larger at the opening and final state',floating.shell.width>sceneBaseline[1440].initial+1&&samples[4].shell.width>sceneBaseline[1440].final+1,{initial:floating.shell.width,final:samples[4].shell.width,baseline:sceneBaseline[1440]});
       check('initial device displays the original default Figma asset',floating.defaultImages.some(i=>i.src.split('?')[0]==='assets/samsung/workspace/fold-default.png'&&i.loaded&&i.alpha>.9),floating.defaultImages);
       const wallpaper=floating.defaultImages.find(i=>i.wallpaper),deviceScale=floating.shell.width/974;
       const wallpaperRect=wallpaper&&{x:(wallpaper.rect.x-floating.shell.x)/deviceScale,y:(wallpaper.rect.y-floating.shell.y)/deviceScale,width:wallpaper.rect.width/deviceScale,height:wallpaper.rect.height/deviceScale};
@@ -177,11 +186,12 @@ function unitChecks() {
     }
     await page.close();
     for(const width of [320,390,820]){
-      const p=await browser.newPage({viewport:{width,height:844},reducedMotion:'no-preference'});p.on('pageerror',e=>errors.push(e.message));await enter(p);await phase(p,0);
-      let s=await snapshot(p);check('mobile '+width+' has no scroll trap',s.sticky!=='sticky'&&s.height<s.viewport*1.7,s);
+      const p=await browser.newPage({viewport:{width,height:844},reducedMotion:'no-preference'});p.on('pageerror',e=>errors.push(e.stack||e.message));await enter(p);await phase(p,0);await p.clock.install();
+      let s=await snapshot(p);if(sceneBaseline[width])check('mobile '+width+' opening scene is larger',s.shell.width>sceneBaseline[width].initial+1,{actual:s.shell.width,baseline:sceneBaseline[width].initial});
+      check('mobile '+width+' has no scroll trap',s.sticky!=='sticky'&&s.height<s.viewport*1.7,s);
       check('mobile '+width+' has one reachable control for each screen',labels.every(label=>s.buttons.some(b=>b.label.toLowerCase().includes(label.toLowerCase()))),s.buttons);
       if(s.cards.length===3&&s.buttons.length>=3){
-        for(const index of [0,1,2,1,0]){await p.locator(rootSelector).getByRole('button',{name:new RegExp(labels[index],'i')}).click();await p.waitForTimeout(4400);s=await snapshot(p);await capture(p,'mobile-'+width+'-'+names[index]);check('mobile '+width+' tap '+names[index]+' selects visible screen',active(s,names[index]),s);check('mobile '+width+' tap '+names[index]+' fits viewport',!s.overflow&&s.copy.every(r=>r.x>=-1&&r.right<=width+1),s.copy);}
+        for(const index of [0,1,2,1,0]){await p.locator(rootSelector).getByRole('button',{name:new RegExp(labels[index],'i')}).click();if(index===2){const frames=[];for(let tick=0;tick<44;tick++){await p.clock.runFor(100);frames.push(await snapshot(p));}check('mobile '+width+' animation keeps visible previews and panes inside the scene',frames.every(s=>[...s.previews,...s.cards].filter(c=>c.alpha>.01).every(c=>c.rect.x>=s.visual.x-1&&c.rect.right<=s.visual.right+1&&c.rect.y>=s.visual.y-1&&c.rect.bottom<=s.visual.bottom+1)),frames.map(s=>({visual:s.visual,previews:s.previews,cards:s.cards})));check('mobile '+width+' compact and pane share one path during animation',frames.every(s=>s.previews.every(a=>{const b=card(s,a.id),scale=s.shell.width/974;return Math.abs(a.rect.x+a.rect.width/2-b.rect.x-b.rect.width/2)<=scale&&Math.abs(a.rect.y+a.rect.height/2-b.rect.y-b.rect.height/2)<=scale&&Math.abs(a.rect.width-b.rect.width)<=scale;})));}else await p.clock.runFor(4400);s=await snapshot(p);if(index===2&&sceneBaseline[width])check('mobile '+width+' final device retains its viewport fit',s.shell.width>=sceneBaseline[width].final-1,{actual:s.shell.width,baseline:sceneBaseline[width].final});await capture(p,'mobile-'+width+'-'+names[index]);check('mobile '+width+' tap '+names[index]+' selects visible screen',active(s,names[index]),s);check('mobile '+width+' tap '+names[index]+' fits viewport',!s.overflow&&s.copy.every(r=>r.x>=-1&&r.right<=width+1),s.copy);}
         check('mobile '+width+' content images decode without distortion',decoded(s)&&undistorted(s),s.cards);
       }
       await capture(p,'mobile-'+width);await p.close();

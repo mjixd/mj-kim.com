@@ -1,0 +1,26 @@
+/* Public portfolio shell; the original validation engine and sample remain intact. */
+:root{--ink:#e8edf6;--muted:#97a7be;--line:#263448;--accent:#528fff;--accent-soft:#172b49;color-scheme:dark}
+html,body{background:#101821;color:var(--ink)}
+body>header,main>.intro,main>.context,main>.bottom,body footer,#projectOpen,#projectRefresh,#scopeOpen,#modeGenerate,#saveDesign{display:none!important}
+main{padding:0!important}
+.workbench{border:1px solid var(--line);border-radius:12px;background:#101821;grid-template-columns:minmax(180px,.8fr) minmax(0,2.1fr) minmax(260px,1fr)}
+.workbench .panel-title,.preview .panel-title,.inspector,.score-area,.canvas-foot,.source-footer{background:#111d2a;color:var(--ink)}
+.preview{background:#101821}.canvas{background:#101821}.source{background:#1e1e1e}
+.inspector{display:block;grid-column:auto}.preview .canvas{min-height:420px}
+.token-label,.scoretext h2,.scoreinner,.scoreinner span,.token-label label{color:var(--ink)}
+input,select,textarea{color:var(--ink);background:#0b131e;border-color:#334155}
+button{color:var(--ink);background:#172334;border-color:#334155}
+.token-grid select{background:#0b131e;color:var(--ink);border-color:#334155}
+.ring{background:conic-gradient(var(--tone) calc(var(--score)*1%),#263448 0)}
+.ring:before{background:#111d2a}
+.scoreinner{background:transparent}
+.preview-heading .background-image-info button{background:#172334;color:var(--ink);border-color:#334155}
+@media(max-width:900px){
+ .workbench{display:flex;flex-direction:column}.source{order:2}.preview{order:0}.inspector{order:1;display:block}
+ .preview .canvas{min-height:190px}.preview-heading{padding:10px}.source .codewrap{max-height:260px}
+ .source{max-height:none}.source .tabs,.source .editor-toolbar{flex-shrink:0}.source-footer{flex-shrink:0}.inspector .token-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+}
+@media(max-width:420px){.inspector .token-grid{grid-template-columns:1fr}}
+.canvas-foot span{background:#1b2a3e;color:#aebbd0}
+.token-row{border-bottom-color:#263448;margin-bottom:14px;padding-bottom:12px}
+.token-row.mismatch select{background:#351b26;border-color:#bc647b;color:#ffc0cc}

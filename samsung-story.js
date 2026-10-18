@@ -5,9 +5,9 @@
   const clamp = value => Math.min(1, Math.max(0, value));
   const ease = value => { const p = clamp(value); return p * p * (3 - 2 * p); };
   function render() {
-    return `<section class="samsung-story-intro"><div class="wrap"><h2>From monitoring to on-site control.</h2></div></section>
-    <section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
+    return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
       <div class="samsung-story__stage">
+        <h2 class="samsung-story__heading">From monitoring to on-site control.</h2>
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
@@ -28,7 +28,7 @@
   function mountScene(root) {
     const video = root.querySelector('video');
     const visual = root.querySelector('.samsung-story__visual');
-    let startScale = 1, startY = 0;
+    let startScale = 1, startY = 0, maxScale = 1;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let active = true, near = false, enabled = false, failed = false, ready = false, raf = 0, target = 0, requested = -1;
     function seek() {
@@ -47,7 +47,7 @@
       root.style.setProperty('--poster-opacity', moving && !ready ? 1 - reveal : 0);
       root.style.setProperty('--hardware-opacity', moving && ready && reveal < 1 ? 1 : 0);
       root.style.setProperty('--interface-opacity', reveal);
-      root.style.setProperty('--interface-scale', startScale + (1 - startScale) * zoom);
+      root.style.setProperty('--interface-scale', moving ? startScale + (maxScale - startScale) * zoom : 1);
       root.style.setProperty('--interface-y', (startY * (1 - zoom)) + '%');
       target = Number.isFinite(video.duration) ? Math.max(0, Math.min(video.duration - .05, clamp(progress / .76) * video.duration)) : 0;
       seek();
@@ -69,6 +69,8 @@
         const videoScale = Math.min(width / 1396, height / 860);
         const endScale = Math.min(width / 974, height / 747);
         startScale = videoScale / endScale;
+        // Keep the whole device framed at the endpoint, including a small vertical inset.
+        maxScale = Math.min(1, innerWidth * .6 / (974 * endScale), Math.max(1, height - 32) / (747 * endScale));
         startY = (height - 860 * videoScale + (56 + 747 / 2) * videoScale - height / 2) / height * 100;
       }
       if (video) {

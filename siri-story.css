@@ -30,12 +30,32 @@
 .siri-chip-copy{max-width:780px}
 .siri-chip h2{color:#fff;font-size:clamp(36px,5vw,64px);font-weight:500;line-height:1.08;letter-spacing:-.035em;margin:20px 0 24px}
 .siri-chip-copy p{font-size:clamp(17px,1.8vw,21px);line-height:1.5;color:#ccc;margin:0}
-.siri-chip-phone{position:relative;width:min(552px,calc(100% - 48px));aspect-ratio:552/596;overflow:hidden;margin:78px auto 0}
+.siri-chip-phone{position:relative;width:min(552px,calc(100% - 48px));aspect-ratio:1104/1552;overflow:hidden;margin:36px auto 0}
 .siri-chip-phone>img{display:block;width:100%;height:auto;max-width:none}
-.siri-chip-display{position:absolute;left:8.15%;right:8.15%;top:18%;bottom:0;background:linear-gradient(180deg,transparent,#000 14%)}
+.siri-chip-display{position:absolute;left:8.15%;right:8.15%;top:17.4%;bottom:0;background:#000}
 .siri-chip-wave{position:absolute;left:8.15%;width:83.7%;top:33.89%;aspect-ratio:462/332;background:#000}
 .siri-chip-wave canvas{display:block}
 @media(max-width:735px){.siri-chip-phone{width:min(384px,calc(100% - 48px));margin-top:44px}}
 @media(max-width:1068px){.siri-hero-title{width:220px}.siri-hero-title h1{font-size:54px}}
 @media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}.siri-voice-caption{margin-top:40px}}
 @media(prefers-reduced-motion:reduce){.siri-hero{height:100svh}.siri-hero-stage{position:relative}.siri-device{will-change:auto}}
+
+.siri-chip-messages{position:absolute;left:8.15%;width:83.7%;top:17.4%;aspect-ratio:750/1334}
+.siri-chip-messages img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;will-change:opacity,transform}
+.siri-chip-sequence{display:flex;align-items:center;justify-content:center;gap:16px;margin:24px 0 12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.siri-chip-sequence i{width:32px;height:1px;background:#555}
+.siri-chip-playback{border:0;background:none;color:#a5a5a5;font:inherit;font-size:12px;padding:8px 12px;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.siri-chip-playback:focus-visible{outline:2px solid #9ddfff;outline-offset:4px}
+.siri-cover{background:#000!important;position:relative}
+.siri-cover [data-siri-cover]{position:absolute;inset:0}
+.siri-cover canvas{display:block;width:100%!important;height:100%!important}
+@media(prefers-reduced-motion:reduce){.siri-chip-messages img{will-change:auto}}
+
+@media(min-width:900px){
+ .siri-chip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:40px;padding:80px max(var(--gutter),calc((100vw - 1280px)/2)) 0;min-height: min(900px,100svh)}
+ .siri-chip-copy{padding:0;text-align:left;width:100%;max-width:580px}
+ .siri-chip h2{font-size:clamp(42px,4.5vw,64px)}
+ .siri-chip-sequence{justify-content:flex-start}
+ .siri-chip-playback{padding-left:0}
+ .siri-chip-phone{align-self:end;width:min(100%,480px,calc((100svh - 100px)*.71134));margin:0 auto}
+}

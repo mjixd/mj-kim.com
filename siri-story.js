@@ -3,9 +3,9 @@
 window.SiriStory = (() => {
   const base = 'assets/line/';
   const layers = [
-    [-645,-70,520,'request'],[-323,-245,740,'review'],[0,-327,450,'sent'],
-    [323,-175,620,'request'],[645,-268,480,'review'],[-645,567,480,'sent'],
-    [-323,392,600,'request'],[0,585,360,'review'],[323,500,600,'sent'],[645,430,480,'request']
+    [-645,-70,520,'short'],[-323,-245,740,'review'],[0,-327,450,'sent'],
+    [323,-175,620,'theme-b'],[645,-268,480,'alternate-review'],[-645,567,480,'theme-c'],
+    [-323,392,600,'listening'],[0,585,360,'request'],[323,500,600,'alternate-sent'],[645,430,480,'long']
   ];
   const clamp = n => Math.max(0,Math.min(1,n));
   let dispose = () => {};
@@ -47,32 +47,63 @@ window.SiriStory = (() => {
         <span class="siri-eyebrow">SiriKit · Voice messaging</span>
         <h2 id="siri-chip-title">Say it to Siri.<br>Send it with LINE.</h2>
         <p>A name. A message. One spoken request.</p>
+        <div class="siri-chip-sequence" aria-hidden="true"><span>Speak</span><i></i><span>Review</span><i></i><span>Send</span></div>
+        <button class="siri-chip-playback" type="button" data-siri-playback aria-label="Pause Siri demonstration">Pause animation</button>
       </div>
       <figure class="siri-chip-phone" aria-label="iPhone 7 with a reconstructed 2016 Siri waveform">
         <img src="${base}apple-iphone7-chip-2016.jpg" width="1104" height="1552" alt="Black iPhone 7, Apple 2016" loading="lazy">
         <div class="siri-chip-display" aria-hidden="true"></div>
+        <div class="siri-chip-messages" aria-hidden="true">${['request','review','sent'].map(state=>`<img data-siri-message="${state}" src="${base}siri-final-${state}.png" alt="Original LINE ${state} screen" width="750" height="1334">`).join('')}</div>
         <div class="siri-chip-wave" data-siri-chip-wave role="img" aria-label="Animated multicolored Siri waveform"></div>
       </figure>
     </section>`;
   }
-  function mountChip(motion){
-    const container=document.querySelector('[data-siri-chip-wave]');
-    if(!container || !window.SiriWave)return ()=>{};
-    // Fixed, bounded backing store; CSS scales it with the original phone geometry.
-    const wave=new SiriWave({container,style:'ios9',width:462,height:332,ratio:2,
+  function makeWave(container,width,height){
+    const wave=new SiriWave({container,style:'ios9',width,height,ratio:2,
       cover:true,autostart:false,speed:.12,amplitude:1.4,pixelDepth:.08});
-    // Render a fully formed still immediately, including reduced-motion page entry.
-    for(let frame=0;frame<40;frame++){wave.clear();wave.draw();}
-    let visible=false,dead=false;
-    function sync(){
-      if(dead)return;
-      if(visible && !document.hidden && !motion.matches)wave.start();else wave.stop();
-    }
+    for(let i=0;i<40;i++){wave.clear();wave.draw();}
+    return wave;
+  }
+  function mountCover(){
+    dispose();
+    const container=document.querySelector('[data-siri-cover]');
+    if(!container||!window.SiriWave)return;
+    const wave=makeWave(container,1000,428),motion=matchMedia('(prefers-reduced-motion: reduce)');
+    let visible=false;
+    function sync(){if(visible&&!document.hidden&&!motion.matches)wave.start();else wave.stop();}
     const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();});
-    observer.observe(container);
-    document.addEventListener('visibilitychange',sync);
-    motion.addEventListener('change',sync);
-    return ()=>{dead=true;observer.disconnect();document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();};
+    observer.observe(container);document.addEventListener('visibilitychange',sync);motion.addEventListener('change',sync);
+    dispose=()=>{observer.disconnect();document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();dispose=()=>{};};
+  }
+  function renderCover(){return '<div class="kv wide siri-cover"><div data-siri-cover role="img" aria-label="Animated multicolored Siri waveform"></div></div>';}
+  function mountChip(motion){
+    const root=document.querySelector('[data-siri-chip]'),container=root?.querySelector('[data-siri-chip-wave]');
+    if(!container||!window.SiriWave)return ()=>{};
+    const wave=makeWave(container,462,332),messages=[...root.querySelectorAll('[data-siri-message]')];
+    const button=root.querySelector('[data-siri-playback]');
+    let visible=false,dead=false,paused=false,raf=0,last=0,elapsed=0;
+    function paint(){
+      const time=motion.matches?7900:elapsed%10800;
+      const fade=(start,end)=>clamp((time-start)/650)*(1-clamp((time-end)/650));
+      const weights=[fade(2500,4300),fade(4300,7300),fade(7300,9700)];
+      const scene=time<2500?'listening':time<4300?'request':time<7300?'review':'sent';
+      root.dataset.siriChipStage=scene;
+      messages.forEach((img,i)=>{const alpha=weights[i];img.style.opacity=alpha;img.style.transform='translateY('+(1-alpha)*10+'px)';});
+      container.style.opacity=String(1-clamp((time-2300)/650)+clamp((time-10000)/650));
+      if(visible&&!paused&&!document.hidden&&!motion.matches&&time<3000)wave.start();else wave.stop();
+    }
+    function frame(now){raf=0;if(dead)return;if(last)elapsed+=Math.min(100,now-last);last=now;paint();raf=requestAnimationFrame(frame);}
+    function sync(){
+      cancelAnimationFrame(raf);raf=0;last=0;
+      paint();
+      if(visible&&!document.hidden&&!motion.matches&&!paused)raf=requestAnimationFrame(frame);
+      button.hidden=motion.matches;
+    }
+    const observer=new IntersectionObserver(entries=>{const next=entries[0].isIntersecting;if(next&&!visible)elapsed=0;visible=next;sync();});
+    observer.observe(root.querySelector('.siri-chip-phone'));
+    function toggle(){paused=!paused;button.textContent=paused?'Play animation':'Pause animation';button.setAttribute('aria-label',(paused?'Play':'Pause')+' Siri demonstration');sync();}
+    button.addEventListener('click',toggle);document.addEventListener('visibilitychange',sync);motion.addEventListener('change',sync);sync();
+    return ()=>{dead=true;cancelAnimationFrame(raf);observer.disconnect();button.removeEventListener('click',toggle);document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();};
   }
   function mount(){
     dispose();
@@ -103,5 +134,5 @@ window.SiriStory = (() => {
     paint();
     dispose=()=>{dead=true;disposeChip();cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);motion.removeEventListener('change',schedule);dispose=()=>{};};
   }
-  return {renderHero,renderVoice,renderChip,mount,cleanup:()=>dispose()};
+  return {renderHero,renderVoice,renderChip,renderCover,mount,mountCover,cleanup:()=>dispose()};
 })();

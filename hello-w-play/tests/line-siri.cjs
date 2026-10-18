@@ -15,8 +15,8 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     const card = page.locator('a[href="#/work/line"]').first();
     const cardText = await card.innerText();
     await card.scrollIntoViewIfNeeded();
-    const cover = await card.locator('img').evaluate(async image => { await image.decode(); const rect = image.getBoundingClientRect(); return { src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight, renderedWidth: rect.width, renderedHeight: rect.height, left: rect.left, right: rect.right }; });
-    check(`${width}: dedicated Siri cover loads within viewport`, /cover_line_siri/.test(cover.src) && cover.width > 0 && cover.left >= 0 && cover.right <= width + 1, cover);
+    const cover = await card.locator('canvas').evaluate(canvas => { const rect=canvas.getBoundingClientRect(); const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data; return {width:canvas.width,height:canvas.height,left:rect.left,right:rect.right,colored:pixels.some((value,index)=>index%4!==3&&value>30)}; });
+    check(`${width}: restored Siri waveform fits viewport and has visible artwork`, cover.width>0&&cover.colored&&cover.left>=0&&cover.right<=width+1,cover);
     await card.screenshot({ path: path.join(out, `line-home-card-${width}.png`) });
     check(`${width}: home card prioritizes Siri`, /Siri/i.test(cardText), cardText);
     await card.click();

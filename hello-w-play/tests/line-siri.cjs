@@ -41,9 +41,25 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     const caseMarkup = await page.locator('main').innerHTML();
     check(`${width}: Speaker images and deck previews are absent`, !/WEB(?:\s|%20|_|-)*(?:7[7-9]|8[0-4])\b/i.test(caseMarkup), images);
     check(`${width}: all case images decode`, images.length > 0 && images.every(image => image.width > 0 && image.height > 0), images);
-    const finalSlides = ['01','02','03','04'].map(number => 'assets/decks/LINE Siri ' + number + '.png');
-    check(`${width}: all four final slide exports render at their source dimensions`, finalSlides.every(file => images.some(image => decodeURIComponent(image.src).split('?')[0] === file && image.width === 1920 && image.height === 1080)), images.filter(image => /LINE(?:%20| )Siri/.test(image.src)));
-    check(`${width}: final hero screens preserve native resolution`, ['request','review','sent'].every(state => images.some(image => image.src === 'assets/line/siri-final-' + state + '.png' && image.width === 750 && image.height === 1334)), images.filter(image => /siri-final-/.test(image.src)));
+    const finalSlides = ['01','02','03','04','05','06'].map(number => 'assets/decks/LINE Siri ' + number + '.png');
+    check(`${width}: all six final slide exports render at their source dimensions`, finalSlides.every(file => images.some(image => decodeURIComponent(image.src).split('?')[0] === file && image.width === 1920 && image.height === 1080)), images.filter(image => /LINE(?:%20| )Siri/.test(image.src)));
+    const heroScreens = await page.locator('[data-siri-hero] .siri-screen img').evaluateAll(nodes => nodes.map(n=>({src:n.getAttribute('src'),width:n.naturalWidth,height:n.naturalHeight})));
+    check(`${width}: original hero screens preserve native resolution`,heroScreens.length>0&&heroScreens.every(image=>image.width===750&&image.height===1334),heroScreens);
+    check(`${width}: hero includes exactly one original sky theme screenshot`,heroScreens.filter(image=>image.src==='assets/line/siri-final-sky.png').length===1,heroScreens);
+    const seasonal = await page.locator('main img').evaluateAll(nodes=>['05','06'].map(number=>{
+      const n=nodes.find(n=>decodeURIComponent(n.getAttribute('src')).split('?')[0]==='assets/decks/LINE Siri '+number+'.png');
+      const section=n?.closest('section'),r=n?.getBoundingClientRect();
+      return {number,heading:section?.querySelector('h2')?.textContent.trim(),left:r?.left,right:r?.right,width:r?.width,height:r?.height};
+    }));
+    check(`${width}: seasonal and sky slides appear in readable detail sections`,seasonal.every(item=>item.heading&&item.width>0&&item.height>0&&item.left>=-1&&item.right<=width+1),seasonal);
+    const deck = await page.locator('.deck-band').evaluate(root=>({heading:root.querySelector('h2').textContent,remaining:root.querySelector('.remaining')?.textContent}));
+    check(`${width}: deck presentation counts six slides`,/6 slides/.test(deck.heading)&&deck.remaining==='+4',deck);
+    const voice=await page.locator('[data-siri-voice]').evaluate(root=>({eyebrow:root.querySelector('.siri-eyebrow')?.textContent,quote:root.querySelector('blockquote')?.textContent,heading:root.querySelector('h2')?.textContent,lead:root.querySelector('.siri-voice-lead')?.textContent,steps:root.querySelectorAll('.siri-voice-steps h3').length}));
+    check(`${width}: voice eyebrow and quotation are removed while the explanation stays`,!voice.eyebrow&&!voice.quote&&voice.heading==='A message startswith your voice.'&&voice.lead?.includes('Siri turns the request')&&voice.steps===3,voice);
+    const impact=await page.locator('.impact').evaluate(root=>({heading:root.querySelector('.eyebrow').textContent,stats:[...root.querySelectorAll('.stats>div')].map(n=>[n.querySelector('b').textContent,n.querySelector('span').textContent])}));
+    check(`${width}: Impact preserves selected-member facts and lowercase at Apple`,impact.heading==='Impact'&&JSON.stringify(impact.stats)===JSON.stringify([['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.']]),impact);
+    const credits=await page.locator('.source-credit,.siri-source').evaluateAll(nodes=>nodes.map(n=>({text:n.textContent.trim(),size:getComputedStyle(n).fontSize,style:getComputedStyle(n).fontStyle,line:getComputedStyle(n).lineHeight})));
+    check(`${width}: small italic source credits remain intact`,credits.length>=2&&credits.some(c=>c.text==='Credit: Andrew Cunningham')&&credits.every(c=>c.size==='12px'&&c.style==='italic'&&c.line==='19.2px'),credits);
     const geometry = await page.evaluate(() => ({ width: innerWidth, documentWidth: document.documentElement.scrollWidth, mainWidth: document.querySelector('main').scrollWidth }));
     check(`${width}: no horizontal overflow`, geometry.documentWidth <= width + 1 && geometry.mainWidth <= width + 1, geometry);
     await page.screenshot({ path: path.join(out, `line-siri-${width}.png`), fullPage: true });

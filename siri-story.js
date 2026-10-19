@@ -3,7 +3,7 @@
 window.SiriStory = (() => {
   const base = 'assets/line/';
   const layers = [
-    [-645,-70,520,'short'],[-323,-245,740,'review'],[0,-327,450,'sent'],
+    [-645,-70,520,'short'],[-323,-245,740,'sky'],[0,-327,450,'sent'],
     [323,-175,620,'theme-b'],[645,-268,480,'alternate-review'],[-645,567,480,'theme-c'],
     [-323,392,600,'listening'],[0,585,360,'request'],[323,500,600,'alternate-sent'],[645,430,480,'long']
   ];
@@ -25,10 +25,8 @@ window.SiriStory = (() => {
   function renderVoice(){
     return `<section class="siri-voice" data-siri-voice aria-labelledby="siri-voice-title">
       <div class="wrap siri-voice-inner">
-        <span class="siri-eyebrow">Siri for LINE</span>
         <h2 id="siri-voice-title">A message starts<br>with your voice.</h2>
         <p class="siri-voice-lead">Say who it is for and what you want to say. Siri turns the request into a LINE message you can review before sending.</p>
-        <blockquote>“Send a LINE to Nancy<br>saying ‘I'll be five minutes late.’”</blockquote>
         <div class="siri-voice-steps">
           <div><span>01</span><h3>Speak naturally.</h3><p>Name the app, the person, and the message in a single request.</p></div>
           <div><span>02</span><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>

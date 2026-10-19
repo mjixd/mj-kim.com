@@ -93,15 +93,15 @@ async function layoutChecks(page, width) {
     check('montage has request, review, and sent devices', await hero.locator('.siri-device').count() >= 3, await hero.locator('.siri-device').count());
     await assetChecks(page, hero, hardwareHash, 'Hero');
     const heroAssets = await assetUrls(hero);
-    const expectedScreens = ['request','review','sent'].map(state => 'assets/line/siri-final-' + state + '.png');
-    check('hero uses all three supplied final LINE screens locally', expectedScreens.every(file => heroAssets.some(url => new URL(url).origin === new URL(base).origin && new URL(url).pathname.endsWith('/' + file))), heroAssets);
+    const expectedScreens = ['request','sky'].map(state => 'assets/line/siri-final-' + state + '.png');
+    check('hero retains request and includes the original sky theme locally', expectedScreens.every(file => heroAssets.some(url => new URL(url).origin === new URL(base).origin && new URL(url).pathname.endsWith('/' + file))), heroAssets);
     await assetChecks(page, voice, roomHash, 'Voice background');
     const screens = await hero.locator('.siri-device').evaluateAll(devices => devices.map(device => ({
       text: device.textContent,
       labels: [device, ...device.querySelectorAll('[aria-label],img')].map(node => node.getAttribute('aria-label') || node.alt || '').join(' '),
     })));
     const screenEvidence = screens.map(screen => screen.text + ' ' + screen.labels).join(' ');
-    check('montage presents request, review, and sent messaging states', /request|send a LINE|send.*message/i.test(screenEvidence) && /review|confirm|cancel/i.test(screenEvidence) && /sent/i.test(screenEvidence), screens);
+    check('montage preserves messaging states and the sky theme', /request|send a LINE|send.*message/i.test(screenEvidence) && /review|confirm|cancel|sent/i.test(screenEvidence) && /sky/i.test(screenEvidence), screens);
     const heroCopy = await hero.innerText(), voiceCopy = await voice.innerText(), mainCopy = await page.locator('main').innerText();
     check('hero has no temporary reconstruction claims', !/reconstruct|provisional|pending original/i.test(heroCopy), heroCopy);
     check('voice copy describes LINE messaging without inherited HomeKit claims', /LINE/.test(voiceCopy) && /message|messaging|send|recipient/i.test(voiceCopy) && !/HomeKit|on\/off switch|turn (?:on|off).*light|unlock.*door/i.test(voiceCopy), voiceCopy);

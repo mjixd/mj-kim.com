@@ -139,6 +139,8 @@
   .c-hero .lead{ margin:22px auto 0; font-size:clamp(17px,2vw,24px); line-height:1.4; color:var(--muted); max-width:52ch; }
   .c-hero .role{ margin:18px auto 0; font-size:14px; color:var(--muted); max-width:60ch; }
   .c-hero .kv{ max-width:1100px; margin:clamp(32px,5vw,56px) auto 0; }
+  .meta-hero-visual{border-radius:0;box-shadow:none;}
+  .meta-hero-visual img{transform:scale(1.08);}
   .carousel-layer{ position:absolute; inset:0; }
   .carousel-controls{ display:flex; justify-content:center; align-items:center; gap:12px; margin-top:14px; color:var(--muted); font-size:12px; }
   .carousel-controls button{ min-width:40px; min-height:40px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--text); cursor:pointer; }
@@ -351,7 +353,7 @@ const CASES = [
       {tag:'3 Adoption', h:'From one-off fixes to shared updates', p:'Figma variables became tokens synced to internal GitHub through Tokens Studio. Engineers update tokens with a single command and the change propagates everywhere. Driven directly with development teams, shifting QA from manual interpretation to a repeatable, measurable system.', from:'EN · 12', src:'assets/decks/EN · 12.png'}
 
     ]},
-  { slug:'domino-mvp', meta:'Domino · 2022–2024', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
+  { slug:'domino-mvp', meta:'Domino App', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
     kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
     kvHero:'assets/decks/EN · 19.png',
     background:'I joined Domino as a founding product designer, helping shape an investment platform from its initial MVP through MyData integration. Working with the CEO, PM, and CTO, I led design end to end, helped set the product direction, and defined hypotheses and success metrics for a unified, account-centric experience.',
@@ -371,7 +373,7 @@ const CASES = [
       {tag:'4 Hypothesis', h:'Metrics before launch', p:'Primary: new-user D7 retention and MyData active DAU. Secondary: account-switching retention. Guardrail: entry to account Analysis. Defined so the team would know what success looked like before shipping.', from:'EN · 31', src:'assets/decks/EN · 31.png'},
       {tag:'5 Delivery', h:'Open the app, see live assets, switch accounts', p:'For the first time in Korea, swipe between brokerage accounts without opening each app. One gesture to switch, one home for everything.', from:'EN · 33', src:'assets/decks/EN · 33.png'}
     ]},
-  { slug:'meta', meta:'Meta · 2020', title:'Remote-work adoption, Manager\u00a01:1\u00a0tool', line:'Cross-functional product strategy inside Enterprise Engineering: hypotheses, an XFN sprint, and measured launch.',
+  { slug:'meta', meta:'Meta Platforms, Inc.', title:'Remote-work adoption, Manager\u00a01:1\u00a0tool', line:'Cross-functional product strategy inside Enterprise Engineering: hypotheses, an XFN sprint, and measured launch.',
     kvHome:'assets/covers/cover_meta_remote_work_stage.png', kvHomeAlt:'Better together — Meta manager 1:1 workflows presented on a pastel gradient auditorium screen',
     kvHero:'assets/meta/hero-four-screens.png', kvHeroAlt:'Manager Landing mobile: Home, event details, quick editor, and Your 1:1s',
     accent:'#277af6', stat:{n:'+195.65%', l:'Manager WAP, 2.3% \u2192 6.8%'},
@@ -880,9 +882,10 @@ function renderCase(slug){
       ${c.slug === 'line' ? '' : `<h1>${caseHeading(c.title)}</h1>`}
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${c.background || c.slug === 'line' || c.slug === 'samsung' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.background || c.slug === 'line' || c.slug === 'samsung' || c.slug === 'meta' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
+    ${c.slug === 'meta' ? kvHTML({src:c.kvHero,alt:c.kvHeroAlt,request:c.slug},'meta-hero-visual') : ''}
     ${c.slug === 'samsung' ? SamsungStory.render() + SamsungStory.renderWorkspace() : ''}
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
     ${c.background ? DominoBackground.render(esc(c.background)) : ''}

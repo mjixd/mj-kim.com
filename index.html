@@ -266,6 +266,7 @@
   .manifesto-block{ padding-bottom:clamp(32px,5vw,64px); }
   .manifesto-block h2{ margin:0 0 14px; font-size:clamp(22px,2.6vw,32px); font-weight:600; letter-spacing:-.02em; }
   .manifesto-block p{ margin:0 0 14px; max-width:68ch; font-size:clamp(16px,1.6vw,19px); line-height:1.55; color:var(--muted); }
+  .about-group h2,.about-group-title{margin:0 0 24px;font-size:clamp(22px,2.6vw,32px);font-weight:600;letter-spacing:-.02em;}
   .rows{ border-top:1px solid var(--line); margin-bottom:clamp(32px,5vw,64px); }
   .rows + .rows{ margin-top:-8px; }
   .row{ display:grid; grid-template-columns:260px 1fr; gap:48px; padding:24px 0; border-bottom:1px solid var(--line); }
@@ -328,7 +329,7 @@
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
 <script src="assets/vendor/lottie/lottie-5.12.2.min.js"></script>
 <script src="siri-story.js?v=matching-invitation-1"></script>
-<script src="samsung-workspace.js?v=no-controls-1"></script>
+<script src="samsung-workspace.js?v=lighting-slide-1"></script>
 <script src="samsung-governance.js?v=neutral-controls-1"></script>
 <script src="samsung-story.js?v=masters-20261019"></script>
 <script>
@@ -356,7 +357,7 @@ const CASES = [
   { slug:'domino-mvp', meta:'Domino App', title:'0\u21921 product and business strategy', line:'Founding team member. Priorities, problem framing, and the design that anchored a \u20a910B (about $7M) raise.',
     kvHome:'assets/covers/domino-mydata-cover.png', kvHomeAlt:'Domino account overview on a phone with a lime gradient background',
     kvHero:'assets/decks/EN · 19.png',
-    background:'I joined Domino as a founding product designer, helping shape an investment platform from its initial MVP through MyData integration. Working with the CEO, PM, and CTO, I led design end to end, helped set the product direction, and defined hypotheses and success metrics for a unified, account-centric experience.',
+    background:'I joined Domino as a founding product design lead, helping shape an investment platform from its initial MVP through MyData integration. Working with the CEO, PM, and CTO, I led design end to end, helped set the product direction, and defined hypotheses and success metrics for a unified, account-centric experience.',
     accent:'#81ff46', stat:{n:'\u20a910B', l:'cumulative investment raised, about $7M'},
     lead:'Domino set out to be the one app for investing across stocks, ETFs, funds, real estate, gold, and crypto. As a founding member, I shaped 0\u21921 product and business strategy with the CEO, PM, and CTO, owned design end to end, and built the team\u2019s operating cadence.',
     role:'Role · Founding member, product strategy, design and team lead, high-level decisions with the CEO · 2022 \u2013 2024',
@@ -945,6 +946,14 @@ function renderAbout(){
       <p>My titles have mostly said design. My work has rarely stayed inside it. I find structural problems, turn them into systems, align cross-functional leaders around them, manage agency partners, and stay through measurable outcomes.</p>
       <p>I\u2019ve done that at <a href="https://design.samsung.com/global/main/">Samsung</a>, <a href="https://www.meta.com/">Meta HQ</a>, and a 0\u21921 fintech startup, across Seoul and Silicon Valley.</p>
     </section>
+    <section class="wrap about-group">
+      <h2>How I work</h2>
+      <div class="rows" aria-label="How I use AI">
+        <div class="row"><b>My input</b><p>Strategy, structure, decisions, and final craft. Every direction here is mine; the tools speed up the making, not the thinking.</p></div>
+        <div class="row"><b>AI contribution</b><p>Drafting, variants, and code scaffolding. Claude and Figma MCP are part of how I work, not something I reach for after.</p></div>
+        <div class="row"><b>Tools &amp; tokens</b><p>Figma · Claude · Figma MCP · Tokens Studio · Storybook. Cumulative tokens used: [add number]</p></div>
+      </div>
+    </section>
     <section class="wrap manifesto-block">
       <h2>The role doesn’t have a name yet</h2>
       <p>My work moves across design, product, strategy, and technology: designing products, shaping strategy, and building systems that let people and AI work together.</p>
@@ -952,6 +961,7 @@ function renderAbout(){
       <p>I’d rather help define the role than wait for the industry to name it.</p>
     </section>
     <section class="wrap">
+      <h2 class="about-group-title">Experience</h2>
       <div class="rows" aria-label="Selected impact">
         <div class="row"><b>Samsung Electronics Co., Ltd.<span class="company-location">South Korea</span></b><p>AI validation operating model recognized by center leadership for broader reuse. Deterministic checks automated; ambiguous decisions routed to people.</p></div>
         <div class="row"><b>FastForward, Inc. (Domino)<span class="company-location">South Korea</span></b><p>D7 retention +153.84% (8.47% \u2192 21.5%) and DAU 3\u00d7 after an account-centric product decision. \u20a910B (about $7M) raised with design cited by the lead investor.</p></div>
@@ -959,20 +969,17 @@ function renderAbout(){
         <div class="row"><b>LINE Plus Corp.<span class="company-location">South Korea</span></b><p>Selected UI designer for an onsite private lab at Apple during WWDC 2016, working on pre-release SiriKit integration for LINE. Supported the CLOVA voice assistant app and led LINE UX Task Force usability studies in Tokyo and Taipei.</p></div>
         <div class="row"><b>NAVER Corp.<span class="company-location">South Korea</span></b><p>New concept interfaces and interaction design, one presented at IDG\u2019s UX World as a future NAVER product. Shopping and commerce web design, and the mobile conversion of a cloud service.</p></div>
       </div>
+      <h2 class="about-group-title">Capabilities</h2>
       <div class="rows" aria-label="How I work">
         <div class="row"><b>Strategy &amp; operations</b><p>Operating strategy, KPI and reporting frameworks, prioritization, decision systems, continuous improvement. Ambiguity into structure.</p></div>
         <div class="row"><b>AI transformation</b><p>Machine-readable systems, human-in-the-loop governance, eval and validation frameworks, workflow automation. Claude and Figma MCP in daily practice.</p></div>
         <div class="row"><b>Leadership</b><p>Executive stakeholder alignment, cross-functional influence, and team building. Managing agency teams and directing their design work—from briefing and prioritization to creative reviews, quality standards, and delivery. Operating cadence, facilitation, and mentoring.</p></div>
         <div class="row"><b>HCI &amp; product</b><p>Human behavior, systems thinking, product strategy, experimentation, data-informed decisions, global product experience.</p></div>
       </div>
+      <h2 class="about-group-title">Education</h2>
       <div class="rows" aria-label="Education">
         <div class="row"><b>MFA, Human-Computer Interaction</b><p>School of Visual Arts, New York · CIP 30.3101 (STEM-designated) · Full-ride scholarship</p></div>
         <div class="row"><b>BA, Communication Design</b><p>Seoul National University of Science and Technology</p></div>
-      </div>
-      <div class="rows" aria-label="How I use AI">
-        <div class="row"><b>My input</b><p>Strategy, structure, decisions, and final craft. Every direction here is mine; the tools speed up the making, not the thinking.</p></div>
-        <div class="row"><b>AI contribution</b><p>Drafting, variants, and code scaffolding. Claude and Figma MCP are part of how I work, not something I reach for after.</p></div>
-        <div class="row"><b>Tools &amp; tokens</b><p>Figma · Claude · Figma MCP · Tokens Studio · Storybook. Cumulative tokens used: [add number]</p></div>
       </div>
       <div class="note">
         <span class="tag">Full case studies</span>

@@ -47,6 +47,27 @@ const dominoBadges = ['1 Discover', '2 Strategy', '3 Delivery', '3 Outcome', '4 
       check(width + ': agency management added at requested intro position', !!added && /agenc/i.test(added[1]) && /manag|lead|oversee/i.test(added[1]), added?.[1]);
       const leadership = await page.locator('.row').evaluateAll(rows => rows.find(row => row.querySelector('b')?.textContent.trim() === 'Leadership')?.querySelector('p')?.textContent || '');
       check(width + ': Leadership describes agency team management and direction without metrics', /agenc/i.test(leadership) && /team/i.test(leadership) && /manag/i.test(leadership) && /direction|directing|direct/i.test(leadership) && !/\d/.test(leadership), leadership);
+      const about = await page.locator('main').evaluate(main => {
+        const headings = [...main.querySelectorAll('h2')];
+        const rows = [...main.querySelectorAll('.row')];
+        const ai = rows.find(row => row.querySelector('b')?.textContent === 'My input')?.closest('.rows');
+        const intro = main.querySelector('.about-intro');
+        return {
+          headings: headings.map(node => node.textContent),
+          visible: headings.every(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden'),
+          aiLabels: ai ? [...ai.querySelectorAll('.row b')].map(node => node.textContent) : [],
+          top: !!ai && intro.nextElementSibling.contains(ai) && ai.closest('section').nextElementSibling?.matches('.manifesto-block'),
+          rows: rows.map(row => row.textContent.replace(/\s+/g, ' ').trim()).sort(),
+        };
+      });
+      check(width + ': About groups have visible headings in reading order', about.visible && JSON.stringify(about.headings) === JSON.stringify(['How I work', 'The role doesn’t have a name yet', 'Experience', 'Capabilities', 'Education']), about.headings);
+      check(width + ': AI group is directly after intro and before manifesto', about.top && JSON.stringify(about.aiLabels) === JSON.stringify(['My input', 'AI contribution', 'Tools & tokens']), about.aiLabels);
+      // Reordering may change grouping, but all 14 existing rows must stay exact.
+      const aboutRowsHash = crypto.createHash('sha256').update(JSON.stringify(about.rows)).digest('hex');
+      check(width + ': About rows preserved exactly without duplication', about.rows.length === 14 && aboutRowsHash === '6936e3821be4a3c2a4015773b94525726a8a8e11a3baba2c3c0e1cb74552594f', aboutRowsHash);
+      await page.evaluate(() => document.fonts.ready);
+      check(width + ': About has no horizontal overflow', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      await page.screenshot({ path: path.join(out, 'about-' + width + '.png'), fullPage: true });
       check(width + ': About full-case-study badge remains', await page.locator('.note .tag').textContent() === 'Full case studies');
       check(width + ': no runtime errors', errors.length === 0, errors);
       await page.close();

@@ -89,10 +89,11 @@
         const x=lerp(start.x,targetX,t), y=lerp(start.y,b.y+692/2,t);
         const renderedWidth=lerp(start.initialWidth||start.w,b.w,t), paneWidth=lerp(461,b.w,t);
         const paneScale=renderedWidth/paneWidth;
-        let previewScale=renderedWidth/start.w;
+        // Keep the lighting tile at its natural size while it slides into the workspace.
+        let previewScale=i===0?1:renderedWidth/start.w;
         card.style.width=paneWidth+'px';
         if(i===1) card.style.backgroundColor=`rgba(0,0,0,${lerp(.8,.85,arrivals[2])})`;
-        let previewX=x-start.w*previewScale/2, previewY=y-start.h*previewScale/2, paneY=y-692*paneScale/2;
+        let previewX=x-start.w*previewScale/2, previewY=(i===0?start.y:y)-start.h*previewScale/2, paneY=y-692*paneScale/2;
         if(i>0){
           const first=card.querySelector(i===1?'.sw-month':'.sw-composer');
           const last=i===1?card.querySelector('.sw-dates'):first;

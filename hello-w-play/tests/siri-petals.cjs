@@ -14,6 +14,13 @@ const checks=[],errors=[];const check=(name,pass,actual)=>checks.push({name,pass
  check('animation contains only the original petal raster and no branch raster',rasters.length===1&&rasters[0].id==='image_1'&&hash(Buffer.from(rasters[0].p.split(',')[1],'base64'))==='4fd00ba7d18ba7b2ab766012531f8173321ef64337a136a1954277a4666c1fa1',rasters.map(a=>a.id));
  const refs=[...(asset.layers||[]),...asset.assets.flatMap(a=>a.layers||[])].filter(l=>l.refId).map(l=>l.refId);
  check('animation dependencies exclude branch and resolve locally',!refs.includes('image_0')&&refs.every(id=>asset.assets.some(a=>a.id===id)),[...new Set(refs)]);
+ check('right animation data remains unchanged',hash(fs.readFileSync(assetPath))==='b612d9ec14bae52fc441275da39df3ac24f549339c4675e252e49c5000eb6c0c');
+ const smaller=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../assets/line/cherry-petals-small.json')));
+ const scaled=JSON.parse(JSON.stringify(asset));let scaledCount=0;
+ for(const layer of [...(scaled.layers||[]),...scaled.assets.flatMap(a=>a.layers||[])])if(layer.ty===2){layer.ks.s.k=layer.ks.s.k.map(v=>v*.4);scaledCount++;}
+ check('left derivative changes only petal scale to forty percent',scaledCount===36&&JSON.stringify(scaled)===JSON.stringify(smaller),{scaledCount});
+ check('left background is the original blossom-free sky asset',hash(fs.readFileSync(path.resolve(__dirname,'../../assets/line/chat-sky-background.png')))==='a312ed208a096b76605e8cd868c4e8ec17873f0b51b8c64ccccd86e63cddf7be');
+ check('original license notice remains preserved',hash(fs.readFileSync(path.resolve(__dirname,'../../assets/line/cherry-petals.LICENSE.txt')))==='7ba316331cfe5f828bc883b4acdc3bf52410e50b59933bbad4bb2328506fdc23');
  const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
  const page=await browser.newPage({viewport:{width:1440,height:1000}});page.on('pageerror',e=>errors.push(e.message));
  const root=page.locator('[data-siri-themes]');
@@ -22,9 +29,25 @@ const checks=[],errors=[];const check=(name,pass,actual)=>checks.push({name,pass
  async function movement(label,expected){const a=await stamp();await page.waitForTimeout(650);const b=await stamp();const changed=a.map((value,i)=>value!==b[i]);check(label,a.length===2&&b.length===2&&changed.every(value=>value===expected),{changed});}
  await page.goto(base+'#/work/line');await root.waitFor();await show();
  await page.waitForFunction(()=>document.querySelectorAll('[data-siri-petals] svg').length===2);
+ await page.waitForFunction(()=>window.lottie.getRegisteredAnimations().filter(a=>a.name.startsWith('siri-petals')).every(a=>a.isLoaded));
+ const baseline=await page.evaluate(()=>{
+  const animations=lottie.getRegisteredAnimations().filter(a=>a.name.startsWith('siri-petals'));
+  animations.forEach(a=>a.goToAndStop(45,true));
+  const surfaces=[...document.querySelectorAll('[data-siri-petals]')].map((overlay,i)=>{
+   const r=overlay.getBoundingClientRect(),image=[...overlay.querySelectorAll('image')].find(n=>n.getBoundingClientRect().width>0),p=image.getBoundingClientRect();
+   return {speed:animations[i].playSpeed,petalWidth:p.width/r.width,petalHeight:p.height/r.height,hardwareFilter:getComputedStyle(overlay.closest('figure').querySelector('.siri-theme-hardware')).filter,sourceFilter:getComputedStyle(overlay.previousElementSibling).filter};
+  });animations.forEach(a=>a.play());return surfaces;
+ });
+ const near=(a,b)=>Math.abs(a-b)<.005;
+ check('left animated petals are forty percent of the original size',near(baseline[0].petalWidth,49.325164794921875/251.828125*.4)&&near(baseline[0].petalHeight,22.93804931640625/374.59375*.4),baseline[0]);
+ check('left fall slows while right speed and petal size stay unchanged',baseline[0].speed>0&&baseline[0].speed<.65&&baseline[1].speed===.65&&near(baseline[1].petalWidth,17.534423828125/236.734375)&&near(baseline[1].petalHeight,8.1541748046875/105.171875),baseline);
+ check('both phones restore unfiltered white hardware without filtering source UI',baseline.every(s=>s.hardwareFilter==='none'&&s.sourceFilter==='none'),baseline);
+ const voiceCopy=await page.locator('[data-siri-voice]').innerText();
+ check('petal and hardware credits are removed from the visible voice section',!/Petal animation:|Hardware and background:/.test(voiceCopy),voiceCopy);
+
  check('themes are merged into the original voice section',await page.locator('[data-siri-voice] [data-siri-themes]').count()===1&&await page.getByRole('heading',{name:'Spring, carried into Siri.',exact:true}).count()===0);
- const screens=await root.locator('.siri-theme-screen>img').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('src')));
- check('two phone screens preserve seasonal chat and sky UI',JSON.stringify(screens)===JSON.stringify(['assets/line/siri-seasonal-chat.png','assets/line/siri-final-sky.png']),screens);
+ const screens=await root.evaluate(root=>{const chat=root.querySelector('.siri-clean-chat'),chrome=chat?.querySelector('img');return {count:root.querySelectorAll('.siri-theme-screen').length,background:chat&&getComputedStyle(chat).backgroundImage,date:chat?.querySelector('.siri-chat-date')?.textContent,time:chat?.querySelector('.siri-chat-time')?.textContent,message:chat?.querySelector('.siri-chat-message')?.innerText,chrome:chrome?.getAttribute('src'),mask:chrome&&getComputedStyle(chrome).maskImage,right:root.querySelector('.siri-theme-phone:nth-child(2) .siri-theme-screen>img')?.getAttribute('src')};});
+ check('left chat preserves native copy and chrome over clean sky while right UI remains original',screens.count===2&&screens.background.includes('chat-sky-background.png')&&screens.date==='Today'&&screens.time==='9:39 AM'&&screens.message==='Can you get the notebook\noff my desk?'&&screens.chrome==='assets/line/siri-seasonal-chat.png'&&screens.mask.includes('rgba(0, 0, 0, 0)')&&screens.right==='assets/line/siri-final-sky.png',screens);
  await movement('both visible overlays animate SVG geometry',true);
  const before=hash(await root.screenshot());await page.waitForTimeout(650);const after=hash(await root.screenshot());check('visible falling petals change actual rendered pixels',before!==after);
  for(const width of [320,390,1440]){
@@ -49,7 +72,7 @@ const checks=[],errors=[];const check=(name,pass,actual)=>checks.push({name,pass
  await show();await movement('returning onscreen resumes petals',true);
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(250);await movement('hidden document stops petals',false);
  await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(250);await movement('visible document resumes petals',true);
- await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(250);await movement('live reduced motion freezes petals',false);check('reduced motion keeps two source screens and hides inactive control',await toggle.isHidden()&&await root.locator('.siri-theme-screen>img').count()===2);
+ await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(250);await movement('live reduced motion freezes petals',false);check('reduced motion keeps both UIs and hides inactive control',await toggle.isHidden()&&await root.locator('.siri-clean-chat').isVisible()&&await root.locator('.siri-theme-phone:nth-child(2) .siri-theme-screen>img').isVisible());
  await page.reload();await root.waitFor();await show();await page.waitForFunction(()=>document.querySelectorAll('[data-siri-petals] svg').length===2);await movement('reduced-motion entry stays static',false);
  await page.emulateMedia({reducedMotion:'no-preference'});await page.waitForTimeout(250);await movement('restored motion preference resumes petals',true);
  for(let cycle=0;cycle<2;cycle++){

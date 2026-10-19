@@ -61,7 +61,7 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     const impact=await page.locator('.impact').evaluate(root=>({heading:root.querySelector('.eyebrow').textContent,stats:[...root.querySelectorAll('.stats>div')].map(n=>[n.querySelector('b').textContent,n.querySelector('span').textContent])}));
     check(`${width}: Impact preserves selected-member facts and lowercase at Apple`,impact.heading==='Impact'&&JSON.stringify(impact.stats)===JSON.stringify([['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.']]),impact);
     const credits=await page.locator('.source-credit,.siri-source').evaluateAll(nodes=>nodes.map(n=>({text:n.textContent.trim(),size:getComputedStyle(n).fontSize,style:getComputedStyle(n).fontStyle,line:getComputedStyle(n).lineHeight})));
-    check(`${width}: small italic source credits remain intact`,credits.length>=2&&credits.some(c=>c.text==='Credit: Andrew Cunningham')&&credits.every(c=>c.size==='12px'&&c.style==='italic'&&c.line==='19.2px'),credits);
+    check(`${width}: small italic source credits remain intact`,credits.length===1&&credits[0].text==='Credit: Andrew Cunningham'&&credits.every(c=>c.size==='12px'&&c.style==='italic'&&c.line==='19.2px'),credits);
     const geometry = await page.evaluate(() => ({ width: innerWidth, documentWidth: document.documentElement.scrollWidth, mainWidth: document.querySelector('main').scrollWidth }));
     check(`${width}: no horizontal overflow`, geometry.documentWidth <= width + 1 && geometry.mainWidth <= width + 1, geometry);
     await page.screenshot({ path: path.join(out, `line-siri-${width}.png`), fullPage: true });

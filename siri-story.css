@@ -65,7 +65,7 @@
 
 .siri-theme-pair{display:flex;justify-content:center;gap:clamp(16px,5vw,72px);max-width:820px;margin:64px auto 0}
 .siri-theme-phone{position:relative;flex:1;min-width:0;max-width:340px;aspect-ratio:702/1320;margin:0}
-.siri-theme-hardware{display:block;width:100%;height:100%;filter:brightness(.16)}
+.siri-theme-hardware{display:block;width:100%;height:100%}
 .siri-theme-screen{position:absolute;left:13.39%;top:13.03%;width:74.07%;height:70%;overflow:hidden;background:#243447}
 .siri-theme-screen>img{display:block;width:100%;height:100%;object-fit:cover}
 .siri-theme-petals{position:absolute;inset:9.6% 0 6.7%;overflow:hidden;pointer-events:none;opacity:.5}
@@ -77,3 +77,12 @@
 @media(max-width:735px){.siri-theme-pair{margin-top:40px;gap:12px}.siri-theme-description{font-size:14px}}
 
 .siri-theme-phone:nth-child(2) .siri-theme-petals{inset:35% 3% 41.5%;border-radius:3px}
+
+.siri-theme-phone:first-child .siri-theme-petals{filter:url(#siri-petal-pink);opacity:.8}
+
+.siri-clean-chat{position:absolute;inset:0;background:#7ba0c8 url(assets/line/chat-sky-background.png) center/cover;container-type:inline-size;font-family:Arial,sans-serif;color:#fff}
+.siri-chat-chrome{position:absolute;inset:0;width:100%;height:100%;-webkit-mask-image:linear-gradient(#000 0 9.6%,transparent 9.6% 93.3%,#000 93.3%);mask-image:linear-gradient(#000 0 9.6%,transparent 9.6% 93.3%,#000 93.3%)}
+.siri-chat-date{position:absolute;top:10.65%;left:42.66%;width:14.67%;height:3.6%;display:grid;place-items:center;border-radius:999px;background:#57799b99;font-size:3.2cqw}
+.siri-chat-time{position:absolute;top:21.1%;right:61.7%;font-size:2.67cqw}
+.siri-chat-message{position:absolute;top:15.15%;left:39.87%;width:58%;box-sizing:border-box;padding:2.4cqw 3.3cqw;border-radius:6cqw;background:#80df3c;color:#122b12;font-size:4.27cqw;line-height:1.18;text-align:left}
+.siri-chat-message:after{content:"";position:absolute;right:-1.7cqw;top:0;width:3.5cqw;height:3.5cqw;background:#80df3c;border-bottom-right-radius:100%}

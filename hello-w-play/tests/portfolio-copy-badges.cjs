@@ -58,13 +58,15 @@ const dominoBadges = ['1 Discover', '2 Strategy', '3 Delivery', '3 Outcome', '4 
         return {
           headings: headings.map(node => node.textContent),
           headingSizes: headings.map(node => parseFloat(getComputedStyle(node).fontSize)),
+          headingStyles: headings.map(node => { const style = getComputedStyle(node); return { size: parseFloat(style.fontSize), weight: style.fontWeight, opacity: style.opacity }; }),
+          rowFontSize: parseFloat(getComputedStyle(rows[0].querySelector('p')).fontSize),
           visible: headings.every(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden'),
           aiLabels: ai ? [...ai.querySelectorAll('.row b')].map(node => node.textContent) : [],
           afterExperience: !!ai && howIndex === experienceIndex + 2 && sequence.indexOf(ai) === howIndex + 1 && capabilitiesIndex === sequence.indexOf(ai) + 1,
           rows: rows.map(row => row.textContent.replace(/\s+/g, ' ').trim()).sort(),
         };
       });
-      check(width + ': About group headings are smaller in requested order while manifesto is unchanged', about.visible && JSON.stringify(about.headings) === JSON.stringify(['The role doesn’t have a name yet', 'Experience', 'How I work', 'Capabilities', 'Education']) && about.headingSizes[0] === (width === 1440 ? 32 : 22) && about.headingSizes.slice(1).every(size => size >= 18 && size <= 22 && size < about.headingSizes[0]), { headings: about.headings, sizes: about.headingSizes });
+      check(width + ': About group headings match body size with bold 40% opacity while manifesto is unchanged', about.visible && JSON.stringify(about.headings) === JSON.stringify(['The role doesn’t have a name yet', 'Experience', 'How I work', 'Capabilities', 'Education']) && about.headingSizes[0] === (width === 1440 ? 32 : 22) && about.headingStyles[0].weight === '600' && about.headingStyles[0].opacity === '1' && about.rowFontSize === 16 && about.headingStyles.slice(1).every(style => style.size === about.rowFontSize && style.weight === '700' && style.opacity === '0.4'), { headings: about.headings, styles: about.headingStyles, rowFontSize: about.rowFontSize });
       check(width + ': AI group is directly after Experience and before Capabilities', about.afterExperience && JSON.stringify(about.aiLabels) === JSON.stringify(['My input', 'AI contribution', 'Tools & tokens']), about.aiLabels);
       // All 14 rows stay exact, including the user-approved replacement tool list.
       const aboutRowsHash = crypto.createHash('sha256').update(JSON.stringify(about.rows)).digest('hex');

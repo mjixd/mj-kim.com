@@ -50,7 +50,7 @@
 .siri-chip-playback svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
 .siri-chip-playback:focus-visible{outline:2px solid #9ddfff;outline-offset:4px}
 .siri-cover{background:#000!important;position:relative}
-.siri-cover [data-siri-cover]{position:absolute;inset:0 7.5%}
+.siri-cover [data-siri-cover]{position:absolute;inset:0 13.875%}
 .siri-cover canvas{display:block;width:100%!important;height:100%!important}
 @media(prefers-reduced-motion:reduce){.siri-chip-card{will-change:auto}}
 

@@ -20,7 +20,6 @@
 .siri-voice-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px;text-align:left;margin-top:clamp(48px,6vw,80px)}
 .siri-voice-steps h3{font-size:22px;margin:14px 0 10px;font-weight:500}
 .siri-voice-steps p{font-size:16px;line-height:1.5;color:#d5dfe6;margin:0}
-.siri-voice-caption{margin:56px 0 0;font-size:13px;color:#c4d2dd}
 .siri-source{font-size:11px;color:#acbdcb;margin:12px 0 0}
 .siri-source a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 /* Apple iPhone 7 (2016), .theme-dark-alt .card-hero: original #121212. */
@@ -35,7 +34,7 @@
 .siri-chip-wave canvas{display:block}
 @media(max-width:735px){.siri-chip-phone{width:min(384px,calc(100% - 48px));margin-top:44px}}
 @media(max-width:1068px){.siri-hero-title{width:220px}.siri-hero-title h1{font-size:54px}}
-@media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}.siri-voice-caption{margin-top:40px}}
+@media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}}
 @media(prefers-reduced-motion:reduce){.siri-hero{height:100svh}.siri-hero-stage{position:relative}.siri-device{will-change:auto}}
 
 .siri-chip-ui{position:absolute;left:8.15%;width:83.7%;top:17.4%;aspect-ratio:750/1334;container-type:inline-size;text-align:right;color:#fff}
@@ -82,6 +81,5 @@
 .siri-clean-chat{position:absolute;inset:0;background:#7ba0c8 url(assets/line/chat-sky-background.png) center/cover;container-type:inline-size;font-family:Arial,sans-serif;color:#fff}
 .siri-chat-chrome{position:absolute;inset:0;width:100%;height:100%;-webkit-mask-image:linear-gradient(#000 0 9.6%,transparent 9.6% 93.3%,#000 93.3%);mask-image:linear-gradient(#000 0 9.6%,transparent 9.6% 93.3%,#000 93.3%)}
 .siri-chat-date{position:absolute;top:10.65%;left:42.66%;width:14.67%;height:3.6%;display:grid;place-items:center;border-radius:999px;background:#57799b99;font-size:3.2cqw}
-.siri-chat-time{position:absolute;top:21.1%;right:61.7%;font-size:2.67cqw}
-.siri-chat-message{position:absolute;top:15.15%;left:39.87%;width:58%;box-sizing:border-box;padding:2.4cqw 3.3cqw;border-radius:6cqw;background:#80df3c;color:#122b12;font-size:4.27cqw;line-height:1.18;text-align:left}
-.siri-chat-message:after{content:"";position:absolute;right:-1.7cqw;top:0;width:3.5cqw;height:3.5cqw;background:#80df3c;border-bottom-right-radius:100%}
+.siri-chat-time{position:absolute;top:21.1%;right:69.5%;font-size:2.67cqw}
+.siri-chat-message{position:absolute;top:15.15%;left:31.6%;width:65.8667%;aspect-ratio:494/128;box-sizing:border-box;padding:3.8667cqw 5.0667cqw 3.0667cqw;background:url(assets/line/chat-bubble-original.svg) center/100% 100% no-repeat;color:#000;font-size:4.2667cqw;line-height:1.1875;text-align:left;white-space:nowrap}

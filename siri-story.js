@@ -28,7 +28,7 @@ window.SiriStory = (() => {
         <p class="siri-voice-lead">Say who it is for and what you want to say. Siri turns the request into a LINE message you can review before sending.</p>
         <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><filter id="siri-petal-pink" color-interpolation-filters="sRGB"><feFlood flood-color="#ffc4df"/><feComposite in2="SourceAlpha" operator="in"/></filter></defs></svg>
         <div class="siri-theme-pair" data-siri-themes>
-          ${[['seasonal-chat','Cherry-blossom LINE chat'],['final-sky','Sky-themed Siri message review']].map(([file,label])=>`<figure class="siri-theme-phone" aria-label="${label}"><img class="siri-theme-hardware" src="${base}apple-iphone-2016.png" alt="White iPhone" width="702" height="1320" loading="lazy"><div class="siri-theme-screen">${file==='seasonal-chat'?`<div class="siri-clean-chat" role="img" aria-label="LINE chat with Nancy on a clear sky background"><img class="siri-chat-chrome" src="${base}siri-seasonal-chat.png" alt="" width="750" height="1334" loading="lazy"><span class="siri-chat-date">Today</span><span class="siri-chat-time">9:39 AM</span><div class="siri-chat-message">Can you get the notebook<br>off my desk?</div></div>`:`<img src="${base}siri-${file}.png" alt="${label}" width="750" height="1334" loading="lazy">`}<div class="siri-theme-petals" data-siri-petals aria-hidden="true"></div></div></figure>`).join('')}
+          ${[['seasonal-chat','Cherry-blossom LINE chat'],['final-sky','Sky-themed Siri message review']].map(([file,label])=>`<figure class="siri-theme-phone" aria-label="${label}"><img class="siri-theme-hardware" src="${base}apple-iphone-2016.png" alt="White iPhone" width="702" height="1320" loading="lazy"><div class="siri-theme-screen">${file==='seasonal-chat'?`<div class="siri-clean-chat" role="img" aria-label="LINE chat with Nancy on a clear sky background"><img class="siri-chat-chrome" src="${base}siri-seasonal-chat.png" alt="" width="750" height="1334" loading="lazy"><span class="siri-chat-date">Today</span><span class="siri-chat-time">9:39 AM</span><div class="siri-chat-message">Want to go see the cherry<br>blossoms this Saturday?</div></div>`:`<img src="${base}siri-${file}.png" alt="${label}" width="750" height="1334" loading="lazy">`}<div class="siri-theme-petals" data-siri-petals aria-hidden="true"></div></div></figure>`).join('')}
         </div>
         <p class="siri-theme-description">Cherry-blossom and sky themes carry LINE’s familiar visual identity into the conversation.</p>
         <button class="siri-petals-toggle" type="button" data-petals-toggle aria-pressed="false">Pause petals</button>
@@ -37,7 +37,6 @@ window.SiriStory = (() => {
           <div><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>
           <div><h3>Stay in control.</h3><p>Confirm Send or choose Cancel. A sent state makes the outcome clear.</p></div>
         </div>
-        <p class="siri-voice-caption">Original LINE interface designs from the 2016 SiriKit exploration.</p>
       </div>
     </section>`;
   }

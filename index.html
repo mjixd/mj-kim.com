@@ -397,7 +397,6 @@ const CASES = [
     stats:[['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.']],
     blocks:[
       {tag:'Background · WWDC 2016', h:'Siri opens to third-party apps', p:'The types of apps that can take advantage of the newly opened Siri.', credit:'Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
-      {tag:'Background · 2016 SiriKit', h:'Supported Domains', p:'To make use of SiriKit, your app has to be in one or more of the following domains:', bullets:['VoIP calling (for example, Skype)','Messaging (WhatsApp)','Payments (Square, PayPal)','Photo (Photos)','Workouts (Runtastic)','Ride booking (Uber, Lyft)','CarPlay (automotive vendors only)','Restaurant reservations (requires additional support from Apple)'], textOnly:true},
       {tag:'Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote. The original LINE designs below document my separate pre-release exploration.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference',note:'Public WeChat demonstration. The LINE proposal was separate private-lab work.'}},
       {tag:'Siri for LINE', h:'Speak. Review. Send.', voiceFeature:true, p:'A spoken request becomes a message the person can review before sending. The original LINE screens show the request, message review, and sent confirmation, carrying familiar LINE themes into the Siri interaction.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
       {tag:'Siri for LINE', h:'Clear intent. Visible control.', p:'The original designs keep the recipient and message together, preserve LINE’s familiar visual language, and separate Cancel from Send. Variations explore short and long messages, contact presentation, and themed message cards.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
@@ -889,7 +888,7 @@ function renderCase(slug){
     ${c.slug === 'samsung' ? SamsungStory.render() + SamsungStory.renderWorkspace() : ''}
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
     ${c.background ? DominoBackground.render(esc(c.background)) : ''}
-    ${c.blocks.map((b, k) => b.governance ? SamsungGovernance.render() : b.voiceFeature ? SiriStory.renderVoice() : `${c.slug === 'line' && b.h === 'Supported Domains' ? SiriStory.renderChip() : ''}
+    ${c.blocks.map((b, k) => b.governance ? SamsungGovernance.render() : b.voiceFeature ? SiriStory.renderVoice() : `${c.slug === 'line' && b.from === 'LINE Siri 02' ? SiriStory.renderChip() : ''}
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `

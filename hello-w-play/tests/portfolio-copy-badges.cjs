@@ -68,7 +68,7 @@ const dominoBadges = ['1 Discover', '2 Strategy', '3 Delivery', '3 Outcome', '4 
       check(width + ': AI group is directly after Experience and before Capabilities', about.afterExperience && JSON.stringify(about.aiLabels) === JSON.stringify(['My input', 'AI contribution', 'Tools & tokens']), about.aiLabels);
       // All 14 rows stay exact, including the user-approved replacement tool list.
       const aboutRowsHash = crypto.createHash('sha256').update(JSON.stringify(about.rows)).digest('hex');
-      check(width + ': About rows preserved exactly without duplication', about.rows.length === 14 && about.rows.includes('Tools & tokensFigma · Figma MCP · Codex · Claude · Git · Tokens Studio') && aboutRowsHash === '2a962be2cadc299d51eabaf8826e6190f304dbcb4bf6fe3dca709cea66b14f29', aboutRowsHash);
+      check(width + ': About rows preserved exactly without duplication', about.rows.length === 14 && about.rows.includes('Tools & tokensFigma · Figma MCP · ChatGPT Codex · Claude Code · Git · Tokens Studio · Playwright') && aboutRowsHash === 'b418bebd1473b2a7ab585d1c2044689f6072428983b633a5c0714a510512288e', aboutRowsHash);
       await page.evaluate(() => document.fonts.ready);
       check(width + ': About has no horizontal overflow', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       await page.screenshot({ path: path.join(out, 'about-' + width + '.png'), fullPage: true });

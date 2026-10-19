@@ -3,8 +3,6 @@
   const clamp = p => Math.max(0, Math.min(1, p));
   const ease = p => { p = clamp(p); return p * p * (3 - 2 * p); };
   const lerp = (a, b, p) => a + (b - a) * p;
-  const steps = [0.28, 0.60, 1];
-  const labels = ['Control Devices', 'Visitor Invitation', 'AI Agent'];
   const icon = (name, className = '') => `<img class="sw-icon ${className}" src="assets/samsung/workspace/${name}.svg" alt="" draggable="false">`;
   const modes = names => `<div class="sw-modes">${names.map((name, i) => `<span class="${i ? '' : 'is-selected'}">${name}</span>`).join('')}</div>`;
   const handle = '<div class="sw-handle"><i></i></div>';
@@ -52,7 +50,6 @@
           <img class="sw-preview" data-samsung-preview="ai" src="assets/samsung/workspace/preview-ai.png?v=layout-2" width="456.011719" height="239.132813" alt="AI Agent input and button preview" draggable="false">
           <div class="sw-status" aria-hidden="true"><img src="assets/samsung/workspace/status.svg" width="932" height="42" alt=""></div><div class="sw-camera" aria-hidden="true"></div><div class="sw-gesture" aria-hidden="true"></div>
         </div></div>
-        <div class="samsung-workspace__controls" role="group" aria-label="Explore the workspace">${labels.map((label,i)=>`<button type="button" data-workspace-step="${i}" aria-pressed="${i===2}"><span aria-hidden="true">0${i+1}</span>${label}</button>`).join('')}</div>
 
       </div></section>`;
   }
@@ -63,7 +60,6 @@
     const previews = [...root.querySelectorAll('[data-samsung-preview]')];
     const defaultDevice = root.querySelector('.sw-default-device');
     const chrome = [...root.querySelectorAll('.sw-status, .sw-camera, .sw-gesture')];
-    const buttons = [...root.querySelectorAll('[data-workspace-step]')];
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let active = true, desktop = false, seen = false, visible = false, raf = 0;
     let progress = 1, transition = null, previousTime = 0;
@@ -124,8 +120,6 @@
         card.style.transform=`translate3d(${x-renderedWidth/2}px,${paneY}px,0) scale(${paneScale})`;
         card.style.boxShadow=`0 ${24*(1-t)}px ${64*(1-t)}px rgba(0,0,0,${.2*(1-t)})`;
       });
-      const selected = p < .35 ? 0 : p < .68 ? 1 : 2;
-      buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===selected)));
     }
     function draw(time) {
       raf=0;
@@ -158,27 +152,18 @@
       if(!desktop && !motion.matches && visible && !seen) { seen=true;animateTo(1); }
       else queue();
     }
-    function select(event) {
-      const button=event.target.closest('[data-workspace-step]');
-      if(!button || !root.contains(button)) return;
-      const to=steps[Number(button.dataset.workspaceStep)];
-      seen=true;
-      if(desktop) window.scrollTo({top:scrollY+root.getBoundingClientRect().top+(root.offsetHeight-innerHeight)*to,behavior:'smooth'});
-      else animateTo(to);
-    }
     const observer=new IntersectionObserver(entries=>{
       visible=entries[0].isIntersecting;
       if(visible && !desktop && !motion.matches && !seen) { seen=true;animateTo(1); }
       else queue();
     },{threshold:.25});
     observer.observe(visual);
-    root.addEventListener('click',select);
     window.addEventListener('scroll',queue,{passive:true});
     window.addEventListener('resize',reconcile);
     document.addEventListener('visibilitychange',queue);
     motion.addEventListener('change',reconcile);
     reconcile();
-    return ()=>{active=false;cancelAnimationFrame(raf);transition=null;observer.disconnect();root.removeEventListener('click',select);window.removeEventListener('scroll',queue);window.removeEventListener('resize',reconcile);document.removeEventListener('visibilitychange',queue);motion.removeEventListener('change',reconcile);};
+    return ()=>{active=false;cancelAnimationFrame(raf);transition=null;observer.disconnect();window.removeEventListener('scroll',queue);window.removeEventListener('resize',reconcile);document.removeEventListener('visibilitychange',queue);motion.removeEventListener('change',reconcile);};
   }
   window.SamsungWorkspace={render,mount};
 })();

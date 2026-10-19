@@ -85,15 +85,18 @@
         {x:261+2*(width+7),y:139,w:303.33,s:1},
       ];
       // Previews dock to the matching UI feature, not the full pane center.
-      const compact = [{x:300,y:430,w:390,h:227},{x:725,y:350,w:424.614868,h:197},{x:1150,y:771,w:456.011719,h:239.132813,initialWidth:280}];
+      const compact = [{x:300,y:430,w:390,h:227},{x:1050,y:350,w:424.614868,h:197},{x:1150,y:771,w:456.011719,h:239.132813,initialWidth:400}];
       cards.forEach((card,i)=>{
         const t=arrivals[i], start=compact[i], b=settled[i];
-        const x=lerp(start.x,b.x+b.w/2,t), y=lerp(start.y,b.y+692/2,t);
+        // Calendar enters toward its two-pane dock, not the still-shrinking first pane.
+        const targetX=i===1?Math.min(b.x+b.w/2,261+461+7+461/2):b.x+b.w/2;
+        const x=lerp(start.x,targetX,t), y=lerp(start.y,b.y+692/2,t);
         const renderedWidth=lerp(start.initialWidth||start.w,b.w,t), paneWidth=lerp(461,b.w,t);
-        const paneScale=renderedWidth/paneWidth, previewScale=renderedWidth/start.w*(i===2 ? .94 : 1);
+        const paneScale=renderedWidth/paneWidth;
+        let previewScale=renderedWidth/start.w;
         card.style.width=paneWidth+'px';
         if(i===1) card.style.backgroundColor=`rgba(0,0,0,${lerp(.8,.85,arrivals[2])})`;
-        let previewY=y-start.h*previewScale/2, paneY=y-692*paneScale/2;
+        let previewX=x-start.w*previewScale/2, previewY=y-start.h*previewScale/2, paneY=y-692*paneScale/2;
         if(i>0){
           const first=card.querySelector(i===1?'.sw-month':'.sw-composer');
           const last=i===1?card.querySelector('.sw-dates'):first;
@@ -102,6 +105,12 @@
           const anchorY=b.y+anchor;
           // AI export: input occupies the top 123px; the badge sits below it.
           const previewAnchor=i===1?start.h/2:61.5;
+          if(i===2){
+            // The input occupies 432px of the 456px export; match its live width before fading.
+            previewScale=lerp(start.initialWidth/start.w,first.offsetWidth*paneScale/432,ease(t/.55));
+            const inputCenter=x+(first.offsetLeft+first.offsetWidth/2-paneWidth/2)*paneScale;
+            previewX=inputCenter-216*previewScale;
+          }
           previewY=anchorY-previewAnchor*previewScale;
           paneY=anchorY-anchor*paneScale;
         }
@@ -109,7 +118,7 @@
         card.style.opacity=reveal;
         card.setAttribute('aria-hidden',String(reveal===0));
         const preview=previews[i];
-        preview.style.transform=`translate3d(${x-start.w*previewScale/2}px,${previewY}px,0) scale(${previewScale})`;
+        preview.style.transform=`translate3d(${previewX}px,${previewY}px,0) scale(${previewScale})`;
         preview.style.opacity=1-reveal;
         preview.setAttribute('aria-hidden',String(reveal===1));
         card.style.transform=`translate3d(${x-renderedWidth/2}px,${paneY}px,0) scale(${paneScale})`;

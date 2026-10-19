@@ -128,7 +128,8 @@
 .samsung-workspace .samsung-story__credit{margin-top:20px}
 .samsung-workspace--scroll{height:340vh}
 .samsung-workspace--scroll .samsung-workspace__stage{position:sticky;top:0;height:100vh;padding-top:90px;display:flex;flex-direction:column;justify-content:center}
-.samsung-workspace--scroll .samsung-workspace__visual{flex:1;min-height:0;max-height:590px}
+.samsung-workspace--scroll .samsung-workspace__visual{flex:1;min-height:0;max-height:590px;overflow:visible}
+@supports (overflow-clip-margin:32px){.samsung-workspace--scroll .samsung-workspace__visual{overflow:clip;overflow-clip-margin:32px}}
 .samsung-workspace--scroll .samsung-story__copy{flex:none;margin-bottom:8px}
 .samsung-workspace--scroll .samsung-workspace__controls{flex:none;margin-top:8px}
 @media(max-width:820px){

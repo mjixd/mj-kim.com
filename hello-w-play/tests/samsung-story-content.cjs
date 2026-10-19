@@ -10,13 +10,13 @@ const check=(name,pass,actual)=>checks.push({name,pass:Boolean(pass),actual});
 async function content(page) {
   const result = await page.evaluate(()=>{
     const normalize=s=>s.replace(/\s+/g,' ').trim();
-    const elements=[...document.querySelectorAll('main h1,main h2,main p,main video,[data-samsung-workspace]')];
-    const locate=text=>elements.findIndex(n=>normalize(n.textContent)===text);
+    const elements=[...document.querySelectorAll('main h1,main h2,main h3,main p,main video,[data-samsung-workspace]')];
+    const locate=text=>elements.findIndex(n=>normalize(n.innerText||n.textContent)===text);
     const markers=[locate('B2B AI Agent & Mobile AI Office'),locate('From monitoring to on-site control.'),elements.findIndex(n=>n.matches('video')),locate('Connected devices and visitor workflows, together in one workspace.'),locate('Every task. One workspace.'),locate('Complex data, clear decisions, on site'),locate('Business and product challenge'),locate('Define the automation boundary')];
     const workspace=document.querySelector('[data-samsung-workspace]');
     const headings=[...document.querySelectorAll('main h1,main h2')].map(n=>normalize(n.textContent));
     const delivery=headings.indexOf('Complex data, clear decisions, on site');
-    const context=headings.indexOf('Business and product challenge');
+    const context=headings.indexOf('Define the automation boundary');
     return {markers,headings,workspaceText:normalize(workspace?.textContent||''),chapter:headings.slice(delivery+1,context),smartThings:[...document.querySelectorAll('a')].find(n=>n.textContent.includes('SmartThings Pro Mobile'))?.href,smartThingsText:[...document.querySelectorAll('a')].find(n=>n.textContent.includes('SmartThings Pro Mobile'))?.parentElement.textContent,adoption:headings.some(t=>t==='From one-off fixes to shared updates'),request:!!document.querySelector('[data-copy-email]'),nav:[...document.querySelectorAll('nav[aria-label="Case navigation"] a')].map(n=>n.getAttribute('href')),h1s:document.querySelectorAll('main h1').length};
   });
   check('one Samsung H1 and requested story order',result.h1s===1&&result.markers.every((x,i)=>x>=0&&(!i||x>result.markers[i-1])),result);

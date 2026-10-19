@@ -31,14 +31,14 @@ const checks=[];const check=(name,pass,actual)=>checks.push({name,pass:!!pass,ac
    });
   },{images:[black,white,blurred,sharp,opaqueBlack,opaqueWhite],boxes});
   for(const s of stats){
-   check(s.id+': background pixels transmit 20% of the underlying scene',s.transmission>=46&&s.transmission<=56,s);
+   const targetTransmission=s.id==='visitor'?38.25:51;
+   check(s.id+': background pixels transmit the latest Figma fill',Math.abs(s.transmission-targetTransmission)<=5,s);
    check(s.id+': blur visibly suppresses wallpaper high frequencies',s.sharpStd>=15&&s.blurStd<s.sharpStd*.25,s);
    check(s.id+': oracle rejects an opaque surface mutation',s.opaqueTransmission<2,s);
   }
   check('all three panes preserve opaque, unfiltered content',styles.every(s=>s.content.length&&s.content.every(c=>c.opacity==='1'&&c.filter==='none')),styles);
-  // Same background treatment as the middle panel includes the base tint, which
-  // controls perceptible glass contrast even when alpha and blur are identical.
-  check('left and right glass base tint matches the middle panel',styles.every(s=>s.background===styles[1].background),styles);
+  // Latest triple master uses 85% visitor fill; control and AI retain 80%.
+  check('all panes use the latest black glass fills',styles.every(s=>s.background===`rgba(0, 0, 0, ${s.id==='visitor'?'0.85':'0.8'})`),styles);
  }finally{await browser.close();}
  const hashes=Object.fromEntries(['samsung-workspace.css','samsung-workspace.js','hello-w-play/tests/samsung-glass-pixels.cjs'].map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../..',f))).digest('hex')]));
  const failures=checks.filter(c=>!c.pass);fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({hashes,checks,failures},null,2));console.log(checks.length+' checks, '+failures.length+' failures',failures.map(f=>f.name));if(failures.length)process.exitCode=1;

@@ -15,10 +15,10 @@
 .sw-default-wallpaper{object-fit:cover;object-position:center;position:absolute;left:21px;top:21px;width:932px;height:705px;max-width:none}
 .sw-default-camera{position:absolute;left:718px;top:34px;width:22px;height:22px;border-radius:50%;background:#000}
 .sw-preview{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;object-fit:contain;will-change:transform,opacity}
-.sw-wallpaper{position:absolute;inset:16px 16px 10px;border-radius:13px;background:url(assets/samsung/workspace/digital-twin-wallpaper.png) center/cover}
-.sw-screen{position:absolute;left:0;top:0;width:303.33px;height:692px;border-radius:13px;background:rgba(26,30,35,.8);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);overflow:hidden;transform-origin:0 0;container-type:inline-size;will-change:transform,width}
+.sw-wallpaper{position:absolute;inset:16px 16px 10px;border-radius:13px;background:url(assets/samsung/workspace/digital-twin-wallpaper.png?v=masters-20261019) center/cover}
+.sw-screen{position:absolute;left:0;top:0;width:303.33px;height:692px;border-radius:13px;background:rgba(0,0,0,.8);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);overflow:hidden;transform-origin:0 0;container-type:inline-size;will-change:transform,width}
 .sw-screen--control{transform:translate3d(261px,139px,0)}
-.sw-screen--visitor{transform:translate3d(571.33px,139px,0)}
+.sw-screen--visitor{background:rgba(0,0,0,.85);transform:translate3d(571.33px,139px,0)}
 .sw-screen--ai{transform:translate3d(881.66px,139px,0)}
 .sw-status{position:absolute;left:259px;top:137px;width:932px;height:42px;pointer-events:none}
 .sw-status img{display:block;width:932px;height:42px;max-width:none}
@@ -34,20 +34,20 @@
 .sw-room-tabs{display:flex;gap:34px;height:32px;margin-top:30px;overflow:hidden;white-space:nowrap;align-items:center;font-size:13px;color:#87878b}
 .sw-room-tabs span:first-child{color:#f3f3f8;border-bottom:1px solid #f3f3f8;padding-bottom:5px;transform:translateY(3px)}
 .sw-updated{height:38px;display:flex;justify-content:flex-end;align-items:center;gap:3px;color:#87878b;font-size:11px}
-.sw-device-card{padding:15px;background:#1a1e23;border-radius:16px;margin:0 -8px 8px;height:211px}
+.sw-device-card{padding:15px;background:rgba(26,30,35,.8);border-radius:16px;margin:0 -8px 8px;height:211px}
 .sw-device-identity{display:flex;align-items:center;gap:8px;height:34px;font-size:13px;font-weight:500}
 .sw-device-identity small{display:block;font-size:11px;color:#87878b;font-weight:400}
 .sw-device-identity .sw-round{margin-left:auto}
 .sw-light-icon{position:relative;width:23px;height:27px;flex:none}
 .sw-light-icon img{position:absolute;left:-12px;top:-16px}
 .sw-round{width:31px;height:31px;flex:none;display:grid;place-items:center;background:#3a3a3d;border-radius:50%}
-.sw-brightness{height:60px;margin-top:17px;padding:12px 13px;background:linear-gradient(90deg,#ffbd3e,#ffd17e 89.23%,#3a3a3d 89.23%);border-radius:11px;color:#fff;line-height:1.1}
+.sw-brightness{height:60px;margin-top:17px;padding:12px 13px;background:linear-gradient(90deg,#ffbd3e,#ffd17e 89.23%,#282d39 89.23%);border-radius:11px;color:#fff;line-height:1.1}
 .sw-brightness>span{display:block;font-size:11px;margin-bottom:1px}
 .sw-brightness strong{font-size:19px}
 .sw-brightness small{font-size:12px;font-weight:500}
 .sw-rule{height:1px;background:#343437;margin:14px 0 23px}
 .sw-modes{display:flex;gap:10px;font-size:11px;text-align:center}
-.sw-modes span{flex:1;padding:6px 0;border-radius:14px;background:#3a3a3d;height:27px}
+.sw-modes span{flex:1;padding:6px 0;border-radius:14px;background:#282d39;height:27px}
 .sw-modes .is-selected{background:#387aff}
 .sw-ac{padding-top:10px;height:206px}
 .sw-temperature{display:flex;align-items:center;gap:10px;height:47px;margin-top:27px}
@@ -93,8 +93,8 @@
 .sw-agent-content .sw-room-context{font-size:12px;line-height:16px;color:#9ba3af;margin:10px 0}
 .sw-conversation{display:flex;flex-direction:column;gap:16px}
 .sw-sender{display:block;color:#939aa6;font-size:12px;line-height:16px;margin-bottom:4px}
-.sw-user-message{align-self:flex-end;max-width:338px;background:#38383c;padding:10px 14px;border-radius:18px 18px 4px 18px}
-.sw-proposal{background:#1c2025;border-radius:16px;padding:16px;margin-top:8px;font-size:14px;line-height:20px}
+.sw-user-message{align-self:flex-end;max-width:338px;background:rgba(33,38,46,.8);padding:10px 14px;border-radius:18px 18px 4px 18px}
+.sw-proposal{background:rgba(33,38,46,.8);border-radius:16px;padding:16px;margin-top:8px;font-size:14px;line-height:20px}
 .sw-proposal>span{display:block;font-size:12px;line-height:16px;color:#a7b1c0;margin-bottom:8px}
 .sw-proposal>div{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
 .sw-proposal b{font-weight:500;color:#ffd17b;white-space:nowrap}

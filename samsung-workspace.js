@@ -43,7 +43,7 @@
       <div class="samsung-workspace__stage" data-samsung-stage>
         <div class="samsung-story__copy"><h2 id="samsung-workspace-title">Every task.<br>One workspace.</h2><p>Work across three split-screen panes on a single display. Use up to three apps at once, or resize pop-up windows for greater flexibility. Browse the web, check messages, and follow directions side by side—keeping your workflow moving without switching screens.</p></div>
         <div class="samsung-workspace__visual"><div class="samsung-workspace__canvas">
-          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><div class="sw-default-device"><img class="sw-default-frame" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""><img class="sw-default-wallpaper" src="assets/samsung/workspace/digital-twin-wallpaper.png" width="932" height="705" alt=""><i class="sw-default-camera"></i></div></div>
+          <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><div class="sw-default-device"><img class="sw-default-frame" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""><img class="sw-default-wallpaper" src="assets/samsung/workspace/digital-twin-wallpaper.png?v=masters-20261019" width="932" height="705" alt=""><i class="sw-default-camera"></i></div></div>
           <div class="sw-screen sw-screen--control" data-samsung-screen="control" role="img" aria-label="Control Devices: lighting and temperature controls">${control()}</div>
           <div class="sw-screen sw-screen--visitor" data-samsung-screen="visitor" role="img" aria-label="Visitor Invitation: calendar and visitor access">${visitor()}</div>
           <div class="sw-screen sw-screen--ai" data-samsung-screen="ai" role="img" aria-label="AI Agent: prepare Meeting Room 1, review lighting and AC changes">${agent()}</div>
@@ -92,6 +92,7 @@
         const renderedWidth=lerp(start.initialWidth||start.w,b.w,t), paneWidth=lerp(461,b.w,t);
         const paneScale=renderedWidth/paneWidth, previewScale=renderedWidth/start.w*(i===2 ? .94 : 1);
         card.style.width=paneWidth+'px';
+        if(i===1) card.style.backgroundColor=`rgba(0,0,0,${lerp(.8,.85,arrivals[2])})`;
         let previewY=y-start.h*previewScale/2, paneY=y-692*paneScale/2;
         if(i>0){
           const first=card.querySelector(i===1?'.sw-month':'.sw-composer');

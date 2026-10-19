@@ -204,6 +204,7 @@
   .chip{ font-size:13px; padding:8px 14px; border:1px solid var(--line); border-radius:999px; color:var(--text); background:var(--bg); cursor:pointer; }
   .chip:hover{ border-color:var(--text); }
   .btn{ display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 22px; border-radius:999px; background:var(--text); color:var(--bg); font-weight:600; font-size:16px; cursor:pointer; border:0; }
+  .btn-reference{background:#eee;color:#000;}
   .btn:hover{ opacity:.9; }
   button.btn{ font-family:inherit; line-height:inherit; }
   [data-copy-email]:focus-visible{ outline:3px solid var(--sky); outline-offset:5px; }
@@ -399,8 +400,8 @@ const CASES = [
     outcomeLabel:'Impact',
     stats:[['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.']],
     blocks:[
-      {tag:'Background · WWDC 2016', h:'Siri opens to third-party apps', p:'The types of apps that can take advantage of the newly opened Siri.', credit:'Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
-      {tag:'Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote. The original LINE designs below document my separate pre-release exploration.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference',note:'Public WeChat demonstration. The LINE proposal was separate private-lab work.'}},
+      {tag:'Background · WWDC 2016', h:'Siri opens to\nthird-party apps', p:'The types of apps that can take advantage of the newly opened Siri.', credit:'Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
+      {tag:'Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote. The original LINE designs below document my separate pre-release exploration.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference'}},
       {tag:'Siri for LINE', h:'Speak. Review. Send.', voiceFeature:true, p:'A spoken request becomes a message the person can review before sending. The original LINE screens show the request, message review, and sent confirmation, carrying familiar LINE themes into the Siri interaction.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
       {tag:'Siri for LINE', h:'Clear intent. Visible control.', p:'The original designs keep the recipient and message together, preserve LINE’s familiar visual language, and separate Cancel from Send. Variations explore short and long messages, contact presentation, and themed message cards.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
       {tag:'Sky theme', h:'One theme, across every state.', p:'The original sky-background screens preserve LINE’s visual identity through message review, sent confirmation, and cancellation.', from:'LINE Siri 06', src:'assets/decks/LINE Siri 06.png', alt:'Original sky-background LINE Siri screens showing review, sent, and canceled states'},
@@ -549,7 +550,7 @@ const ROLES = ['Product Designer', 'Design Strategist', 'Design Engineer', 'Prod
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Keep short connecting words with the phrase they introduce in case headings.
-const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').replace(/live assets/g, 'live&nbsp;assets');
+const caseHeading = s => esc(s).replace(/\b(or|with|by|to) /g, '$1&nbsp;').replace(/live assets/g, 'live&nbsp;assets').replace(/\n/g, '<br>');
 function slideContents(src, alt='', animate=true){
   const name = src.startsWith(DECK_BASE) ? decodeURIComponent(src.split('?')[0].slice(DECK_BASE.length)).replace(/\.png$/, '') : '';
   const imageSrc = name ? slideSrc(name) : src;
@@ -901,7 +902,7 @@ function renderCase(slug){
           ${b.detail ? `<div class="slide-detail"><h3>${esc(b.detail.h)}</h3><p>${esc(b.detail.p)}</p></div>` : ''}
           ${b.credit ? `<p class="source-credit">${esc(b.credit)}</p>` : ''}
           ${b.bullets ? `<ul class="slide-list">${b.bullets.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}
-          ${b.demo ? `<p><a class="btn" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p><p class="role">${esc(b.demo.note)}</p>` : ''}
+          ${b.demo ? `<p><a class="btn${c.slug === 'line' ? ' btn-reference' : ''}" href="${esc(b.demo.href)}">${esc(b.demo.label)}</a></p>${b.demo.note ? `<p class="role">${esc(b.demo.note)}</p>` : ''}` : ''}
           ${b.playable ? `<div class="hello-w-demo"><iframe src="hello-w-play/?embed=1" title="hello,w interactive block game" loading="lazy"></iframe></div><p class="demo-note">Use the direction buttons or arrow keys to move. Press Jump or Space to jump. This browser demonstration reconstructs the AR interaction without surface tracking.</p>` : ''}
           ${b.textOnly ? '' : b.cards ? contextCardsHTML(b.cards, c.slug) : b.slides ? carouselHTML(c, k) : kvHTML({from:b.from, src:b.src||'', alt:b.alt||b.h, request:c.slug})}
           `}

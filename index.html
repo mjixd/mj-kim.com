@@ -338,7 +338,7 @@
    `from` notes which deck slide the visual comes from.
    ============================================================ */
 const CASES = [
-  { slug:'samsung', meta:'Samsung Electronics Co., Ltd.', title:'B2B AI Agent & Mobile AI Office', line:'Connected workplace services, on-site controls, and an AI-assisted mobile workspace.',
+  { slug:'samsung', meta:'Samsung Electronics Co., Ltd.', title:'B2B AI Agent & Mobile AI Office', homeTitle:'B2B AX · AI-readable Systems', line:'Designing connected B2B workspaces and building AI-readable design systems—turning shared tokens and design rules into verifiable interfaces.',
     kvHome:'assets/covers/cover_ces.png', kvHomeAlt:'CES 2025 AI Office exhibit with an architectural model and digital twin display',
     kvHero:'assets/decks/EN · 03.png',
     accent:'#06bfff', stat:{n:'Org-wide', l:'reuse recognized at center leadership review'},
@@ -730,7 +730,7 @@ function renderHome(){
           <div class="ed">
             <div class="ed-grid wrap">
               <div class="ed-left">
-                <h3>${esc(c.title)}</h3>
+                <h3>${esc(c.homeTitle || c.title)}</h3>
                 <p class="ed-sub">${esc(c.line)}</p>
               </div>
               <div class="ed-right">
@@ -760,7 +760,7 @@ function observeKV(){
 function solutionAccordionHTML(c, block){
   return `<div class="solution-accordion" aria-label="Four workflow solutions">
     <div class="solution-stage">
-    <div class="solution-intro"><span class="tag">${esc(block.tag)}</span><h2>${caseHeading(block.h)}</h2><p>${esc(block.p)}</p></div>
+    <div class="solution-intro"><h2>${caseHeading(block.h)}</h2><p>${esc(block.p)}</p></div>
     <div class="solution-panel">
       <div class="solution-list">${META_SOLUTIONS.map((s,i) => `<div class="solution-item">
         <h3><button class="solution-toggle" type="button" id="solution-toggle-${s.key}" data-solution="${i}" aria-label="${esc(s.title)}" aria-expanded="${i === 0}" aria-controls="solution-description-${s.key}"><span class="solution-number" aria-hidden="true">0${i+1}</span><span class="solution-label">${esc(s.title)}</span><span class="indicator" aria-hidden="true">${i === 0 ? '−' : '+'}</span></button></h3>
@@ -893,7 +893,7 @@ function renderCase(slug){
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `
-          <span class="tag">${esc(b.tag)}</span>
+          ${c.slug === 'domino-mvp' ? `<span class="tag">${esc(b.tag)}</span>` : ''}
           <h2>${caseHeading(b.h)}</h2>
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
           ${b.credit ? `<p class="source-credit">${esc(b.credit)}</p>` : ''}
@@ -913,7 +913,7 @@ function renderCase(slug){
     ${d ? `
     <section class="band">
       <div class="deck-band wrap">
-        <span class="tag">Full case study</span>
+        ${c.slug === 'domino-mvp' ? '<span class="tag">Full case study</span>' : ''}
         <h2>${esc(d.title || 'The whole story, ' + d.slides.length + ' slides')}</h2>
         <p>${esc(d.description || 'Explore a preview below. The full case study is available on request and includes process, trade-offs, and outcomes.')}</p>
         <button type="button" class="btn" data-copy-email>Request the full case study</button>
@@ -943,7 +943,7 @@ function renderAbout(){
     <section class="about-intro wrap">
       <h1>About</h1>
       <p>I\u2019m a strategy and product leader with 15 years across product, technology, and organizational transformation, grounded in an MFA in Human-Computer Interaction.</p>
-      <p>My titles have mostly said design. My work has rarely stayed inside it. I find structural problems, turn them into systems, align cross-functional leaders around them, and stay through measurable outcomes.</p>
+      <p>My titles have mostly said design. My work has rarely stayed inside it. I find structural problems, turn them into systems, align cross-functional leaders around them, manage agency partners, and stay through measurable outcomes.</p>
       <p>I\u2019ve done that at <a href="https://design.samsung.com/global/main/">Samsung</a>, <a href="https://www.meta.com/">Meta HQ</a>, and a 0\u21921 fintech startup, across Seoul and Silicon Valley.</p>
     </section>
     <section class="wrap manifesto-block">
@@ -963,7 +963,7 @@ function renderAbout(){
       <div class="rows" aria-label="How I work">
         <div class="row"><b>Strategy &amp; operations</b><p>Operating strategy, KPI and reporting frameworks, prioritization, decision systems, continuous improvement. Ambiguity into structure.</p></div>
         <div class="row"><b>AI transformation</b><p>Machine-readable systems, human-in-the-loop governance, eval and validation frameworks, workflow automation. Claude and Figma MCP in daily practice.</p></div>
-        <div class="row"><b>Leadership</b><p>Executive stakeholder alignment, cross-functional influence, team building, operating cadence, facilitation, mentoring.</p></div>
+        <div class="row"><b>Leadership</b><p>Executive stakeholder alignment, cross-functional influence, and team building. Managing agency teams and directing their design work—from briefing and prioritization to creative reviews, quality standards, and delivery. Operating cadence, facilitation, and mentoring.</p></div>
         <div class="row"><b>HCI &amp; product</b><p>Human behavior, systems thinking, product strategy, experimentation, data-informed decisions, global product experience.</p></div>
       </div>
       <div class="rows" aria-label="Education">

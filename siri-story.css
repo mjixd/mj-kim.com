@@ -8,7 +8,6 @@
 .siri-hero-title p{margin:0 0 12px;font-size:13px;letter-spacing:.12em;color:#5f6467}
 .siri-hero-title h1{font-size:72px;line-height:1;letter-spacing:-.055em;font-weight:600;margin:0}
 .siri-hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,#fafafaee,#fafafa);opacity:0;pointer-events:none;z-index:2}
-.siri-hero-note{position:absolute;bottom:16px;left:16px;right:16px;z-index:3;margin:0;text-align:center;font-size:11px;color:#51565a;text-shadow:0 1px 4px #fff;background:#fafafae8;width:max-content;max-width:calc(100% - 32px);padding:7px 12px;border-radius:20px;margin-inline:auto}
 .siri-hero.is-static{height:100svh}
 .siri-hero.is-static .siri-hero-stage{position:relative}
 .siri-hero.is-static .siri-device{will-change:auto}

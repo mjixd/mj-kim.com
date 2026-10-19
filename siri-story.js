@@ -18,7 +18,6 @@ window.SiriStory = (() => {
         <div class="siri-devices" aria-hidden="true">${layers.map(([x,y,travel,state])=>`<div class="siri-device" data-x="${x}" data-y="${y}" data-travel="${travel}"><img src="${base}apple-iphone-2016.png" alt="" width="702" height="1320">${screen(state)}</div>`).join('')}</div>
         <div class="siri-hero-title"><p>Apple x LINE</p><h1>Siri<br> for LINE</h1></div>
         <div class="siri-hero-scrim" aria-hidden="true"></div>
-        <p class="siri-hero-note">Original LINE designs · Speak. Review. Send.</p>
       </div>
     </section>`;
   }

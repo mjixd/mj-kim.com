@@ -1,5 +1,5 @@
-// Contract: exact company labels; Meta's existing four-screen artwork fills
-// the viewport, increases in size, and leaves normal body gutters intact.
+// Contract: keep Meta's gradient fullwidth while shrinking the four-screen
+// group to 80% of its previous size, preserving center and spacing proportions.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -7,11 +7,12 @@ const pw = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:8791/';
 const out = process.env.TEST_OUTPUT || '/tmp/meta-hero-width';
 const browserName = process.env.TEST_BROWSER || 'chromium';
-// Captured from the rendered page before this change on 2026-10-19.
+// Rendered artwork widths captured before the requested 20% reduction.
+// The original asset's immutable pixels preserve inter-screen spacing ratios.
 const baseline = [
-  { width: 1440, hero: 1100, bodyLeft: 64, bodyRight: 1376, gutter: 63.36 },
-  { width: 390, hero: 350, bodyLeft: 0, bodyRight: 390, gutter: 20 },
-  { width: 320, hero: 280, bodyLeft: 0, bodyRight: 320, gutter: 20 },
+  { width: 1440, hero: 1555.2001953125, bodyLeft: 64, bodyRight: 1376, gutter: 63.36 },
+  { width: 390, hero: 421.20001220703125, bodyLeft: 0, bodyRight: 390, gutter: 20 },
+  { width: 320, hero: 345.5999755859375, bodyLeft: 0, bodyRight: 320, gutter: 20 },
 ];
 const checks = [];
 const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual });
@@ -35,10 +36,11 @@ const near = (a, b) => Math.abs(a - b) < 1;
       const geometry = await image.evaluate(image => {
         const r = image.getBoundingClientRect(), parent = image.closest('.kv'), box = parent.getBoundingClientRect();
         const body = document.querySelector('.slide.wrap'), content = body.getBoundingClientRect();
-        return { left: r.left, right: r.right, width: r.width, height: r.height, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, boxLeft: box.left, boxRight: box.right, radius: parseFloat(getComputedStyle(parent).borderRadius), bodyLeft: content.left, bodyRight: content.right, gutter: parseFloat(getComputedStyle(body).paddingLeft), overflow: document.documentElement.scrollWidth > innerWidth + 1 };
+        return { left: r.left, right: r.right, width: r.width, height: r.height, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, boxLeft: box.left, boxRight: box.right, radius: parseFloat(getComputedStyle(parent).borderRadius), background: getComputedStyle(parent).backgroundImage, bodyLeft: content.left, bodyRight: content.right, gutter: parseFloat(getComputedStyle(body).paddingLeft), overflow: document.documentElement.scrollWidth > innerWidth + 1 };
       });
-      check(expected.width + ': gradient artwork reaches both viewport edges', near(geometry.boxLeft, 0) && near(geometry.boxRight, expected.width) && geometry.radius === 0, geometry);
-      check(expected.width + ': four screens are larger and remain fully within the visible artwork', geometry.width > expected.hero + 1 && geometry.left + geometry.width * .09 >= 0 && geometry.right - geometry.width * .09 <= expected.width && Math.abs(geometry.width / geometry.height - geometry.naturalWidth / geometry.naturalHeight) < .005, geometry);
+      check(expected.width + ': gradient artwork reaches both viewport edges', near(geometry.boxLeft, 0) && near(geometry.boxRight, expected.width) && geometry.radius === 0 && /gradient/.test(geometry.background), geometry);
+      check(expected.width + ': four-screen group is 20% narrower with preserved proportions', near(geometry.width, expected.hero * .8) && near((geometry.left + geometry.right) / 2, expected.width / 2) && geometry.left + geometry.width * .09 >= 0 && geometry.right - geometry.width * .09 <= expected.width && Math.abs(geometry.width / geometry.height - geometry.naturalWidth / geometry.naturalHeight) < .005, geometry);
+      check(expected.width + ': lateral background room increases', geometry.left > (expected.width - expected.hero) / 2 && geometry.right < (expected.width + expected.hero) / 2, geometry);
       check(expected.width + ': body gutters are unchanged without horizontal overflow', near(geometry.bodyLeft, expected.bodyLeft) && near(geometry.bodyRight, expected.bodyRight) && near(geometry.gutter, expected.gutter) && !geometry.overflow, geometry);
       check(expected.width + ': original hero request link remains', (await image.locator('..').getAttribute('href'))?.startsWith('mailto:mjkiminfo@gmail.com?subject='));
       await image.scrollIntoViewIfNeeded();

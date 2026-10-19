@@ -157,7 +157,7 @@
   /* Credits always occupy their own line in small italic type. */
   p.source-credit, .slide p.source-credit, p.siri-source{font-size:12px;font-style:italic;font-weight:400;line-height:1.6;margin-top:8px;}
   .slide p{ margin:18px auto 0; font-size:clamp(17px,1.8vw,21px); line-height:1.45; color:var(--muted); max-width:58ch; }
-  .slide-detail{max-width:760px;margin:clamp(32px,4vw,48px) auto 0;text-align:left;}
+  .slide-detail{max-width:760px;margin:clamp(32px,4vw,48px) auto 0;text-align:center;}
   .slide-detail h3{margin:0;font-size:clamp(18px,2vw,22px);line-height:1.3;font-weight:600;}
   .slide .slide-detail p{max-width:none;margin-top:12px;font-size:clamp(15px,1.4vw,17px);line-height:1.6;}
   .slide-list{ max-width:58ch; margin:24px auto 0; padding-left:1.3em; text-align:left; font-size:clamp(17px,1.8vw,21px); line-height:1.6; color:var(--muted); }
@@ -348,7 +348,7 @@ const CASES = [
     accent:'#06bfff', stat:{n:'Org-wide', l:'reuse recognized at center leadership review'},
     lead:'Samsung\u2019s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, bringing connected devices, workplace services, and on-site decisions into one workspace.',
     role:'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 \u2013 present',
-    stats:[['3 states','PASS / REVIEW / FAIL: deterministic checks automated; ambiguous accessibility decisions routed to people'],['1 command','updates tokens org-wide; color, radius, spacing, type propagate to every linked screen'],['CES 2025','AI Office mobile prototype, from brief to exhibit in 3 months']],
+    stats:[['Org-wide','Led the adoption of shared design standards and validation workflows across engineering and partner teams.'],['1 command','updates tokens org-wide; color, radius, spacing, type propagate to every linked screen'],['CES 2025','AI Office mobile prototype, from brief to exhibit in 3 months']],
     blocks:[
       {tag:'Delivery', h:'Complex data, clear decisions, on site', p:'Dense energy and space data compressed into a mobile decision surface. Partner, engineering, and business requirements converged through weekly CTO·VP reviews and shipped as the AI Office prototype at CES 2025.', src:'assets/covers/cover_ces.png', alt:'CES 2025 AI Office exhibit with an architectural model and digital twin display'},
       {tag:'Separate project · Design systems', h:'Design token validation', p:'A shared workflow for design-asset governance and implementation QA. I conceived a validation tool that connects design tokens, implementation rules, and the rendered interface so teams can verify changes against a common standard.', textOnly:true, detail:{h:'Business and product challenge', p:'Design assets and production code were maintained on separate paths. Every change to color, radius, spacing, or typography required individual updates and repeated manual QA. The challenge was to make shared standards executable, keep design and engineering aligned, and identify which decisions still needed human judgment.'}},

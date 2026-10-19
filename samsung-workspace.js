@@ -41,7 +41,7 @@
   function render() {
     return `<section class="samsung-workspace" data-samsung-workspace aria-labelledby="samsung-workspace-title">
       <div class="samsung-workspace__stage" data-samsung-stage>
-        <div class="samsung-story__copy"><span class="samsung-story__eyebrow">Multitask with three apps at once</span><h2 id="samsung-workspace-title">Every task. One workspace.</h2><p>Work across three split-screen panes on a single display. Use up to three apps at once, or resize pop-up windows for greater flexibility. Browse the web, check messages, and follow directions side by side—keeping your workflow moving without switching screens.</p></div>
+        <div class="samsung-story__copy"><h2 id="samsung-workspace-title">Every task.<br>One workspace.</h2><p>Work across three split-screen panes on a single display. Use up to three apps at once, or resize pop-up windows for greater flexibility. Browse the web, check messages, and follow directions side by side—keeping your workflow moving without switching screens.</p></div>
         <div class="samsung-workspace__visual"><div class="samsung-workspace__canvas">
           <div class="samsung-workspace__device" aria-hidden="true"><div class="sw-wallpaper"></div><div class="sw-default-device"><img class="sw-default-frame" src="assets/samsung/workspace/fold-default.png" width="974" height="747" alt=""><img class="sw-default-wallpaper" src="assets/samsung/workspace/digital-twin-wallpaper.png" width="932" height="705" alt=""><i class="sw-default-camera"></i></div></div>
           <div class="sw-screen sw-screen--control" data-samsung-screen="control" role="img" aria-label="Control Devices: lighting and temperature controls">${control()}</div>
@@ -84,22 +84,34 @@
         {x:261+width+7,y:139,w:width,s:1},
         {x:261+2*(width+7),y:139,w:303.33,s:1},
       ];
-      // Each preview expands into its pane on one shared center/width trajectory.
-      const compact = [{x:300,y:430,w:390,h:227},{x:725,y:350,w:424.614868,h:197},{x:1150,y:430,w:456.011719,h:239.132813}];
+      // Previews dock to the matching UI feature, not the full pane center.
+      const compact = [{x:300,y:430,w:390,h:227},{x:725,y:350,w:424.614868,h:197},{x:1150,y:771,w:456.011719,h:239.132813,initialWidth:280}];
       cards.forEach((card,i)=>{
         const t=arrivals[i], start=compact[i], b=settled[i];
         const x=lerp(start.x,b.x+b.w/2,t), y=lerp(start.y,b.y+692/2,t);
-        const renderedWidth=lerp(start.w,b.w,t), paneWidth=lerp(461,b.w,t);
-        const paneScale=renderedWidth/paneWidth, previewScale=renderedWidth/start.w;
+        const renderedWidth=lerp(start.initialWidth||start.w,b.w,t), paneWidth=lerp(461,b.w,t);
+        const paneScale=renderedWidth/paneWidth, previewScale=renderedWidth/start.w*(i===2 ? .94 : 1);
+        card.style.width=paneWidth+'px';
+        let previewY=y-start.h*previewScale/2, paneY=y-692*paneScale/2;
+        if(i>0){
+          const first=card.querySelector(i===1?'.sw-month':'.sw-composer');
+          const last=i===1?card.querySelector('.sw-dates'):first;
+          const anchor=(first.offsetTop+last.offsetTop+last.offsetHeight)/2;
+          // Keep the final feature height throughout arrival as the pane unfolds around it.
+          const anchorY=b.y+anchor;
+          // AI export: input occupies the top 123px; the badge sits below it.
+          const previewAnchor=i===1?start.h/2:61.5;
+          previewY=anchorY-previewAnchor*previewScale;
+          paneY=anchorY-anchor*paneScale;
+        }
         const reveal=ease((t-.55)/.45);
         card.style.opacity=reveal;
         card.setAttribute('aria-hidden',String(reveal===0));
         const preview=previews[i];
-        preview.style.transform=`translate3d(${x-renderedWidth/2}px,${y-start.h*previewScale/2}px,0) scale(${previewScale})`;
+        preview.style.transform=`translate3d(${x-start.w*previewScale/2}px,${previewY}px,0) scale(${previewScale})`;
         preview.style.opacity=1-reveal;
         preview.setAttribute('aria-hidden',String(reveal===1));
-        card.style.width=paneWidth+'px';
-        card.style.transform=`translate3d(${x-renderedWidth/2}px,${y-692*paneScale/2}px,0) scale(${paneScale})`;
+        card.style.transform=`translate3d(${x-renderedWidth/2}px,${paneY}px,0) scale(${paneScale})`;
         card.style.boxShadow=`0 ${24*(1-t)}px ${64*(1-t)}px rgba(0,0,0,${.2*(1-t)})`;
       });
       const selected = p < .35 ? 0 : p < .68 ? 1 : 2;

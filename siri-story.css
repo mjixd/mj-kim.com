@@ -83,3 +83,13 @@
 .siri-chat-date{position:absolute;top:10.65%;left:42.66%;width:14.67%;height:3.6%;display:grid;place-items:center;border-radius:999px;background:#57799b99;font-size:3.2cqw}
 .siri-chat-time{position:absolute;top:21.1%;right:69.5%;font-size:2.67cqw}
 .siri-chat-message{position:absolute;top:15.15%;left:31.6%;width:65.8667%;aspect-ratio:494/128;box-sizing:border-box;padding:3.8667cqw 5.0667cqw 3.0667cqw;background:url(assets/line/chat-bubble-original.svg) center/100% 100% no-repeat;color:#000;font-size:4.2667cqw;line-height:1.1875;text-align:left;white-space:nowrap}
+
+.siri-theme-review{position:absolute;inset:0;container-type:inline-size;font-family:Arial,sans-serif;color:#fff}
+.siri-theme-review>img{position:absolute;inset:0;width:100%;height:100%}
+.siri-review-request-bg{clip-path:inset(5% 0 83% 0)}
+.siri-review-request{position:absolute;top:5.847%;left:4%;right:4%;text-align:right;font-size:5.3333cqw;line-height:1.2;white-space:nowrap}
+.siri-review-sky{position:absolute;left:4%;top:35.0825%;width:92%;height:23.8381%;background:url(assets/line/chat-sky-background.png) center/cover}
+.siri-review-avatar{clip-path:ellipse(4.5% 2.53% at 11.7% 39.45%)}
+.siri-review-recipient{position:absolute;left:18.1333%;top:38.1559%;font-size:4.2667cqw;line-height:1}
+.siri-review-message{left:28.1333%;top:44.2279%}
+.siri-review-ready{position:absolute;right:8%;top:53.973%;font-size:3.2cqw;line-height:1.2;color:#ffffffb3}

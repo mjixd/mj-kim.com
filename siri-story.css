@@ -5,7 +5,7 @@
 .siri-screen{position:absolute;left:47px;top:86px;width:260px;height:462px;overflow:hidden;background:#10252b}
 .siri-screen>img{display:block;width:100%;height:100%;object-fit:cover}
 .siri-hero-title{position:absolute;top:50%;left:50%;text-align:center;width:290px;z-index:1;will-change:transform,opacity}
-.siri-hero-title p{margin:0 0 12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#5f6467}
+.siri-hero-title p{margin:0 0 12px;font-size:13px;letter-spacing:.12em;color:#5f6467}
 .siri-hero-title h1{font-size:72px;line-height:1;letter-spacing:-.055em;font-weight:600;margin:0}
 .siri-hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,#fafafaee,#fafafa);opacity:0;pointer-events:none;z-index:2}
 .siri-hero-note{position:absolute;bottom:16px;left:16px;right:16px;z-index:3;margin:0;text-align:center;font-size:11px;color:#51565a;text-shadow:0 1px 4px #fff;background:#fafafae8;width:max-content;max-width:calc(100% - 32px);padding:7px 12px;border-radius:20px;margin-inline:auto}
@@ -18,8 +18,7 @@
 .siri-voice h2{font-size:clamp(36px,5vw,64px);line-height:1.08;letter-spacing:-.035em;font-weight:600;margin:20px 0 24px;text-wrap:balance}
 .siri-voice-lead{font-size:clamp(17px,1.8vw,21px);line-height:1.5;max-width:53ch;margin:0 auto;color:#e2e9ed}
 .siri-voice blockquote{font-size:clamp(24px,3vw,40px);line-height:1.3;font-weight:400;letter-spacing:-.02em;margin:64px 0}
-.siri-voice-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px;text-align:left}
-.siri-voice-steps span{font-size:12px;color:#8ee6e4;letter-spacing:.1em}
+.siri-voice-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px;text-align:left;margin-top:clamp(48px,6vw,80px)}
 .siri-voice-steps h3{font-size:22px;margin:14px 0 10px;font-weight:500}
 .siri-voice-steps p{font-size:16px;line-height:1.5;color:#d5dfe6;margin:0}
 .siri-voice-caption{margin:56px 0 0;font-size:13px;color:#c4d2dd}

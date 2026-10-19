@@ -293,9 +293,9 @@
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-4">
-<link rel="stylesheet" href="siri-story.css?v=20261019-layered">
+<link rel="stylesheet" href="siri-story.css?v=20261019-copy">
 <link rel="stylesheet" href="samsung-story.css?v=hero-heading-1">
-<link rel="stylesheet" href="samsung-governance.css?v=neutral-controls-1">
+<link rel="stylesheet" href="samsung-governance.css?v=compact-copy-2">
 <link rel="stylesheet" href="samsung-workspace.css?v=digital-twin-2">
 </head>
 <body>
@@ -324,7 +324,7 @@
 <script src="domino-zoom.js?v=mobile-memory-1"></script>
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
-<script src="siri-story.js?v=20261019-themes"></script>
+<script src="siri-story.js?v=20261019-copy"></script>
 <script src="samsung-workspace.js?v=digital-twin-1"></script>
 <script src="samsung-governance.js?v=neutral-controls-1"></script>
 <script src="samsung-story.js?v=digital-twin-1"></script>
@@ -384,7 +384,7 @@ const CASES = [
       {tag:'4 Solution', h:'Workflow integration', p:'Recurring check-ins, mid-cycle, performance, and career conversations in a familiar flow. Meetings as the entry point, so preparation and follow-up became part of everyday work.', from:'EN · 44', textOnly:true},
       {tag:'4 Extension', h:'Rooms integration', p:'A shared 1:1 note that starts automatically when a 1:1 is detected in a Room and continues across desktop and mobile. The workflow extended beyond its original team.', from:'EN · 47', src:'assets/decks/EN · 47.png'}
     ]},
-  { slug:'line', meta:'LINE · 2016', title:'Siri for LINE', line:'Designing voice interactions for LINE messaging through a pre-release SiriKit exploration.',
+  { slug:'line', meta:'LINE · 2016', title:'Siri for LINE', footerTitle:'Siri for LINE, the first SiriKit', line:'Designing voice interactions for LINE messaging through a pre-release SiriKit exploration.',
     kvHome:'assets/covers/cover_line_siri_wave.png', kvHomeAlt:'Multicolored Siri waveform on a black background',
     kvHero:'assets/decks/LINE Siri 01.png', kvHeroAlt:'Siri for LINE: original interface designs from the 2016 SiriKit exploration',
     accent:'#19e300', stat:{n:'WWDC 2016', l:'selected UI designer for a private pre-release SiriKit lab'},
@@ -921,8 +921,8 @@ function renderCase(slug){
     </section>` : ''}
     <nav class="pager" aria-label="Case navigation">
       <div class="wrap">
-        <a class="prev" href="#/work/${prev.slug}"><small>← Previous</small><strong>${esc(prev.title)}</strong></a>
-        <a class="next" href="#/work/${next.slug}"><small>Next →</small><strong>${esc(next.title)}</strong></a>
+        <a class="prev" href="#/work/${prev.slug}"><small>← Previous</small><strong>${esc(prev.footerTitle || prev.title)}</strong></a>
+        <a class="next" href="#/work/${next.slug}"><small>Next →</small><strong>${esc(next.footerTitle || next.title)}</strong></a>
       </div>
     </nav>`;
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});

@@ -16,7 +16,7 @@ window.SiriStory = (() => {
     return `<section class="siri-hero" data-siri-hero aria-label="Siri for LINE, original 2016 interface designs">
       <div class="siri-hero-stage">
         <div class="siri-devices" aria-hidden="true">${layers.map(([x,y,travel,state])=>`<div class="siri-device" data-x="${x}" data-y="${y}" data-travel="${travel}"><img src="${base}apple-iphone-2016.png" alt="" width="702" height="1320">${screen(state)}</div>`).join('')}</div>
-        <div class="siri-hero-title"><p>2016 · SiriKit</p><h1>Siri<br> for LINE</h1></div>
+        <div class="siri-hero-title"><p>Apple x LINE</p><h1>Siri<br> for LINE</h1></div>
         <div class="siri-hero-scrim" aria-hidden="true"></div>
         <p class="siri-hero-note">Original LINE designs · Speak. Review. Send.</p>
       </div>
@@ -28,9 +28,9 @@ window.SiriStory = (() => {
         <h2 id="siri-voice-title">A message starts<br>with your voice.</h2>
         <p class="siri-voice-lead">Say who it is for and what you want to say. Siri turns the request into a LINE message you can review before sending.</p>
         <div class="siri-voice-steps">
-          <div><span>01</span><h3>Speak naturally.</h3><p>Name the app, the person, and the message in a single request.</p></div>
-          <div><span>02</span><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>
-          <div><span>03</span><h3>Stay in control.</h3><p>Confirm Send or choose Cancel. A sent state makes the outcome clear.</p></div>
+          <div><h3>Speak naturally.</h3><p>Name the app, the person, and the message in a single request.</p></div>
+          <div><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>
+          <div><h3>Stay in control.</h3><p>Confirm Send or choose Cancel. A sent state makes the outcome clear.</p></div>
         </div>
         <p class="siri-voice-caption">Original LINE interface designs from the 2016 SiriKit exploration.</p>
         <p class="siri-source">Hardware and background: Apple, 2016 · <a href="https://web.archive.org/web/20160914234642/https://www.apple.com/ios/ios-10/" target="_blank" rel="noopener noreferrer">iOS 10</a> · <a href="https://web.archive.org/web/20161019050542/apple.com/ios/home/" target="_blank" rel="noopener noreferrer">Siri reference</a></p>

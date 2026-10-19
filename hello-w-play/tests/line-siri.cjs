@@ -42,16 +42,18 @@ const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual }
     check(`${width}: Speaker images and deck previews are absent`, !/WEB(?:\s|%20|_|-)*(?:7[7-9]|8[0-4])\b/i.test(caseMarkup), images);
     check(`${width}: all case images decode`, images.length > 0 && images.every(image => image.width > 0 && image.height > 0), images);
     const finalSlides = ['01','02','03','04','05','06'].map(number => 'assets/decks/LINE Siri ' + number + '.png');
-    check(`${width}: all six final slide exports render at their source dimensions`, finalSlides.every(file => images.some(image => decodeURIComponent(image.src).split('?')[0] === file && image.width === 1920 && image.height === 1080)), images.filter(image => /LINE(?:%20| )Siri/.test(image.src)));
+    const deckResources=await page.evaluate(async files=>Promise.all(files.map(src=>new Promise(resolve=>{const image=new Image();image.onload=()=>resolve({src,width:image.naturalWidth,height:image.naturalHeight});image.onerror=()=>resolve({src,width:0,height:0});image.src=src;}))),finalSlides);
+    check(`${width}: all six archived slide resources remain available at source dimensions`,deckResources.every(image=>image.width===1920&&image.height===1080),deckResources);
     const heroScreens = await page.locator('[data-siri-hero] .siri-screen img').evaluateAll(nodes => nodes.map(n=>({src:n.getAttribute('src'),width:n.naturalWidth,height:n.naturalHeight})));
     check(`${width}: original hero screens preserve native resolution`,heroScreens.length>0&&heroScreens.every(image=>image.width===750&&image.height===1334),heroScreens);
     check(`${width}: hero includes exactly one original sky theme screenshot`,heroScreens.filter(image=>image.src==='assets/line/siri-final-sky.png').length===1,heroScreens);
-    const seasonal = await page.locator('main img').evaluateAll(nodes=>['05','06'].map(number=>{
+    const seasonal = await page.locator('main img').evaluateAll(nodes=>['06'].map(number=>{
       const n=nodes.find(n=>decodeURIComponent(n.getAttribute('src')).split('?')[0]==='assets/decks/LINE Siri '+number+'.png');
       const section=n?.closest('section'),r=n?.getBoundingClientRect();
       return {number,heading:section?.querySelector('h2')?.textContent.trim(),left:r?.left,right:r?.right,width:r?.width,height:r?.height};
     }));
-    check(`${width}: seasonal and sky slides appear in readable detail sections`,seasonal.every(item=>item.heading&&item.width>0&&item.height>0&&item.left>=-1&&item.right<=width+1),seasonal);
+    check(`${width}: sky slide remains in a readable detail section`,seasonal.every(item=>item.heading&&item.width>0&&item.height>0&&item.left>=-1&&item.right<=width+1),seasonal);
+    check(`${width}: seasonal slide is replaced by two in-section phones`, !headings.includes('Spring, carried into Siri.')&&await page.locator('[data-siri-voice] .siri-theme-phone').count()===2);
     const deck = await page.locator('.deck-band').evaluate(root=>({heading:root.querySelector('h2').textContent,remaining:root.querySelector('.remaining')?.textContent}));
     check(`${width}: deck presentation counts six slides`,/6 slides/.test(deck.heading)&&deck.remaining==='+4',deck);
     const voice=await page.locator('[data-siri-voice]').evaluate(root=>({eyebrow:root.querySelector('.siri-eyebrow')?.textContent,quote:root.querySelector('blockquote')?.textContent,heading:root.querySelector('h2')?.textContent,lead:root.querySelector('.siri-voice-lead')?.textContent,steps:root.querySelectorAll('.siri-voice-steps h3').length}));

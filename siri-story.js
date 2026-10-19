@@ -27,12 +27,18 @@ window.SiriStory = (() => {
       <div class="wrap siri-voice-inner">
         <h2 id="siri-voice-title">A message starts<br>with your voice.</h2>
         <p class="siri-voice-lead">Say who it is for and what you want to say. Siri turns the request into a LINE message you can review before sending.</p>
+        <div class="siri-theme-pair" data-siri-themes>
+          ${[['seasonal-chat','Cherry-blossom LINE chat'],['final-sky','Sky-themed Siri message review']].map(([file,label])=>`<figure class="siri-theme-phone" aria-label="${label}"><img class="siri-theme-hardware" src="${base}apple-iphone-2016.png" alt="Black iPhone" width="702" height="1320" loading="lazy"><div class="siri-theme-screen"><img src="${base}siri-${file}.png" alt="${label}" width="750" height="1334" loading="lazy"><div class="siri-theme-petals" data-siri-petals aria-hidden="true"></div></div></figure>`).join('')}
+        </div>
+        <p class="siri-theme-description">Cherry-blossom and sky themes carry LINE’s familiar visual identity into the conversation.</p>
+        <button class="siri-petals-toggle" type="button" data-petals-toggle aria-pressed="false">Pause petals</button>
         <div class="siri-voice-steps">
           <div><h3>Speak naturally.</h3><p>Name the app, the person, and the message in a single request.</p></div>
           <div><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>
           <div><h3>Stay in control.</h3><p>Confirm Send or choose Cancel. A sent state makes the outcome clear.</p></div>
         </div>
         <p class="siri-voice-caption">Original LINE interface designs from the 2016 SiriKit exploration.</p>
+        <p class="siri-source">Petal animation: <a href="https://lottiefiles.com/free-animation/cherry-flowers-p7WIofua7Q" target="_blank" rel="noopener noreferrer">Syed Asim Ali Shah</a> · Branch-free adaptation · <a href="https://lottiefiles.com/page/license" target="_blank" rel="noopener noreferrer">Lottie Simple License</a></p>
         <p class="siri-source">Hardware and background: Apple, 2016 · <a href="https://web.archive.org/web/20160914234642/https://www.apple.com/ios/ios-10/" target="_blank" rel="noopener noreferrer">iOS 10</a> · <a href="https://web.archive.org/web/20161019050542/apple.com/ios/home/" target="_blank" rel="noopener noreferrer">Siri reference</a></p>
       </div>
     </section>`;
@@ -120,6 +126,32 @@ window.SiriStory = (() => {
     button.addEventListener('click',toggle);document.addEventListener('visibilitychange',sync);motion.addEventListener('change',sync);sync();
     return ()=>{dead=true;cancelAnimationFrame(raf);observer.disconnect();button.removeEventListener('click',toggle);document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();};
   }
+  function mountPetals(motion){
+    const root=document.querySelector('[data-siri-themes]');
+    if(!root || !window.lottie)return ()=>{};
+    const button=document.querySelector('[data-petals-toggle]');
+    let visible=false,paused=false,dead=false;
+    const animations=[...root.querySelectorAll('[data-siri-petals]')].map((container,index)=>{
+      const animation=lottie.loadAnimation({container,renderer:'svg',loop:true,autoplay:false,
+        path:base+'cherry-petals.json',name:'siri-petals-'+index,
+        rendererSettings:{preserveAspectRatio:'xMidYMid slice'}});
+      animation.setSpeed(.65);
+      animation.addEventListener('DOMLoaded',()=>{if(dead)return;animation.goToAndStop(index*45,true);sync();});
+      return animation;
+    });
+    function sync(){
+      if(dead)return;
+      const play=visible&&!document.hidden&&!motion.matches&&!paused;
+      animations.forEach(animation=>play?animation.play():animation.pause());
+      root.dataset.playing=String(play);
+      button.hidden=motion.matches;
+    }
+    function toggle(){paused=!paused;button.textContent=paused?'Play petals':'Pause petals';button.setAttribute('aria-pressed',String(paused));sync();}
+    const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();},{threshold:.05});
+    observer.observe(root);button.addEventListener('click',toggle);
+    document.addEventListener('visibilitychange',sync);motion.addEventListener('change',sync);sync();
+    return ()=>{dead=true;observer.disconnect();button.removeEventListener('click',toggle);document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);animations.forEach(animation=>animation.destroy());};
+  }
   function mount(){
     dispose();
     const root=document.querySelector('[data-siri-hero]');if(!root)return;
@@ -127,6 +159,7 @@ window.SiriStory = (() => {
     const title=root.querySelector('.siri-hero-title'),scrim=root.querySelector('.siri-hero-scrim');
     const motion=matchMedia('(prefers-reduced-motion: reduce)');
     const disposeChip=mountChip(motion);
+    const disposePetals=mountPetals(motion);
     let raf=0,dead=false;
     function paint(){
       raf=0;if(dead)return;
@@ -147,7 +180,7 @@ window.SiriStory = (() => {
     window.addEventListener('scroll',schedule,{passive:true});
     window.addEventListener('resize',schedule);motion.addEventListener('change',schedule);
     paint();
-    dispose=()=>{dead=true;disposeChip();cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);motion.removeEventListener('change',schedule);dispose=()=>{};};
+    dispose=()=>{dead=true;disposeChip();disposePetals();cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);motion.removeEventListener('change',schedule);dispose=()=>{};};
   }
   return {renderHero,renderVoice,renderChip,renderCover,mount,mountCover,cleanup:()=>dispose()};
 })();

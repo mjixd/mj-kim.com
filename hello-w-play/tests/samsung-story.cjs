@@ -59,7 +59,7 @@ function deterministicMotionChecks() {
   flush(); const interrupted = { properties: { ...properties }, time: video.currentTime };
   check('deterministic queued interruption uses latest input', JSON.stringify(interrupted) === JSON.stringify(sample(.22)), interrupted, 'unit');
   media.matches = true; motionCallback();
-  check('deterministic reduced motion releases media and reveals endpoint', !attrs.has('src') && properties['--interface-opacity'] === '1' && properties['--interface-scale'] === '1', { ...properties }, 'unit');
+  check('deterministic reduced motion releases media and reveals endpoint', !attrs.has('src') && properties['--interface-opacity'] === '1' && properties['--interface-scale'] === '0.9', { ...properties }, 'unit');
   media.matches = false; motionCallback(); videoHandlers.get('loadeddata')();
   const restored = sample(.22);
   check('deterministic reduced-motion reentry restores prior input', JSON.stringify(restored) === JSON.stringify(interrupted), restored, 'unit');
@@ -237,7 +237,7 @@ async function staticChecks(browser, options, label) {
       check('original case introduction precedes unfolding', order.introFirst && order.introBeforeStory, order);
       const intro = (await page.locator('.c-hero').innerText()).replace(/\s+/g, ' ');
       check('case title is exactly the requested mobile AI title', (await page.locator('main h1').innerText()).trim() === 'B2B AI Agent & Mobile AI Office');
-      check('case meta and role remain, with mobile lead and a separate validation chapter', ['SAMSUNG · 2024', 'Samsung’s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, bringing connected devices, workplace services, and on-site decisions into one workspace.', 'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 – present'].every(text => intro.includes(text)) && main.includes('Design token validation') && main.includes('I conceived a validation tool that connects design tokens, implementation rules, and the rendered interface'), intro);
+      check('case meta and role remain, with mobile lead and a separate validation chapter', ['SAMSUNG ELECTRONICS CO., LTD.', 'Samsung’s B2B AI platform spans SmartThings Pro.AI and Digital Twin AI. I led the AI Office experience and the mobile transition, bringing connected devices, workplace services, and on-site decisions into one workspace.', 'Role · AI product strategy, B2B experience, token asset governance, cross-functional leadership · 2024 – present'].every(text => intro.includes(text)) && main.includes('Design token validation') && main.includes('I conceived a validation tool that connects design tokens, implementation rules, and the rendered interface'), intro);
       check('workspace heading introduces unfolding inside its stage and description follows', order.headingAfterIntro && order.headingInStage && order.headingBeforeVideo && order.sentenceAfterStory, order);
       check('removed hero labels are no longer visible', !/Samsung · B2B mobile experience/i.test(main) && !main.includes('Hardware imagery: Samsung Galaxy Z Fold8 · SmartThings interface adaptation: Minjung Kim'));
       check('intro has no redundant slide before the scroll story', order.heroVisuals === 0, order);

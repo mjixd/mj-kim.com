@@ -7,7 +7,7 @@
   function render() {
     return `<section class="samsung-story samsung-story--hero" data-samsung-story aria-label="Samsung unfolding workspace">
       <div class="samsung-story__stage">
-        <h2 class="samsung-story__heading">From monitoring to on-site control.</h2>
+        <h2 class="samsung-story__heading">From monitoring<br> to on-site control.</h2>
         <div class="samsung-story__visual">
           <img class="samsung-story__poster" src="assets/samsung/fold-start.png" width="1000" height="616" alt="" aria-hidden="true" fetchpriority="high">
           <video muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
@@ -47,7 +47,7 @@
       root.style.setProperty('--poster-opacity', moving && !ready ? 1 - reveal : 0);
       root.style.setProperty('--hardware-opacity', moving && ready && reveal < 1 ? 1 : 0);
       root.style.setProperty('--interface-opacity', reveal);
-      root.style.setProperty('--interface-scale', moving ? startScale + (maxScale - startScale) * zoom : 1);
+      root.style.setProperty('--interface-scale', moving ? startScale + (maxScale - startScale) * zoom : .9);
       root.style.setProperty('--interface-y', (startY * (1 - zoom)) + '%');
       target = Number.isFinite(video.duration) ? Math.max(0, Math.min(video.duration - .05, clamp(progress / .76) * video.duration)) : 0;
       seek();
@@ -70,7 +70,7 @@
         const endScale = Math.min(width / 974, height / 747);
         startScale = videoScale / endScale;
         // Keep the whole device framed at the endpoint, including a small vertical inset.
-        maxScale = Math.min(1, innerWidth * .6 / (974 * endScale), Math.max(1, height - 32) / (747 * endScale));
+        maxScale = Math.min(1, innerWidth * .6 / (974 * endScale), Math.max(1, height - 32) / (747 * endScale)) * .9;
         startY = (height - 860 * videoScale + (56 + 747 / 2) * videoScale - height / 2) / height * 100;
       }
       if (video) {

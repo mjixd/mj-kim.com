@@ -1,6 +1,8 @@
 .band.domino-background{padding-top:calc(clamp(56px,8vw,112px) + 100px)}
 .domino-background__figure{--shadow-padding:clamp(12px,1.667vw,24px);position:relative;width:calc(112% + var(--shadow-padding) + var(--shadow-padding));max-width:calc(100vw - 32px);padding:var(--shadow-padding);margin:clamp(28px,4.5vw,48px) 0 0 50%;transform:translateX(-50%)}
-.domino-background__device{position:relative;aspect-ratio:3142/1800}
+/* The 3142px export centers the phone at x1490.5. Reserve 161px-equivalent
+   space on the left to balance the right shadow without cropping either edge. */
+.domino-background__device{position:relative;width:95.1256%;margin-left:4.8744%;aspect-ratio:3142/1800}
 .domino-background__device>img{display:block;width:100%;height:auto}
 /* Display coordinates inside the original 2074 export, including its shadow. */
 .domino-background__screen{position:absolute;left:7.8931%;top:13.0556%;width:79.2807%;height:65.1667%;border-radius:7.0253% / 14.919%;overflow:hidden;opacity:0;background:#161316}

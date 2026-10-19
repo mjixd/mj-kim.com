@@ -291,7 +291,7 @@
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-3">
-<link rel="stylesheet" href="siri-story.css?v=20261019-keyvisual">
+<link rel="stylesheet" href="siri-story.css?v=20261019-layered">
 <link rel="stylesheet" href="samsung-story.css?v=hero-heading-1">
 <link rel="stylesheet" href="samsung-governance.css?v=neutral-controls-1">
 <link rel="stylesheet" href="samsung-workspace.css?v=digital-twin-1">
@@ -322,7 +322,7 @@
 <script src="domino-zoom.js?v=mobile-memory-1"></script>
 <script src="domino-background.js?v=2074-2"></script>
 <script src="assets/vendor/siriwave/siriwave-2.4.0.js"></script>
-<script src="siri-story.js?v=20261019-keyvisual"></script>
+<script src="siri-story.js?v=20261019-layered"></script>
 <script src="samsung-workspace.js?v=digital-twin-1"></script>
 <script src="samsung-governance.js?v=neutral-controls-1"></script>
 <script src="samsung-story.js?v=digital-twin-1"></script>
@@ -882,7 +882,7 @@ function renderCase(slug){
     ${c.slug === 'samsung' ? SamsungStory.render() + SamsungStory.renderWorkspace() : ''}
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}
     ${c.background ? DominoBackground.render(esc(c.background)) : ''}
-    ${c.blocks.map((b, k) => b.governance ? SamsungGovernance.render() : b.voiceFeature ? SiriStory.renderChip() + SiriStory.renderVoice() : `
+    ${c.blocks.map((b, k) => b.governance ? SamsungGovernance.render() : b.voiceFeature ? SiriStory.renderVoice() : `${c.slug === 'line' && b.h === 'Supported Domains' ? SiriStory.renderChip() : ''}
       <section class="band ${k % 2 === 0 ? 'alt' : ''}">
         <div class="slide wrap">
           ${c.slug === 'meta' && b.from === 'EN · 44' ? solutionAccordionHTML(c, b) : `

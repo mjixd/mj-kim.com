@@ -44,16 +44,21 @@ window.SiriStory = (() => {
     // https://web.archive.org/web/20161018184700/apple.com/iphone-7/
     return `<section class="siri-chip" data-siri-chip aria-labelledby="siri-chip-title">
       <div class="wrap siri-chip-copy">
-        <span class="siri-eyebrow">SiriKit · Voice messaging</span>
         <h2 id="siri-chip-title">Say it to Siri.<br>Send it with LINE.</h2>
         <p>A name. A message. One spoken request.</p>
-        <div class="siri-chip-sequence" aria-hidden="true"><span>Speak</span><i></i><span>Review</span><i></i><span>Send</span></div>
-        <button class="siri-chip-playback" type="button" data-siri-playback aria-label="Pause Siri demonstration">Pause animation</button>
+        <button class="siri-chip-playback" type="button" data-siri-playback aria-label="Pause Siri demonstration"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button>
       </div>
-      <figure class="siri-chip-phone" aria-label="iPhone 7 with a reconstructed 2016 Siri waveform">
+      <figure class="siri-chip-phone" aria-label="iPhone 7 demonstrating a spoken request and LINE message review">
         <img src="${base}apple-iphone7-chip-2016.jpg" width="1104" height="1552" alt="Black iPhone 7, Apple 2016" loading="lazy">
         <div class="siri-chip-display" aria-hidden="true"></div>
-        <div class="siri-chip-messages" aria-hidden="true">${['request','review','sent'].map(state=>`<img data-siri-message="${state}" src="${base}siri-final-${state}.png" alt="Original LINE ${state} screen" width="750" height="1334">`).join('')}</div>
+        <div class="siri-chip-ui" aria-label="Original 2016 Siri and LINE interface">
+          <img class="siri-chip-background" data-siri-background src="${base}siri-layer-background.png" alt="" width="750" height="1334">
+          <img class="siri-chip-status" data-siri-status src="${base}siri-layer-status.png" alt="iPhone status bar" width="725" height="19">
+          <div class="siri-chip-request" data-siri-request aria-label="Send Nancy a line message can you get the notebook off my desk?"></div>
+          <img class="siri-chip-edit" data-siri-edit src="${base}siri-layer-edit.png" alt="tap to edit" width="147" height="32">
+          <img class="siri-chip-response" data-siri-response src="${base}siri-layer-response.png" alt="Here’s your LINE message:" width="494" height="37">
+          <img class="siri-chip-card" data-siri-card src="${base}siri-layer-card.png" alt="LINE message to Nancy: Can you get the notebook off my desk? Cancel or Send." width="694" height="434">
+        </div>
         <div class="siri-chip-wave" data-siri-chip-wave role="img" aria-label="Animated multicolored Siri waveform"></div>
       </figure>
     </section>`;
@@ -79,18 +84,30 @@ window.SiriStory = (() => {
   function mountChip(motion){
     const root=document.querySelector('[data-siri-chip]'),container=root?.querySelector('[data-siri-chip-wave]');
     if(!container||!window.SiriWave)return ()=>{};
-    const wave=makeWave(container,462,332),messages=[...root.querySelectorAll('[data-siri-message]')];
+    const wave=makeWave(container,462,332);
+    const request=root.querySelector('[data-siri-request]');
+    const background=root.querySelector('[data-siri-background]'),edit=root.querySelector('[data-siri-edit]');
+    const response=root.querySelector('[data-siri-response]'),card=root.querySelector('[data-siri-card]');
+    // Text and typography transcribed from the original PSD +txt request layer.
+    const utterance='“Send Nancy a line message can \nyou get the notebook off my \ndesk?”';
     const button=root.querySelector('[data-siri-playback]');
     let visible=false,dead=false,paused=false,raf=0,last=0,elapsed=0;
     function paint(){
-      const time=motion.matches?7900:elapsed%10800;
-      const fade=(start,end)=>clamp((time-start)/650)*(1-clamp((time-end)/650));
-      const weights=[fade(2500,4300),fade(4300,7300),fade(7300,9700)];
-      const scene=time<2500?'listening':time<4300?'request':time<7300?'review':'sent';
-      root.dataset.siriChipStage=scene;
-      messages.forEach((img,i)=>{const alpha=weights[i];img.style.opacity=alpha;img.style.transform='translateY('+(1-alpha)*10+'px)';});
-      container.style.opacity=String(1-clamp((time-2300)/650)+clamp((time-10000)/650));
-      if(visible&&!paused&&!document.hidden&&!motion.matches&&time<3000)wave.start();else wave.stop();
+      const time=motion.matches?8500:elapsed%12000;
+      const exit=1-clamp((time-10200)/800);
+      const typed=Math.floor(clamp((time-1500)/3100)*utterance.length);
+      const text=time>=11000?'':utterance.slice(0,typed);
+      if(request.textContent!==text)request.textContent=text;
+      root.dataset.siriChipStage=time<1500||time>=11000?'listening':time<5300?'request':'review';
+      background.style.opacity=String(clamp((time-1400)/1000)*exit);
+      request.style.opacity=String(exit);
+      edit.style.opacity=String(clamp((time-4700)/350)*exit);
+      response.style.opacity=String(clamp((time-4950)/450)*exit);
+      const rise=clamp((time-5300)/1000),eased=1-Math.pow(1-rise,4);
+      card.style.opacity=String(clamp(rise*3)*exit);
+      card.style.transform='translateY('+((1-eased)*65)+'%)';
+      container.style.opacity=String((1-clamp((time-1600)/900))+clamp((time-11000)/650));
+      if(visible&&!paused&&!document.hidden&&!motion.matches&&(time<2500||time>=11000))wave.start();else wave.stop();
     }
     function frame(now){raf=0;if(dead)return;if(last)elapsed+=Math.min(100,now-last);last=now;paint();raf=requestAnimationFrame(frame);}
     function sync(){
@@ -101,7 +118,7 @@ window.SiriStory = (() => {
     }
     const observer=new IntersectionObserver(entries=>{const next=entries[0].isIntersecting;if(next&&!visible)elapsed=0;visible=next;sync();});
     observer.observe(root.querySelector('.siri-chip-phone'));
-    function toggle(){paused=!paused;button.textContent=paused?'Play animation':'Pause animation';button.setAttribute('aria-label',(paused?'Play':'Pause')+' Siri demonstration');sync();}
+    function toggle(){paused=!paused;button.innerHTML=paused?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>';button.setAttribute('aria-label',(paused?'Play':'Pause')+' Siri demonstration');sync();}
     button.addEventListener('click',toggle);document.addEventListener('visibilitychange',sync);motion.addEventListener('change',sync);sync();
     return ()=>{dead=true;cancelAnimationFrame(raf);observer.disconnect();button.removeEventListener('click',toggle);document.removeEventListener('visibilitychange',sync);motion.removeEventListener('change',sync);wave.dispose();};
   }

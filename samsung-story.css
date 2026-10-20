@@ -34,3 +34,6 @@
 
 .samsung-story__heading{font-size:clamp(32px,4vw,60px);line-height:1.1;letter-spacing:-.035em;text-align:center;margin:0 auto 32px;max-width:1100px}
 .samsung-story--hero.samsung-story--motion .samsung-story__heading{position:absolute;top:clamp(96px,12vh,144px);left:0;right:0;padding:0 24px;margin:0 auto;z-index:1}
+
+/* Keep the overview attached to the unfolding scene. */
+.band.samsung-story__overview{padding-top:32px;padding-bottom:48px}

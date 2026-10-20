@@ -15,10 +15,10 @@
         </div>
       </div>
     </section>
-    <section class="band" aria-label="SmartThings Pro Mobile overview">
+    <section class="band samsung-story__overview" aria-label="SmartThings Pro Mobile overview">
       <div class="slide wrap">
         <p>Connected devices and visitor workflows, together in one workspace.</p>
-        <p><a href="https://play.google.com/store/apps/details?id=com.samsung.space.pnpt.stpm&amp;hl=en" target="_blank" rel="noopener noreferrer">SmartThings Pro Mobile</a> connects workplace access, room and seat reservations, calendar syncing, visitor invitations, support requests, and lighting and temperature control. Available to users authorized by their company’s administrator, the experience adapts to each space’s enabled services and operating policies.</p>
+        <p>Samsung’s <a href="https://play.google.com/store/apps/details?id=com.samsung.space.pnpt.stpm&amp;hl=en" target="_blank" rel="noopener noreferrer">SmartThings Pro Mobile</a> connects workplace access, room and seat reservations, calendar syncing, visitor invitations, support requests, and lighting and temperature control. Available to users authorized by their company’s administrator, the experience adapts to each space’s enabled services and operating policies.</p>
       </div>
     </section>`;
   }

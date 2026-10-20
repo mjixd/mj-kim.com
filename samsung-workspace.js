@@ -69,8 +69,8 @@
       progress = clamp(p);
       // Overview for incoming cards, then fit the docked device on small screens.
       const fit = desktop ? 0 : ease((p-.88)/.12);
-      const scale = Math.min(visual.clientWidth/lerp(1350,1030,fit),visual.clientHeight/790);
-      canvas.style.transform=`translate(-50%,-50%) scale(${scale}) translateY(-39px)`;
+      const scale = Math.min(visual.clientWidth/lerp(1350,1030,fit),visual.clientHeight/747);
+      canvas.style.transform=`translate(-50%,-50%) scale(${scale}) translateY(-39.5px)`;
       const arrivals = [ease((p-.04)/.20), ease((p-.35)/.20), ease((p-.68)/.20)];
       defaultDevice.style.opacity=1-arrivals[0];
       chrome.forEach(element=>{element.style.opacity=arrivals[0];});

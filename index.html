@@ -299,6 +299,7 @@
   #app{ animation:fade .35s ease both; }
   @keyframes fade{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
+.line-ad-appendix{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);align-items:center;gap:clamp(40px,7vw,110px);padding-block:100px}.line-ad-appendix h2{font-size:clamp(32px,4vw,54px);line-height:1.12;margin:18px 0 28px}.line-ad-appendix p{max-width:550px;line-height:1.65}.line-ad-appendix figure{margin:0;justify-self:center;width:min(100%,375px)}.line-ad-appendix img{display:block;width:100%;height:auto;border-radius:16px}.line-ad-appendix figcaption{font-size:12px;line-height:1.5;opacity:.6;margin-top:16px}.line-ad-appendix .ad-role{font-size:14px;opacity:.65;margin-top:26px}@media(max-width:700px){.line-ad-appendix{grid-template-columns:1fr;padding-block:64px;gap:36px}.line-ad-appendix figure{width:min(100%,330px)}}
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-4">
@@ -931,6 +932,14 @@ function renderCase(slug){
         </div>
       </div>
     </section>` : ''}
+    ${c.slug === 'line' ? `<section class="band" aria-labelledby="line-ad-title"><div class="line-ad-appendix wrap">
+      <div><div class="eyebrow">Fun fact · Beyond Siri</div><h2 id="line-ad-title">From conversations<br>to campaigns.</h2>
+      <p>Alongside the Siri exploration, I worked on LINE campaign creative production and sustaining: adapting brand assets, localized copy and landing-page layouts within a shared advertising system.</p>
+      <p>The BE AD plan connected a native chat-list placement to rich in-app experiences, with image, video and split templates. Reusable production rules and preview checks helped keep campaign variations consistent.</p>
+      <p class="ad-role">Creative production · Asset adaptation · Campaign sustaining</p>
+      <p>As a playful extension, I brought that visual language back to Siri: an ad inviting people to send a LINE with their voice.</p></div>
+      <figure><img src="assets/line/line-siri-be-ad-concept.png" width="750" height="1334" loading="lazy" alt="Siri for LINE promotional concept: Less typing. More talking. An original LINE Siri response screen on a dark green campaign cover."><figcaption>Portfolio concept · Not a launched campaign.<br>Based on the BE AD planning deck and original LINE creative assets, 2016.</figcaption></figure>
+    </div></section>` : ''}
     <nav class="pager" aria-label="Case navigation">
       <div class="wrap">
         <a class="prev" href="#/work/${prev.slug}"><small>← Previous</small><strong>${esc(prev.footerTitle || prev.title)}</strong></a>

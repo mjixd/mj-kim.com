@@ -400,7 +400,8 @@ const CASES = [
     lead:'Selected as a UI designer to participate in an onsite private session lab at Apple in Cupertino, I worked on integrating a pre-release version of SiriKit into LINE messenger.',
     role:'Role · UI / UX design, voice interaction · SiriKit exploration, 2016',
     outcomeLabel:'Impact',
-    stats:[['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.']],
+    stats:[['1 of 2','Selected LINE representatives: a UI designer from the Korea office and a software engineer from the Japan office.'],['at Apple','Private onsite SiriKit lab participation in Cupertino.'],['81.1%','Market context · Japan, 2021: mobile phone owners aged 15–79 who used LINE at least monthly.']],
+    impactSource:{label:'Source: NTT DOCOMO Mobile Society Research Institute, January 2021 survey. Market adoption, not a result of this project.',href:'https://www.moba-ken.jp/project/service/20210520.html'},
     blocks:[
       {tag:'Background · WWDC 2016', h:'Siri opens to\nthird-party apps', p:'The types of apps that can take advantage of the newly opened Siri.', credit:'Credit: Andrew Cunningham', src:'assets/line/siri-background.svg', alt:'WWDC presentation listing Siri-enabled app categories: Messaging, VoIP calling, Payments, Ride booking, Photo search, and Workouts. Photo by Andrew Cunningham.'},
       {tag:'Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote. The original LINE designs below document my separate pre-release exploration.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference'}},
@@ -915,6 +916,7 @@ function renderCase(slug){
       <div class="impact wrap">
         <div class="eyebrow">${esc(c.outcomeLabel || 'Impact')}</div>
         <div class="stats${c.stats.length === 4 ? ' stats-four' : ''}">${c.stats.map(([n,l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+        ${c.impactSource ? `<p class="source-credit"><a href="${esc(c.impactSource.href)}" target="_blank" rel="noopener noreferrer">${esc(c.impactSource.label)}</a></p>` : ''}
       </div>
     </section>
     ${d ? `

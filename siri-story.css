@@ -11,7 +11,7 @@
 .siri-hero.is-static{height:100svh}
 .siri-hero.is-static .siri-hero-stage{position:relative}
 .siri-hero.is-static .siri-device{will-change:auto}
-.siri-voice{background:#081b25 url('assets/line/apple-siri-background-2016.jpg') center bottom/cover no-repeat;color:#fff;text-align:center;padding:clamp(80px,9vw,140px) 0 100px}
+.siri-voice{background:#081b25 url('assets/line/apple-siri-background-2016.jpg') center bottom/cover no-repeat;color:#fff;text-align:center;padding:clamp(80px,9vw,140px) 0 200px}
 .siri-voice-inner{max-width:1100px}
 .siri-eyebrow{font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:#d6e0e8}
 .siri-voice h2{font-size:clamp(36px,5vw,64px);line-height:1.08;letter-spacing:-.035em;font-weight:600;margin:20px 0 24px;text-wrap:balance}
@@ -34,7 +34,7 @@
 .siri-chip-wave canvas{display:block}
 @media(max-width:735px){.siri-chip-phone{width:min(384px,calc(100% - 48px));margin-top:44px}}
 @media(max-width:1068px){.siri-hero-title{width:220px}.siri-hero-title h1{font-size:54px}}
-@media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 90px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}}
+@media(max-width:735px){.siri-hero-title{width:190px}.siri-hero-title h1{font-size:38px}.siri-hero-title p{font-size:10px;margin-bottom:9px}.siri-voice{padding:72px 0 190px}.siri-voice blockquote{margin:44px 0}.siri-voice-steps{grid-template-columns:1fr;gap:28px}}
 @media(prefers-reduced-motion:reduce){.siri-hero{height:100svh}.siri-hero-stage{position:relative}.siri-device{will-change:auto}}
 
 .siri-chip-ui{position:absolute;left:8.15%;width:83.7%;top:17.4%;aspect-ratio:750/1334;container-type:inline-size;text-align:right;color:#fff}

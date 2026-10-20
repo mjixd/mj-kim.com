@@ -928,7 +928,7 @@ function renderCase(slug){
         <p>${esc(d.description || 'Explore a preview below. The full case study is available on request and includes process, trade-offs, and outcomes.')}</p>
         <button type="button" class="btn" data-copy-email>Request the full case study</button>
         <div class="deck-strip">
-          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<button type="button" class="thumb${k === 2 ? ' more' : ''}" data-copy-email aria-label="Copy email address to request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more ' + (d.unit || 'slides') : 'preview ' + (k+1)}">${slideContents(n.startsWith('assets/') ? n : slideSrc(n), c.title + ', preview ' + (k+1), false)}<span${k === 2 ? ' class="remaining"' : ''}>${k === 2 ? '+' + (d.slides.length - 2) : k+1}</span></button>`).join('')}
+          ${(d.previews || d.slides.slice(0,3)).map((n,k) => `<button type="button" class="thumb${k === 2 ? ' more' : ''}" data-copy-email aria-label="Copy email address to request ${esc(c.title)}, ${k === 2 ? d.slides.length - 2 + ' more ' + (d.unit || 'slides') : 'preview ' + (k+1)}">${slideContents(n.startsWith('assets/') ? n : slideSrc(n), c.title + ', preview ' + (k+1), false)}${k === 2 ? `<span class="remaining">+${d.slides.length - 2}</span>` : ''}</button>`).join('')}
         </div>
       </div>
     </section>` : ''}

@@ -5,7 +5,7 @@
 .samsung-workspace__stage{padding:100px var(--gutter) 48px}
 .samsung-workspace .samsung-story__copy{margin-bottom:12px}
 .samsung-workspace .samsung-story__copy p,.samsung-workspace .samsung-story__credit{color:var(--muted)}
-.samsung-workspace__visual{position:relative;width:100%;max-width:1440px;height:min(590px,58vw);margin:auto;overflow:hidden}
+.samsung-workspace__visual{position:relative;top:-16px;width:100%;max-width:1440px;height:min(590px,58vw);margin:auto;overflow:hidden}
 .samsung-workspace__canvas{position:absolute;width:1450px;height:900px;left:50%;top:50%;transform-origin:center;transform:translate(-50%,-50%) scale(.5);font-family:SamsungWorkspace,Arial,sans-serif;color:#f3f3f8;font-size:14px;line-height:1.3;pointer-events:none}
 .samsung-workspace__canvas *{box-sizing:border-box}
 .samsung-workspace__canvas p{margin:0}

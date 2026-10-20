@@ -19,19 +19,19 @@ async function state(page) {
     const active = buttons.findIndex(button => button.getAttribute('aria-expanded') === 'true');
     const rect = node => { const r = node.getBoundingClientRect(); return { top:r.top, bottom:r.bottom, left:r.left, right:r.right, width:r.width, height:r.height }; };
     const visible = node => { const style = getComputedStyle(node); return !node.hidden && style.display !== 'none' && style.visibility !== 'hidden' && +style.opacity > .95; };
-    const images = [...root.querySelectorAll('.solution-visual .solution-scene')];
+    const images = [...root.querySelectorAll('.solution-visual img')];
     const shown = images.map((img,i) => visible(img) ? i : -1).filter(i => i >= 0);
     const selected = images[active];
     return { active, expanded:buttons.filter(b=>b.getAttribute('aria-expanded')==='true').length, shown,
       description: active >= 0 && visible(document.getElementById(buttons[active].getAttribute('aria-controls'))),
-      filter:selected && getComputedStyle(selected).filter, imageLoaded:selected && selected.getBoundingClientRect().width > 0 && selected.textContent.trim().length > 0,
+      filter:selected && getComputedStyle(selected).filter, imageLoaded:selected && selected.complete && selected.naturalWidth > 0,
       controls:buttons.map(rect), descriptionRect: active >= 0 && rect(document.getElementById(buttons[active].getAttribute('aria-controls'))),
       visual:rect(root.querySelector('.solution-visual')), text:rect(root.querySelector('.solution-list')),
       overflow:document.documentElement.scrollWidth > innerWidth + 1,
-      src: selected && selected.dataset.scene, alt:selected && selected.getAttribute('aria-label') };
+      src: selected && selected.getAttribute('src'), alt:selected && selected.alt };
   });
 }
-function matching(s) { return s.active >= 0 && s.expanded===1 && s.shown.length===1 && s.shown[0]===s.active && s.description && s.imageLoaded && s.src === String(s.active) && s.alt === expected[s.active][0]; }
+function matching(s) { return s.active >= 0 && s.expanded===1 && s.shown.length===1 && s.shown[0]===s.active && s.description && s.imageLoaded && s.src.endsWith(expected[s.active][1]) && s.alt === expected[s.active][0]; }
 function sharp(s) { return s.filter === 'none' || s.filter === 'blur(0px)'; }
 async function enter(page) { await page.goto(rootUrl + '#/work/meta'); await page.locator('.solution-accordion').waitFor(); }
 async function introChecks(page) {
@@ -77,40 +77,29 @@ async function introFallbackCheck(page, label) {
   check(label+' retains workflow introduction in an unpinned accessible story',result.inside && !result.sticky && result.description?.startsWith('Recurring check-ins,'),result);
 }
 async function renderedFrame(page, index) {
-  return page.locator('.solution-visual .solution-scene').nth(index).evaluate(image => {
+  return page.locator('.solution-visual img').nth(index).evaluate(image => {
     const style = getComputedStyle(image), rect = image.getBoundingClientRect();
     return { opacity:+style.opacity, transform:style.transform, filter:style.filter, visibility:style.visibility,
-      hidden:image.hidden, width:rect.width, height:rect.height, loaded:image.getBoundingClientRect().width>0 && image.textContent.trim().length>0 };
+      hidden:image.hidden, width:rect.width, height:rect.height, loaded:image.complete && image.naturalWidth>0 };
   });
-}
-// Sample the first rendered midpoint instead of assuming a frame has painted at 80ms.
-// This still fails if a transition jumps straight to its endpoint or never starts.
-async function transitionFrame(page, index) {
-  const deadline = Date.now() + 600;
-  let frame;
-  do {
-    frame = await renderedFrame(page, index);
-    if (frame.opacity > 0 && frame.opacity < 1) return frame;
-    await page.waitForTimeout(16);
-  } while (Date.now() < deadline);
-  return frame;
 }
 async function motionChecks(page) {
   const controls = page.locator('.solution-toggle');
   if ((await state(page)).active !== 0) await controls.nth(0).click();
   await controls.nth(0).scrollIntoViewIfNeeded(); await pause(page);
-  await controls.nth(1).click();
-  const secondMidpoint = await transitionFrame(page,1);
+  await controls.nth(1).click(); await page.waitForTimeout(80);
+  const secondMidpoint = await renderedFrame(page,1);
   check('second scene visibly transitions before interruption',secondMidpoint.loaded && secondMidpoint.opacity>0 && secondMidpoint.opacity<1 && secondMidpoint.transform!=='none',secondMidpoint);
   // Select the third scene before the second scene's 420ms fade has completed.
   const interruptedOpacity = await controls.nth(2).evaluate(button => {
-    const outgoing = button.closest('.solution-accordion').querySelectorAll('.solution-visual .solution-scene')[1];
+    const outgoing = button.closest('.solution-accordion').querySelectorAll('.solution-visual img')[1];
     const opacity = +getComputedStyle(outgoing).opacity;
     button.click();
     return opacity;
   });
   check('latest selection interrupts an unfinished rendered fade',interruptedOpacity>0 && interruptedOpacity<1,interruptedOpacity);
-  const thirdMidpoint = await transitionFrame(page,2);
+  await page.waitForTimeout(80);
+  const thirdMidpoint = await renderedFrame(page,2);
   check('latest scene visibly transitions after rapid selection',thirdMidpoint.loaded && thirdMidpoint.opacity>0 && thirdMidpoint.opacity<1 && thirdMidpoint.transform!=='none',thirdMidpoint);
   await page.screenshot({path:path.join(out,'meta-transition-midpoint.png')});
   await pause(page);
@@ -121,7 +110,7 @@ async function motionChecks(page) {
   // Observe synchronously after activation, before any animation frame can run.
   const immediate = await controls.nth(1).evaluate(button => {
     button.click();
-    const root=button.closest('.solution-accordion'), image=root.querySelectorAll('.solution-visual .solution-scene')[1], style=getComputedStyle(image);
+    const root=button.closest('.solution-accordion'), image=root.querySelectorAll('.solution-visual img')[1], style=getComputedStyle(image);
     return {expanded:button.getAttribute('aria-expanded'),hidden:image.hidden,opacity:+style.opacity,transform:style.transform,filter:style.filter,visibility:style.visibility};
   });
   check('reduced motion selection is fully rendered immediately',immediate.expanded==='true' && !immediate.hidden && immediate.opacity===1 && immediate.transform==='none' && immediate.filter==='none' && immediate.visibility==='visible',immediate);
@@ -230,8 +219,8 @@ async function scrollSweep(page, reverse = false) {
   if(process.env.TEST_FOCUS==='motion') { check('motion interruption produces no browser errors',errors.length===0,errors); await finish(browser); return; }
   await introChecks(page);
   const story = page.locator('.solution-accordion');
-  check('four original titles and native scenes preserved', JSON.stringify(await story.locator('.solution-toggle').allTextContents()).includes(expected[0][0]) && await story.locator('.solution-toggle').count()===4 && JSON.stringify(await story.locator('.solution-visual .solution-scene').evaluateAll(scenes=>scenes.map(s=>[s.getAttribute('aria-label'),s.dataset.scene])))===JSON.stringify(expected.map((v,i)=>[v[0],String(i)])));
-  check('native demonstration does not open mail', await story.locator('.solution-visual').getAttribute('href') === null);
+  check('four original titles and image assets preserved', JSON.stringify(await story.locator('.solution-toggle').allTextContents()).includes(expected[0][0]) && await story.locator('.solution-toggle').count()===4 && JSON.stringify(await story.locator('.solution-visual img').evaluateAll(images=>images.map(i=>[i.alt,i.getAttribute('src').split('/').pop()])))===JSON.stringify(expected));
+  check('screen retains explicit full-case email request', /^mailto:mjkiminfo@gmail.com\?/.test(await story.locator('.solution-visual').getAttribute('href')));
   const forward = await scrollSweep(page);
   const sequence = [...new Set(forward.map(s=>s.active))];
   check('forward scrolling visits all four solutions in order', JSON.stringify(sequence) === '[0,1,2,3]', sequence);

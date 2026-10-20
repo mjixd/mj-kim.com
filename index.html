@@ -304,7 +304,7 @@
 <link rel="stylesheet" href="domino-background.css?v=2074-4">
 <link rel="stylesheet" href="siri-story.css?v=brand-spacing-3">
 <link rel="stylesheet" href="samsung-story.css?v=overview-3">
-<link rel="stylesheet" href="samsung-governance.css?v=ai-readable-title-1">
+<link rel="stylesheet" href="samsung-governance.css?v=section-spacing-2">
 <link rel="stylesheet" href="samsung-workspace.css?v=centered-stage-3">
 </head>
 <body>
@@ -406,7 +406,7 @@ const CASES = [
       {tag:'Siri for LINE', h:'Before the public release', p:'In 2016, Apple opened Siri to third-party apps through SiriKit, including messaging. I participated as a selected UI designer in a private pre-release lab for LINE. WeChat was shown in the public WWDC keynote. The original LINE designs below document my separate pre-release exploration.', from:'LINE Siri 02', src:'assets/decks/LINE Siri 02.png', demo:{href:'https://www.youtube.com/watch?v=n5jXg_NNiCA',label:'Watch the WWDC 2016 reference'}},
       {tag:'Siri for LINE', h:'Speak. Review. Send.', voiceFeature:true, p:'A spoken request becomes a message the person can review before sending. The original LINE screens show the request, message review, and sent confirmation, carrying familiar LINE themes into the Siri interaction.', from:'LINE Siri 03', src:'assets/decks/LINE Siri 03.png'},
       {tag:'Siri for LINE', h:'Clear intent. Visible control.', p:'The original designs keep the recipient and message together, preserve LINE’s familiar visual language, and separate Cancel from Send. Variations explore short and long messages, contact presentation, and themed message cards.', from:'LINE Siri 04', src:'assets/decks/LINE Siri 04.png'},
-      {tag:'Sky theme', h:'One theme, across every state.', p:'The original sky-background screens preserve LINE’s visual identity through message review, sent confirmation, and cancellation.', from:'LINE Siri 06', src:'assets/decks/LINE Siri 06.png', alt:'Original sky-background LINE Siri screens showing review, sent, and canceled states'},
+      {tag:'Sky theme', h:'One theme, across every state.', p:'The original sky-background screens preserve LINE’s visual identity through message review, sent confirmation, and cancellation.', from:'LINE Siri 05', src:'assets/decks/LINE Siri 05.png?v=20261020-renumber', alt:'Original sky-background LINE Siri screens showing review, sent, and canceled states'},
     ]},
   { slug:'leadership', meta:'Leadership', title:'Strategy & organizational leadership', line:'Shared priorities, clear expectations, coordinated delivery, visible progress. The systems a team runs on.',
     kvHero:'assets/decks/EN · 50.png',
@@ -526,14 +526,14 @@ const DECKS = {
     chapters:[["1 Discover",0],["2 Product strategy",6],["3 Delivery & impact",8],["4 Account strategy",12],["5 Delivery & metrics",18]] },
   'meta': { previews:['EN · 42','EN · 43','EN · 46'], slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
     chapters:[["1 Understanding",0],["2 Planning",2],["3 Research",4],["4 Design solution",7]] },
-  'line': { previews:['LINE Siri 01','LINE Siri 02','LINE Siri 03'], slides:["LINE Siri 01","LINE Siri 02","LINE Siri 03","LINE Siri 04","LINE Siri 06","LINE Siri 07","LINE Siri 08","LINE Siri 09","LINE Siri 10","LINE Siri 11","LINE Siri 12","LINE Siri 13","LINE Siri 14","LINE Siri 15","LINE Siri 16","LINE Siri 17"],
+  'line': { previews:['LINE Siri 01','LINE Siri 02','LINE Siri 03'], slides:["LINE Siri 01","LINE Siri 02","LINE Siri 03","LINE Siri 04","LINE Siri 05","LINE Siri 06","LINE Siri 07","LINE Siri 08","LINE Siri 09","LINE Siri 10","LINE Siri 11","LINE Siri 12","LINE Siri 13","LINE Siri 14","LINE Siri 15","LINE Siri 16"],
     chapters:[["Siri for LINE",0],["Appendix · Campaign production & sustaining",9]] },
   'leadership': { slides:["EN · 48","EN · 49","EN · 50","EN · 51","EN · 52","EN · 53","EN · 54"],
     chapters:[["1 Principles",0],["2 Operating model",2],["3 Shared context",5]] }
 };
 const META_SOLUTIONS = [{"key":"upcoming","title":"CTA for Upcoming 1:1s","description":"Start from an upcoming meeting. Open the shared 1:1 note directly from Home, so preparation begins in the flow of the workday.","src":"assets/meta/solution-upcoming.png"},{"key":"event-notes","title":"Event details with 1:1 notes","description":"Keep the meeting and its shared notes together. Review the agenda from event details before joining the conversation.","src":"assets/meta/solution-event-notes.png"},{"key":"quick-editor","title":"Quick editor","description":"Add or update talking points in place. A focused editor makes it easy to capture context without leaving the meeting flow.","src":"assets/meta/solution-quick-editor.png"},{"key":"discover","title":"Discover & Add your 1:1s","description":"Find existing 1:1s and create a new one from a single list. Recurring conversations stay easy to return to.","src":"assets/meta/solution-discover.png"}];
 const DECK_BASE = 'assets/decks/';
-const DECK_REVISION = '20261019-line-siri-themes';
+const DECK_REVISION = '20261020-line-continuous-numbering';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {

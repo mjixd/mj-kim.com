@@ -520,8 +520,8 @@ const CASES = [
 const DECKS = {
   'hello-w': {title:'Inside the research', unit:'spreads', description:'Preview the competitive landscape, experience journey, and testing synthesis. The complete 45-spread process book and 49-page written thesis are available on request.', previews:['assets/thesis/process-20.svg','assets/thesis/process-25.svg','assets/thesis/process-39.svg'], slides:Array.from({length:45}, (_,i) => 'Process Book · ' + (i+1))},
 
-  'samsung': { slides:["EN · 03","EN · 04","EN · 05","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
-    chapters:[["1 Context",0],["2 Operating model",3],["3 Delivery",10]] },
+  'samsung': { slides:["EN · 03","EN · 04","EN · 05","Samsung · On-site control","Samsung · One workspace","EN · 06","EN · 07","EN · 08","EN · 09","EN · 10","EN · 11","EN · 12","EN · 13","EN · 14","EN · 15","EN · 16","EN · 17"],
+    chapters:[["1 Context",0],["Mobile workspace",3],["2 Operating model",5],["3 Delivery",12]] },
   'domino-mvp': { previews:['EN · 21','EN · 32','EN · 34'], slides:["EN · 21","EN · 19","EN · 20","EN · 22","EN · 23","EN · 24","EN · 25","EN · 26","WEB 42","2072","WEB 44","EN · 37","EN · 29","EN · 30","EN · 27","EN · 28","EN · 31","EN · 32","EN · 33","EN · 34","EN · 35","EN · 36"],
     chapters:[["1 Discover",0],["2 Product strategy",6],["3 Delivery & impact",8],["4 Account strategy",12],["5 Delivery & metrics",18]] },
   'meta': { previews:['EN · 42','EN · 43','EN · 46'], slides:["EN · 39","EN · 40","ML3","ML6","EN · 41","EN · 42","EN · 43","EN · 44","EN · 45","EN · 46","EN · 47"],
@@ -537,6 +537,8 @@ const DECK_REVISION = '20261020-line-continuous-numbering';
 const slideSrc = name => DECK_BASE + encodeURIComponent(name) + '.png?v=' + DECK_REVISION;
 // Video bounds in the original 1920×1080 Figma frames.
 const SLIDE_VIDEOS = {
+  'Samsung · On-site control': {src:'assets/videos/samsung-hero-slide.mp4', x:760, y:156, w:1120, h:720, radius:0, alt:'Galaxy unfolds into SmartThings device controls and AI Agent'},
+  'Samsung · One workspace': {src:'assets/videos/samsung-workspace-slide.mp4', x:760, y:156, w:1120, h:720, radius:0, alt:'Device controls, visitor invitations and AI Agent enter a shared workspace'},
   'EN · 19': {src:'assets/videos/domino-chart.mp4', x:341, y:78, w:1239, h:623, alt:'Exploring an interactive investment chart', overlay:{src:'assets/domino-app-icon.png', x:1386, y:491, w:244, h:244, radius:61.86656}},
   'EN · 33': {src:'assets/videos/domino-account.mp4', x:144, y:98.65, w:432, h:892.216, alt:'Switching between investment accounts'},
   'WEB 44': {src:'assets/videos/domino-filter.mp4', x:175, y:99, w:432, h:896.5946, alt:'Filtering assets by category'}
@@ -560,7 +562,7 @@ function slideContents(src, alt='', animate=true){
   // These updated Figma visuals no longer contain page numbers.
   const mask = /^(EN · |LINE Siri )/.test(name) && !['EN · 28', 'EN · 37'].includes(name) ? `<i class="slide-number-mask" aria-hidden="true" style="background-image:url('${esc(imageSrc)}')"></i>` : '';
   const v = animate && SLIDE_VIDEOS[name];
-  const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${42/v.w*100}% / ${42/v.h*100}%"></video>` : '';
+  const video = v ? `<video class="slide-video" src="${v.src}" aria-label="${esc(v.alt)}" autoplay muted loop playsinline preload="metadata" style="left:${v.x/1920*100}%;top:${v.y/1080*100}%;width:${v.w/1920*100}%;height:${v.h/1080*100}%;border-radius:${(v.radius ?? 42)/v.w*100}% / ${(v.radius ?? 42)/v.h*100}%"></video>` : '';
   const o = v && v.overlay;
   const overlay = o ? `<img class="slide-overlay" src="${o.src}" alt="" aria-hidden="true" style="position:absolute;left:${o.x/1920*100}%;top:${o.y/1080*100}%;width:${o.w/1920*100}%;height:${o.h/1080*100}%;border-radius:${o.radius/o.w*100}%;pointer-events:none">` : '';
   return `<img src="${esc(imageSrc)}" alt="${esc(alt)}" loading="lazy">${mask}${video}${overlay}`;

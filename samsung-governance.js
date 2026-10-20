@@ -3,7 +3,7 @@
   function render() {
     return `<section class="samsung-governance" data-samsung-governance aria-labelledby="governance-title">
       <div class="samsung-governance__stage">
-        <header class="samsung-governance__heading"><h2 id="governance-title">Define the automation boundary</h2><p>Change a token. Inspect the result. Restore the baseline.</p></header>
+        <header class="samsung-governance__heading"><h2 id="governance-title">AI-readable system</h2><p>Defining the automation boundary.<br>Change a token. Inspect the result. Restore the baseline.</p></header>
         <div class="samsung-governance__prototype"><iframe src="tokenproof/" title="Tokenproof interactive validation prototype" loading="lazy"></iframe></div>
         <div class="samsung-governance__demo-note"><span>Interactive public prototype · REVIEW items require human assessment.</span><a href="tokenproof/" target="_blank" rel="noopener noreferrer">Open prototype in a full window</a></div>
         <div class="samsung-governance__panels">

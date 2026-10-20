@@ -24,18 +24,18 @@ window.SiriStory = (() => {
   function renderVoice(){
     return `<section class="siri-voice" data-siri-voice aria-labelledby="siri-voice-title">
       <div class="wrap siri-voice-inner">
-        <h2 id="siri-voice-title">A message starts<br>with your voice.</h2>
-        <p class="siri-voice-lead">Say who it is for and what you want to say. Siri turns the request into a LINE message you can review before sending.</p>
+        <h2 id="siri-voice-title">Recognizably LINE.<br>Even in Siri.</h2>
+        <p class="siri-voice-lead">Siri let people send messages without opening LINE. That convenience moved a key brand interaction onto Apple’s interface. The challenge was to make LINE feel familiar, even outside its own app.</p>
         <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><filter id="siri-petal-pink" color-interpolation-filters="sRGB"><feFlood flood-color="#ffc4df"/><feComposite in2="SourceAlpha" operator="in"/></filter></defs></svg>
         <div class="siri-theme-pair" data-siri-themes>
           ${[['seasonal-chat','Cherry-blossom LINE chat'],['final-sky','Sky-themed Siri message review']].map(([file,label])=>`<figure class="siri-theme-phone" aria-label="${label}"><img class="siri-theme-hardware" src="${base}apple-iphone-2016.png" alt="White iPhone" width="702" height="1320" loading="lazy"><div class="siri-theme-screen">${file==='seasonal-chat'?`<div class="siri-clean-chat" role="img" aria-label="LINE chat with Nancy on a clear sky background"><img class="siri-chat-chrome" src="${base}siri-seasonal-chat.png" alt="" width="750" height="1334" loading="lazy"><span class="siri-chat-date">Today</span><span class="siri-chat-time">9:39 AM</span><div class="siri-chat-message">Want to go see the cherry<br>blossoms this Saturday?</div></div>`:`<div class="siri-theme-review" aria-label="Siri message review for Nancy"><img class="siri-review-original" src="${base}siri-${file}.png" alt="" width="750" height="1334" loading="lazy"><img class="siri-review-request-bg" src="${base}siri-layer-background.png" alt=""><div class="siri-review-request">“Send Nancy a LINE message:<br>Want to go see the cherry<br>blossoms this Saturday?”</div><div class="siri-review-sky"></div><img class="siri-review-avatar" src="${base}siri-${file}.png" alt=""><span class="siri-review-recipient">To: Nancy</span><div class="siri-chat-message siri-review-message">Want to go see the cherry<br>blossoms this Saturday?</div><span class="siri-review-ready">Ready to send</span></div>`}<div class="siri-theme-petals" data-siri-petals aria-hidden="true"></div></div></figure>`).join('')}
         </div>
-        <p class="siri-theme-description">Cherry-blossom and sky themes carry LINE’s familiar visual identity into the conversation.</p>
+        <p class="siri-theme-description">At Apple’s private lab in Cupertino, I worked with prerelease SiriKit to explore how Intents UI extensions could carry LINE’s seasonal Sakura theme into the Siri response.</p>
         <button class="siri-petals-toggle" type="button" data-petals-toggle aria-pressed="false">Pause petals</button>
         <div class="siri-voice-steps">
-          <div><h3>Speak naturally.</h3><p>Name the app, the person, and the message in a single request.</p></div>
-          <div><h3>Review the message.</h3><p>Keep the recipient and message together, so the intent stays visible.</p></div>
-          <div><h3>Stay in control.</h3><p>Confirm Send or choose Cancel. A sent state makes the outcome clear.</p></div>
+          <div><h3>Protect a brand asset.</h3><p>For LINE’s Japanese audience, seasonal themes offered an emotional connection beyond messaging. Sakura became the brand experience to carry forward.</p></div>
+          <div><h3>Adapt to the platform.</h3><p>Bring the theme into LINE’s custom Siri response UI while keeping the recipient, message, and confirmation clear within Apple’s interaction model.</p></div>
+          <div><h3>Extend the experience.</h3><p>The design established a principle for future integrations: expand access to the service while preserving the visual and emotional cues that make it recognizably LINE.</p></div>
         </div>
       </div>
     </section>`;

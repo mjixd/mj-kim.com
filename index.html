@@ -300,6 +300,7 @@
   @keyframes fade{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   @media (prefers-reduced-motion: reduce){ #app{ animation:none; } }
 .performance-review-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(32px,5vw,80px);margin-top:40px}.performance-review-columns h3{font-size:20px;line-height:1.3;margin:0 0 18px}.performance-review-columns p{font-size:17px;line-height:1.65;margin:0}.performance-review-columns+.source-credit{margin-top:32px}@media(max-width:700px){.performance-review-columns{grid-template-columns:1fr;gap:32px}}
+.leadership-hero-visual{width:100%;aspect-ratio:3111/1226;border-radius:0;box-shadow:none}.leadership-hero-visual img{width:100%;height:100%;object-fit:contain}
 </style>
 <link rel="stylesheet" href="domino-zoom.css?v=mobile-memory-1">
 <link rel="stylesheet" href="domino-background.css?v=2074-4">
@@ -413,8 +414,8 @@ const CASES = [
       {tag:'Sky theme', h:'One theme, across every state.', p:'The original sky-background screens preserve LINE’s visual identity through message review, sent confirmation, and cancellation.', from:'LINE Siri 05', src:'assets/decks/LINE Siri 05.png?v=20261020-renumber', alt:'Original sky-background LINE Siri screens showing review, sent, and canceled states'},
     ]},
   { slug:'leadership', meta:'Leadership', title:'Strategy & organizational leadership', line:'Shared priorities, clear expectations, coordinated delivery, visible progress. The systems a team runs on.',
-    kvHero:'assets/decks/EN · 50.png',
-    kvHome:'assets/covers/cover_strategy_alignment_v1.png', kvHomeAlt:'Black geometric forms align into a connected composition on a cream background',
+    kvHero:'assets/covers/leadership-strategy-at-every-scale.webp', kvHeroAlt:'Strategy at every scale: company and business, organization and team, project, feature, and campaign',
+    kvHome:'assets/covers/leadership-strategy-at-every-scale.webp', kvHomeAlt:'Strategy at every scale: company and business, organization and team, project, feature, and campaign',
     accent:'#ffd84d', stat:{n:'System-oriented', l:'principles, process, scenarios, information architecture, and documentation the team ran on'},
     lead:'As a founding team member and design lead, I connected user and business goals to execution priorities, made roles and deliverables explicit across teams, and coordinated scope, timing, and dependencies with PM and engineering so the way the team worked led to product delivery.',
     role:'Role · Strategic decision making, operating model, organizational leadership',
@@ -895,9 +896,10 @@ function renderCase(slug){
       ${c.slug === 'line' ? '' : `<h1>${caseHeading(c.title)}</h1>`}
       <p class="lead">${esc(c.lead)}</p>
       <p class="role">${esc(c.role)}</p>
-      ${c.background || c.slug === 'line' || c.slug === 'samsung' || c.slug === 'meta' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
+      ${c.background || c.slug === 'line' || c.slug === 'samsung' || c.slug === 'meta' || c.slug === 'leadership' ? '' : kvHTML({from:hero.from, src:c.kvHero||'', alt:c.kvHeroAlt||c.title, request:c.slug})}
       ${c.visualNote ? `<p class="role">${esc(c.visualNote)}</p>` : ''}
     </section>
+    ${c.slug === 'leadership' ? kvHTML({src:c.kvHero,alt:c.kvHeroAlt},'leadership-hero-visual') : ''}
     ${c.slug === 'meta' ? kvHTML({src:c.kvHero,alt:c.kvHeroAlt,request:c.slug},'meta-hero-visual') : ''}
     ${c.slug === 'samsung' ? SamsungStory.render() + SamsungStory.renderWorkspace() : ''}
     ${c.slug === 'domino-mvp' ? DominoZoom.render() : ''}

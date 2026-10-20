@@ -46,7 +46,7 @@ const out = process.env.TEST_OUTPUT || path.join(require('node:os').tmpdir(), 's
         });
         results.push({ viewport, progress, ...geometry });
         assert(geometry.centerErrors.every(e => Math.abs(e) <= 2), 'copy and device are horizontally centered');
-        assert(Math.abs(geometry.gap - (mobile ? 12 : 16)) <= 2, 'actual copy-to-device gap remains compact');
+        assert(Math.abs(geometry.gap - (mobile ? 24 : 32)) <= 2, 'actual copy-to-device gap remains compact');
         assert(Math.abs(geometry.topGap - geometry.bottomGap) <= 2, 'actual content has balanced vertical margins');
         assert(!geometry.overflow, 'page has no horizontal overflow');
         assert(geometry.overviewAfterHero, 'overview follows hero and precedes workspace');

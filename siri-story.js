@@ -132,7 +132,7 @@ window.SiriStory = (() => {
       const animation=lottie.loadAnimation({container,renderer:'svg',loop:true,autoplay:false,
         path:base+(index===0?'cherry-petals-small.json':'cherry-petals.json'),name:'siri-petals-'+index,
         rendererSettings:{preserveAspectRatio:'xMidYMid slice'}});
-      animation.setSpeed(index===0?.35:.65);
+      animation.setSpeed(.35);
       animation.addEventListener('DOMLoaded',()=>{if(dead)return;animation.goToAndStop(index*45,true);sync();});
       return animation;
     });

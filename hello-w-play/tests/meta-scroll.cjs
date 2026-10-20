@@ -220,7 +220,7 @@ async function scrollSweep(page, reverse = false) {
   await introChecks(page);
   const story = page.locator('.solution-accordion');
   check('four original titles and image assets preserved', JSON.stringify(await story.locator('.solution-toggle').allTextContents()).includes(expected[0][0]) && await story.locator('.solution-toggle').count()===4 && JSON.stringify(await story.locator('.solution-visual img').evaluateAll(images=>images.map(i=>[i.alt,i.getAttribute('src').split('/').pop()])))===JSON.stringify(expected));
-  check('screen retains explicit full-case email request', /^mailto:mjkiminfo@gmail.com\?/.test(await story.locator('.solution-visual').getAttribute('href')));
+  check('screen retains explicit full-case email request', /^mailto:mkim181@sva.edu\?/.test(await story.locator('.solution-visual').getAttribute('href')));
   const forward = await scrollSweep(page);
   const sequence = [...new Set(forward.map(s=>s.active))];
   check('forward scrolling visits all four solutions in order', JSON.stringify(sequence) === '[0,1,2,3]', sequence);

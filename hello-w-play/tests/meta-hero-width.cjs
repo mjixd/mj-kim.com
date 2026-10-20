@@ -42,7 +42,7 @@ const near = (a, b) => Math.abs(a - b) < 1;
       check(expected.width + ': four-screen group is 20% narrower with preserved proportions', near(geometry.width, expected.hero * .8) && near((geometry.left + geometry.right) / 2, expected.width / 2) && geometry.left + geometry.width * .09 >= 0 && geometry.right - geometry.width * .09 <= expected.width && Math.abs(geometry.width / geometry.height - geometry.naturalWidth / geometry.naturalHeight) < .005, geometry);
       check(expected.width + ': lateral background room increases', geometry.left > (expected.width - expected.hero) / 2 && geometry.right < (expected.width + expected.hero) / 2, geometry);
       check(expected.width + ': body gutters are unchanged without horizontal overflow', near(geometry.bodyLeft, expected.bodyLeft) && near(geometry.bodyRight, expected.bodyRight) && near(geometry.gutter, expected.gutter) && !geometry.overflow, geometry);
-      check(expected.width + ': original hero request link remains', (await image.locator('..').getAttribute('href'))?.startsWith('mailto:mjkiminfo@gmail.com?subject='));
+      check(expected.width + ': original hero request link remains', (await image.locator('..').getAttribute('href'))?.startsWith('mailto:mkim181@sva.edu?subject='));
       await image.scrollIntoViewIfNeeded();
       await page.screenshot({ path: path.join(out, `${browserName}-${expected.width}.png`) });
       // Use the public navigation to verify that the case can be remounted.

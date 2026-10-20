@@ -5,12 +5,12 @@ const playwright = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browserName = process.env.TEST_BROWSER || 'chromium';
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:8789/';
 const out = process.env.TEST_OUTPUT || path.join(require('os').tmpdir(), 'case-copy-tests');
-const email = 'mjkiminfo@gmail.com';
+const email = 'mkim181@sva.edu';
 const checks = [];
 const check = (name, pass, actual) => checks.push({ name, pass: !!pass, actual });
 const settle = page => page.waitForTimeout(70);
 const feedback = page => page.locator('[role="status"], [role="alert"]').evaluateAll(nodes => nodes.filter(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).opacity !== '0').map(node => node.textContent).join(' '));
-const success = text => /copied/i.test(text) && !/couldn.t|cannot|unable|failed|not copied/i.test(text);
+const success = text => text.includes(email) && /copied/i.test(text) && !/couldn.t|cannot|unable|failed|not copied/i.test(text);
 const usefulFailure = text => !success(text) && text.includes(email) && /copy|select|manual/i.test(text);
 async function mockClipboard(page) {
   await page.addInitScript(() => {
@@ -40,6 +40,9 @@ async function mockClipboard(page) {
     await page.goto(base);
     const routes = await page.locator('a[href^="#/work/"]').evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute('href')))]);
     check(`${width}: all project routes discovered`, routes.length >= 4, routes);
+    await page.goto(base + '#/about');
+    const aboutLinks = await page.locator('a[href^="mailto:"]').evaluateAll(nodes => nodes.map(node => ({ href: node.getAttribute('href'), text: node.textContent })));
+    check(`${width}: About contact links display and target new email`, aboutLinks.length >= 2 && aboutLinks.every(link => link.href.startsWith('mailto:' + email) && link.text.includes(email)), aboutLinks);
     for (const route of routes) {
       await page.goto(base + route);
       await page.locator('.pager').waitFor();
@@ -58,7 +61,7 @@ async function mockClipboard(page) {
       const controls = page.locator('.deck-band .btn, .deck-strip .thumb');
       check(`${width} ${route}: exactly four accessible copy controls including +N`, await controls.count() === 4 && await page.locator('.deck-strip .more').innerText().then(text => /\+\d+/.test(text)));
       const mailto = await page.locator('a[href^="mailto:"]').evaluateAll(nodes => nodes.filter(node => !node.closest('.deck-band')).map(node => node.getAttribute('href')));
-      check(`${width} ${route}: other mailto links retained`, mailto.includes('mailto:mjkiminfo@gmail.com') && mailto.some(href => href.includes('subject=')), mailto);
+      check(`${width} ${route}: other mailto links retained`, mailto.includes('mailto:' + email) && mailto.every(href => href.startsWith('mailto:' + email)) && mailto.some(href => new URL(href).searchParams.get('subject')?.startsWith('Case study request: ')), mailto);
       for (let index = 0; index < await controls.count(); index++) {
         const before = await page.evaluate(() => copyProbe.calls.length);
         await controls.nth(index).click();
@@ -133,6 +136,24 @@ async function mockClipboard(page) {
   await page.locator('.deck-band .btn').click();
   await settle(page);
   check('failure followed by route navigation: new copy succeeds', success(await feedback(page)));
+  if (browserName === 'chromium') {
+    const nativeContext = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'], reducedMotion: 'reduce' });
+    const nativePage = await nativeContext.newPage();
+    await nativePage.goto(base);
+    const nativeRoutes = await nativePage.locator('a[href^="#/work/"]').evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute('href')))]);
+    for (const route of nativeRoutes) {
+      await nativePage.goto(base + route);
+      const controls = nativePage.locator('.deck-band .btn, .deck-strip .thumb');
+      for (let index = 0; index < await controls.count(); index++) {
+        await nativePage.evaluate(() => navigator.clipboard.writeText('clipboard sentinel'));
+        await controls.nth(index).click();
+        await settle(nativePage);
+        const copied = await nativePage.evaluate(() => navigator.clipboard.readText());
+        check('native clipboard ' + route + ' control ' + index, copied === email && success(await feedback(nativePage)), copied);
+      }
+    }
+    await nativeContext.close();
+  }
   await browser.close();
   const result = { browser: browserName, sourceHash: crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname, '../../index.html'))).digest('hex'), checks, failures: checks.filter(item => !item.pass) };
   fs.writeFileSync(path.join(out, 'case-copy-results.json'), JSON.stringify(result, null, 2));

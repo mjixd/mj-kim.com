@@ -327,7 +327,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Minjung Kim</span>
-    <span>Full case studies available on request · <a href="mailto:mjkiminfo@gmail.com">mjkiminfo@gmail.com</a></span>
+    <span>Full case studies available on request · <a href="mailto:mkim181@sva.edu">mkim181@sva.edu</a></span>
   </div>
 </footer>
 <div class="copy-toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -585,7 +585,7 @@ function contextCardsHTML(cards, slug){
 
 function requestHref(slug=''){
   const c = CASES.find(c => c.slug === slug), title = c ? c.title : 'Selected projects';
-  return 'mailto:mjkiminfo@gmail.com?subject=' + encodeURIComponent('Case study request: ' + title) + '&body=' + encodeURIComponent('Hi Minjung,\n\nI would like to see the full case study for ' + title + '.\n\nName / company:\nContext for my request:\n\nThank you!');
+  return 'mailto:mkim181@sva.edu?subject=' + encodeURIComponent('Case study request: ' + title) + '&body=' + encodeURIComponent('Hi Minjung,\n\nI would like to see the full case study for ' + title + '.\n\nName / company:\nContext for my request:\n\nThank you!');
 }
 function kvHTML(kv, cls=''){
   if (!kv.src) return `<div class="kv ${cls}"><span class="label">Key visual · from ${esc(kv.from||'')}</span><span class="dims"></span></div>`;
@@ -997,7 +997,7 @@ function renderAbout(){
       <div class="note">
         <span class="tag">Full case studies</span>
         <p>Project pages share selected visuals and key decisions. Full case studies are available on request, with process, trade-offs, and detailed outcomes. Get in touch to explore the work in depth.</p>
-        <a href="${esc(requestHref())}">Request full case studies · mjkiminfo@gmail.com</a>
+        <a href="${esc(requestHref())}">Request full case studies · mkim181@sva.edu</a>
       </div>
     </section>`;
   window.scrollTo({top:0});
@@ -1199,7 +1199,7 @@ document.addEventListener('click', e => {
   e.preventDefault(); const t = a.getAttribute('href'); if (location.hash === t) route(); else location.hash = t;
 });
 // Case-study requests copy the contact address without leaving the page.
-const contactEmail = 'mjkiminfo@gmail.com';
+const contactEmail = 'mkim181@sva.edu';
 const copyToast = document.getElementById('copyToast');
 let copyNoticeTimer, copyRequest = 0;
 function showCopyNotice(message, dismissAfter = 0){

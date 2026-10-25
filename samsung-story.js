@@ -28,6 +28,8 @@
   function mountScene(root) {
     const video = root.querySelector('video');
     const visual = root.querySelector('.samsung-story__visual');
+    const stage = root.querySelector('.samsung-story__stage');
+    let mobile = false;
     let startScale = 1, startY = 0, maxScale = 1;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let active = true, near = false, enabled = false, failed = false, ready = false, raf = 0, target = 0, requested = -1;
@@ -40,7 +42,7 @@
     function draw() {
       raf = 0;
       if (!active) return;
-      const progress = enabled ? clamp(-root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - innerHeight)) : 1;
+      const progress = enabled ? clamp(-root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - (mobile ? stage.offsetHeight : innerHeight))) : 1;
       const moving = enabled && !failed;
       const reveal = moving ? ease((progress - .76) / .08) : 1;
       const zoom = moving ? ease((progress - .84) / .14) : 1;
@@ -61,7 +63,8 @@
     }
     function reconcile() {
       if (!active) return;
-      enabled = innerWidth > 820 && innerHeight >= 700 && !motion.matches;
+      mobile = innerWidth <= 820;
+      enabled = (mobile || (innerWidth > 820 && innerHeight >= 700)) && !motion.matches;
       root.classList.toggle('samsung-story--motion', enabled);
       if (video) {
         // Match the straight-on terminal video frame before handing off to the 4x master.
@@ -70,7 +73,7 @@
         const endScale = Math.min(width / 974, height / 747);
         startScale = videoScale / endScale;
         // Keep the whole device framed at the endpoint, including a small vertical inset.
-        maxScale = Math.min(1, innerWidth * .6 / (974 * endScale), Math.max(1, height - 32) / (747 * endScale)) * .9;
+        maxScale = mobile ? .9 : Math.min(1, innerWidth * .6 / (974 * endScale), Math.max(1, height - 32) / (747 * endScale)) * .9;
         startY = (height - 860 * videoScale + (56 + 747 / 2) * videoScale - height / 2) / height * 100;
       }
       if (video) {

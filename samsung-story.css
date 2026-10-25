@@ -37,3 +37,11 @@
 
 /* Keep the overview attached to the unfolding scene. */
 .band.samsung-story__overview{padding-top:32px;padding-bottom:48px}
+
+/* Mobile-only unfolding: stable height avoids address-bar resize jumps. */
+@media(max-width:820px){
+ .samsung-story--motion{height:240svh}
+ .samsung-story--hero.samsung-story--motion .samsung-story__stage{height:100svh;padding:84px var(--gutter,24px) 24px;justify-content:flex-start;box-sizing:border-box}
+ .samsung-story--hero.samsung-story--motion .samsung-story__heading{position:static;padding:0;margin:0 auto 24px;flex-shrink:0}
+ .samsung-story--hero.samsung-story--motion .samsung-story__visual{width:100%;height:auto;aspect-ratio:auto;max-height:none;min-height:0;flex:1;margin:0 auto}
+}

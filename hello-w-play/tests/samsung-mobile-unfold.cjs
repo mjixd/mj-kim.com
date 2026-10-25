@@ -12,7 +12,7 @@ async function state(page) {
     const image = root.querySelector('.samsung-story__interface'), video = root.querySelector('video');
     const r = image.getBoundingClientRect(), fit = Math.min(r.width / image.naturalWidth, r.height / image.naturalHeight);
     const h = root.querySelector('h2').getBoundingClientRect();
-    return { sticky: getComputedStyle(root.firstElementChild).position, runway: root.offsetHeight,
+    return { sticky: getComputedStyle(root.firstElementChild).position, runway: root.offsetHeight, stageHeight: root.firstElementChild.offsetHeight, stageTop: root.firstElementChild.getBoundingClientRect().top,
       imageAlpha: +getComputedStyle(image).opacity, videoAlpha: +getComputedStyle(video).opacity,
       ready: video.readyState, time: video.currentTime, src: video.getAttribute('src'), decoded: image.naturalWidth > 0,
       overflow: document.documentElement.scrollWidth > innerWidth + 1,
@@ -45,7 +45,7 @@ async function visibleVideoGap(page) {
   });
 }
 async function phase(page, value) {
-  await page.locator(selector).evaluate((root, value) => scrollTo({ top: scrollY + root.getBoundingClientRect().top + (root.offsetHeight - innerHeight) * value, behavior: 'instant' }), value);
+  await page.locator(selector).evaluate((root, value) => scrollTo({ top: scrollY + root.getBoundingClientRect().top + (root.offsetHeight - (innerWidth <= 820 ? root.firstElementChild.offsetHeight : innerHeight)) * value, behavior: 'instant' }), value);
   await page.waitForTimeout(350); return state(page);
 }
 async function enter(browser, width, height, reducedMotion = 'no-preference', fail = false) {
@@ -70,9 +70,31 @@ async function enter(browser, width, height, reducedMotion = 'no-preference', fa
         await page.screenshot({ path: path.join(out, '390x844-opening.png') });
       }
       const middle = await phase(page, .4), end = await phase(page, 1), reverse = await phase(page, .4);
-      check(label + ': scroll runway and sticky stage', start.sticky === 'sticky' && start.runway > height * 2, start);
+      check(label + ': scroll runway and sticky stage', start.sticky === 'sticky' && start.runway - start.stageHeight >= height * (width <= 820 ? 1.4 : 2) - 2 && Math.abs(middle.stageTop) <= 1, start);
       check(label + ': unfolding advances visible decoded video', start.imageAlpha < .01 && middle.videoAlpha > .99 && middle.ready >= 2 && middle.time > start.time + .5, { start, middle });
       check(label + ': endpoint is decoded final UI within viewport', end.decoded && end.imageAlpha > .99 && !end.overflow && end.device.left >= 7 && end.device.right <= width - 7 && end.device.top >= end.headingBottom && end.device.bottom <= height + 1, end);
+      if (width === 390) {
+        await phase(page, 1);
+        const gap = await page.locator(selector).evaluate(root => {
+          const image = root.querySelector('.samsung-story__interface'), box = image.getBoundingClientRect();
+          const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = Math.round(400 * image.naturalHeight / image.naturalWidth);
+          const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+          let last = -1;
+          for (let y = canvas.height - 1; y >= 0 && last < 0; y--) {
+            let dark = 0;
+            for (let x = 0; x < canvas.width; x++) { const i = (y * canvas.width + x) * 4; if (pixels[i + 3] > 128 && Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) < 160) dark++; }
+            if (dark > canvas.width * .02) last = y;
+          }
+          const fit = Math.min(box.width / image.naturalWidth, box.height / image.naturalHeight);
+          const deviceBottom = box.top + (box.height - image.naturalHeight * fit) / 2 + (last + 1) / canvas.height * image.naturalHeight * fit;
+          const overviewTop = document.querySelector('.samsung-story__overview p').getBoundingClientRect().top;
+          return { gap: overviewTop - deviceBottom, deviceBottom, overviewTop, last };
+        });
+        check('390x844: final device to overview gap is at most 100px', gap.last >= 0 && gap.gap >= 0 && gap.gap <= 100, gap);
+        await page.screenshot({ path: path.join(out, '390x844-exit.png') });
+        await phase(page, .4);
+      }
       check(label + ': reversing scroll restores intermediate video', reverse.videoAlpha > .99 && reverse.imageAlpha < .01 && Math.abs(reverse.time - middle.time) < .1, { middle, reverse });
       if (width === 390) {
         await page.locator(selector + ' video').evaluate(v => { window.__storyVideo = v; window.__storyLoads = 0; v.addEventListener('loadstart', () => window.__storyLoads++); });

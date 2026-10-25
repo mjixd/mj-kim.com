@@ -40,8 +40,10 @@
 
 /* Mobile-only unfolding: stable height avoids address-bar resize jumps. */
 @media(max-width:820px){
- .samsung-story--motion{height:240svh}
- .samsung-story--hero.samsung-story--motion .samsung-story__stage{height:100svh;padding:84px var(--gutter,24px) 24px;justify-content:flex-start;box-sizing:border-box}
+ .samsung-story--motion{height:auto}
+ /* Retain the scroll travel without leaving an empty viewport below the device. */
+ .samsung-story--motion::after{content:"";display:block;height:140svh}
+ .samsung-story--hero.samsung-story--motion .samsung-story__stage{height:auto;padding:84px var(--gutter,24px) 24px;justify-content:flex-start;box-sizing:border-box}
  .samsung-story--hero.samsung-story--motion .samsung-story__heading{position:static;padding:0;margin:0 auto 12px;flex-shrink:0}
- .samsung-story--hero.samsung-story--motion .samsung-story__visual{width:100%;height:auto;aspect-ratio:974/747;max-height:none;min-height:0;flex:0 1 auto;margin:0 auto}
+ .samsung-story--hero.samsung-story--motion .samsung-story__visual{width:100%;height:auto;aspect-ratio:974/747;max-height:calc(100svh - 190px);min-height:0;flex:0 1 auto;margin:0 auto}
 }

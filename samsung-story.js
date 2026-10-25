@@ -29,6 +29,7 @@
     const video = root.querySelector('video');
     const visual = root.querySelector('.samsung-story__visual');
     const stage = root.querySelector('.samsung-story__stage');
+    const overview = root.nextElementSibling?.matches('.samsung-story__overview') ? root.nextElementSibling : null;
     let mobile = false;
     let startScale = 1, startY = 0, maxScale = 1;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -66,6 +67,11 @@
       mobile = innerWidth <= 820;
       enabled = (mobile || (innerWidth > 820 && innerHeight >= 700)) && !motion.matches;
       root.classList.toggle('samsung-story--motion', enabled);
+      // Keep the explanation beside the mobile scene throughout the scroll.
+      if (overview) {
+        if (mobile && enabled && overview.parentElement !== stage) stage.append(overview);
+        else if ((!mobile || !enabled) && overview.parentElement === stage) root.after(overview);
+      }
       if (video) {
         // Match the straight-on terminal video frame before handing off to the 4x master.
         const { width, height } = visual.getBoundingClientRect();
@@ -105,6 +111,7 @@
       video?.removeEventListener('seeked', seek);
       video?.removeEventListener('error', error);
       release();
+      if (overview?.parentElement === stage) root.after(overview);
     };
   }
   function cleanup() { disposers.forEach(dispose => dispose()); disposers = []; }

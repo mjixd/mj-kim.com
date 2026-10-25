@@ -44,6 +44,28 @@ async function visibleVideoGap(page) {
     return { gap: contentTop - headingBottom, contentTop, headingBottom, first, time: video.currentTime };
   });
 }
+async function visibleOverviewGap(page) {
+  return page.locator(selector).evaluate(root => {
+    const final = root.querySelector('.samsung-story__interface');
+    const image = +getComputedStyle(final).opacity >= .99 ? final : root.querySelector('video');
+    const nativeWidth = image.videoWidth || image.naturalWidth, nativeHeight = image.videoHeight || image.naturalHeight, box = image.getBoundingClientRect();
+    const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = Math.round(400 * nativeHeight / nativeWidth);
+    const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let last = -1;
+    for (let y = canvas.height - 1; y >= 0 && last < 0; y--) {
+      let dark = 0;
+      for (let x = 0; x < canvas.width; x++) { const i = (y * canvas.width + x) * 4; if (pixels[i + 3] > 128 && Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) < 160) dark++; }
+      if (dark > canvas.width * .02) last = y;
+    }
+    const fit = Math.min(box.width / nativeWidth, box.height / nativeHeight);
+    const positionY = parseFloat(getComputedStyle(image).objectPosition.split(' ')[1]) / 100;
+    const deviceBottom = box.top + (box.height - nativeHeight * fit) * positionY + (last + 1) / canvas.height * nativeHeight * fit;
+    const paragraph = document.querySelector('.samsung-story__overview p').getBoundingClientRect();
+    const overviewTop = paragraph.top;
+    return { gap: overviewTop - deviceBottom, deviceBottom, overviewTop, overviewBottom: paragraph.bottom, viewportHeight: innerHeight, last };
+  });
+}
 async function phase(page, value) {
   await page.locator(selector).evaluate((root, value) => scrollTo({ top: scrollY + root.getBoundingClientRect().top + (root.offsetHeight - (innerWidth <= 820 ? root.firstElementChild.offsetHeight : innerHeight)) * value, behavior: 'instant' }), value);
   await page.waitForTimeout(350); return state(page);
@@ -75,24 +97,15 @@ async function enter(browser, width, height, reducedMotion = 'no-preference', fa
       check(label + ': endpoint is decoded final UI within viewport', end.decoded && end.imageAlpha > .99 && !end.overflow && end.device.left >= 7 && end.device.right <= width - 7 && end.device.top >= end.headingBottom && end.device.bottom <= height + 1, end);
       if (width === 390) {
         await phase(page, 1);
-        const gap = await page.locator(selector).evaluate(root => {
-          const image = root.querySelector('.samsung-story__interface'), box = image.getBoundingClientRect();
-          const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = Math.round(400 * image.naturalHeight / image.naturalWidth);
-          const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(image, 0, 0, canvas.width, canvas.height);
-          const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-          let last = -1;
-          for (let y = canvas.height - 1; y >= 0 && last < 0; y--) {
-            let dark = 0;
-            for (let x = 0; x < canvas.width; x++) { const i = (y * canvas.width + x) * 4; if (pixels[i + 3] > 128 && Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) < 160) dark++; }
-            if (dark > canvas.width * .02) last = y;
-          }
-          const fit = Math.min(box.width / image.naturalWidth, box.height / image.naturalHeight);
-          const deviceBottom = box.top + (box.height - image.naturalHeight * fit) / 2 + (last + 1) / canvas.height * image.naturalHeight * fit;
-          const overviewTop = document.querySelector('.samsung-story__overview p').getBoundingClientRect().top;
-          return { gap: overviewTop - deviceBottom, deviceBottom, overviewTop, last };
-        });
+        const gap = await visibleOverviewGap(page);
         check('390x844: final device to overview gap is at most 100px', gap.last >= 0 && gap.gap >= 0 && gap.gap <= 100, gap);
         await page.screenshot({ path: path.join(out, '390x844-exit.png') });
+        for (const progress of [0, .4, .8, 1]) {
+          await phase(page, progress);
+          const overview = await visibleOverviewGap(page);
+          check('390x844: overview follows visible device during phase ' + progress, overview.last >= 0 && overview.gap >= 0 && overview.gap <= 160 && overview.overviewTop >= 0 && overview.overviewBottom <= overview.viewportHeight, overview);
+          await page.screenshot({ path: path.join(out, '390x844-overview-' + progress + '.png') });
+        }
         await phase(page, .4);
       }
       check(label + ': reversing scroll restores intermediate video', reverse.videoAlpha > .99 && reverse.imageAlpha < .01 && Math.abs(reverse.time - middle.time) < .1, { middle, reverse });
@@ -107,7 +120,24 @@ async function enter(browser, width, height, reducedMotion = 'no-preference', fa
         const resized = await state(page), lifetime = await page.locator(selector + ' video').evaluate(v => ({ same: v === window.__storyVideo, loads: window.__storyLoads }));
         check('portrait height change retains video source and progress', lifetime.same && lifetime.loads === 0 && resized.src === middle.src && resized.ready >= 2 && resized.time > .5, { resized, lifetime, middle });
       }
-      await phase(page, 1); await page.screenshot({ path: path.join(out, label + '.png') }); await page.close();
+      await phase(page, 1); await page.screenshot({ path: path.join(out, label + '.png') });
+      if (width <= 820) {
+        await page.locator('.samsung-story__overview p').last().evaluate(p => p.scrollIntoView({ block: 'end', behavior: 'instant' }));
+        const copy = await page.locator('.samsung-story__overview p').last().evaluate(p => { const r = p.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, height: innerHeight }; });
+        check(label + ': full overview copy is reachable after unfolding', copy.top >= 0 && copy.bottom <= copy.height + 1, copy);
+      }
+      if (width === 390) {
+        await page.locator('.samsung-story__overview').evaluate(node => { window.__overview = node; window.__overviewText = node.textContent; });
+        for (const [nextWidth, reducedMotion, remount] of [[1440, 'no-preference', false], [390, 'no-preference', false], [390, 'reduce', false], [390, 'no-preference', true], [390, 'no-preference', true]]) {
+          await page.setViewportSize({ width: nextWidth, height: 900 });
+          await page.emulateMedia({ reducedMotion });
+          if (remount) await page.evaluate(() => SamsungStory.mount());
+          await page.waitForTimeout(150);
+          const overview = await page.evaluate(() => { const nodes = [...document.querySelectorAll('.samsung-story__overview')]; return { count: nodes.length, same: nodes[0] === window.__overview, text: nodes[0]?.textContent === window.__overviewText, outside: !document.querySelector('[data-samsung-story]').contains(nodes[0]) }; });
+          check('overview survives width/motion/remount ' + [nextWidth, reducedMotion, remount].join('/'), overview.count === 1 && overview.same && overview.text && (nextWidth <= 820 || overview.outside), overview);
+        }
+      }
+      await page.close();
     }
     for (const [width, height, reduced, fail, label] of [[390,844,'reduce',false,'mobile-reduced'], [1440,900,'reduce',false,'desktop-reduced'], [821,699,'no-preference',false,'short-desktop'], [390,844,'no-preference',true,'mobile-media-error']]) {
       const page = await enter(browser, width, height, reduced, fail);

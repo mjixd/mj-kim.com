@@ -21,6 +21,29 @@ async function state(page) {
       headingBottom: h.bottom, height: innerHeight, width: innerWidth };
   });
 }
+async function visibleVideoGap(page) {
+  return page.locator(selector).evaluate(root => {
+    const video = root.querySelector('video'), box = video.getBoundingClientRect();
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(video, 0, 0);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let first = -1;
+    for (let y = 0; y < canvas.height && first < 0; y++) {
+      let dark = 0;
+      for (let x = 0; x < canvas.width; x++) {
+        const i = (y * canvas.width + x) * 4;
+        if (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) < 160) dark++;
+      }
+      if (dark > canvas.width * .02) first = y;
+    }
+    const css = getComputedStyle(video), fit = css.objectFit === 'cover' ? Math.max(box.width / canvas.width, box.height / canvas.height) : Math.min(box.width / canvas.width, box.height / canvas.height);
+    const offset = (box.height - canvas.height * fit) * parseFloat(css.objectPosition.split(' ')[1]) / 100;
+    const contentTop = box.top + offset + first * fit, headingBottom = root.querySelector('h2').getBoundingClientRect().bottom;
+    return { gap: contentTop - headingBottom, contentTop, headingBottom, first, time: video.currentTime };
+  });
+}
 async function phase(page, value) {
   await page.locator(selector).evaluate((root, value) => scrollTo({ top: scrollY + root.getBoundingClientRect().top + (root.offsetHeight - innerHeight) * value, behavior: 'instant' }), value);
   await page.waitForTimeout(350); return state(page);
@@ -41,6 +64,11 @@ async function enter(browser, width, height, reducedMotion = 'no-preference', fa
       const page = await enter(browser, width, height), label = width + 'x' + height;
       let start = await phase(page, 0);
       if (start.src) { await page.waitForFunction(s => document.querySelector(s + ' video').readyState >= 2, selector); start = await phase(page, 0); }
+      if (width === 390) {
+        const gap = await visibleVideoGap(page);
+        check('390x844: title to visible opening device gap is at most 80px', gap.first >= 0 && gap.gap >= 0 && gap.gap <= 80, gap);
+        await page.screenshot({ path: path.join(out, '390x844-opening.png') });
+      }
       const middle = await phase(page, .4), end = await phase(page, 1), reverse = await phase(page, .4);
       check(label + ': scroll runway and sticky stage', start.sticky === 'sticky' && start.runway > height * 2, start);
       check(label + ': unfolding advances visible decoded video', start.imageAlpha < .01 && middle.videoAlpha > .99 && middle.ready >= 2 && middle.time > start.time + .5, { start, middle });

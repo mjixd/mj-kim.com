@@ -56,12 +56,13 @@
   function mount(root) {
     const canvas = root.querySelector('.samsung-workspace__canvas');
     const visual = root.querySelector('.samsung-workspace__visual');
+    const stage = root.querySelector('.samsung-workspace__stage');
     const cards = [...root.querySelectorAll('[data-samsung-screen]')];
     const previews = [...root.querySelectorAll('[data-samsung-preview]')];
     const defaultDevice = root.querySelector('.sw-default-device');
     const chrome = [...root.querySelectorAll('.sw-status, .sw-camera, .sw-gesture')];
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
-    let active = true, desktop = false, seen = false, visible = false, raf = 0;
+    let active = true, desktop = false, mobile = false, scrolling = false, stickyTop = 0, seen = false, visible = false, raf = 0;
     let progress = 1, transition = null, previousTime = 0;
     // Canvas coordinates preserve the device and shared system chrome. Panel
     // widths reflow their contents; transforms never stretch text or icons.
@@ -125,7 +126,7 @@
     function draw(time) {
       raf=0;
       if (!active) return;
-      if (desktop) paint(clamp(-root.getBoundingClientRect().top / Math.max(1,root.offsetHeight-innerHeight)));
+      if (scrolling) paint(clamp(((mobile ? stickyTop : 0)-root.getBoundingClientRect().top) / Math.max(1,root.offsetHeight-(mobile ? stage.offsetHeight : innerHeight))));
       else if (transition) {
         if (!visible || document.hidden) { previousTime=0; return; }
         const delta = previousTime ? Math.min(time-previousTime,50) : 0;
@@ -143,19 +144,24 @@
       previousTime=0;queue();
     }
     function reconcile() {
-      const wasDesktop=desktop;
+      const wasScrolling=scrolling;
+      mobile=innerWidth<=820;
       desktop=innerWidth>820 && innerHeight>=700 && !motion.matches;
-      root.classList.toggle('samsung-workspace--scroll',desktop);
+      scrolling=desktop || (mobile && !motion.matches);
+      root.classList.toggle('samsung-workspace--scroll',scrolling);
+      // On short mobile screens, let the copy pass before pinning the whole device.
+      stage.style.setProperty('--workspace-stage-height',stage.offsetHeight+'px');
+      stickyTop=mobile && scrolling ? parseFloat(getComputedStyle(stage).top) || 0 : 0;
       paint(progress);
-      if (desktop) { transition=null;queue(); }
+      if (scrolling) { transition=null;queue(); }
       else if (motion.matches) { transition=null;paint(1); }
-      else if(wasDesktop || !seen) { transition=null;paint(seen?progress:0); }
-      if(!desktop && !motion.matches && visible && !seen) { seen=true;animateTo(1); }
+      else if(wasScrolling || !seen) { transition=null;paint(seen?progress:0); }
+      if(!scrolling && !motion.matches && visible && !seen) { seen=true;animateTo(1); }
       else queue();
     }
     const observer=new IntersectionObserver(entries=>{
       visible=entries[0].isIntersecting;
-      if(visible && !desktop && !motion.matches && !seen) { seen=true;animateTo(1); }
+      if(visible && !scrolling && !motion.matches && !seen) { seen=true;animateTo(1); }
       else queue();
     },{threshold:.25});
     observer.observe(visual);

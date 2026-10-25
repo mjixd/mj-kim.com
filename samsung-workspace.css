@@ -130,3 +130,11 @@
  .samsung-workspace__stage{padding:80px var(--gutter);gap:24px}
  .samsung-workspace__visual{height:calc((100vw - 2 * var(--gutter)) * 747 / 1030)}
 }
+
+/* Mobile progress follows scrolling, with content-sized spacing around the device. */
+@media(max-width:820px){
+ .samsung-workspace--scroll{height:auto}
+ .samsung-workspace--scroll::after{content:"";display:block;height:160svh}
+ .samsung-workspace--scroll .samsung-workspace__stage{height:auto;top:min(0px,calc(100svh - var(--workspace-stage-height,100svh)));padding-block:80px 32px}
+ .samsung-workspace--scroll .samsung-workspace__visual{max-height:calc(100svh - 112px);overflow:hidden;overflow-clip-margin:0}
+}
